@@ -14,7 +14,23 @@ namespace TMS.Data
         {
 
         }
-        //public virtual DbSet<BalanceType> BalanceTypes { get; set; }
+        public virtual DbSet<Fee> Fees { get; set; }
+        public virtual DbSet<DenominationServiceProvider> DenominationServiceProviders { get; set; }
+        public virtual DbSet<FeesType> FeesTypes { get; set; }
+        public virtual DbSet<InquiryBill> InquiryBills { get; set; }
+        public virtual DbSet<InquiryBillDetails> InquiryBillDetails { get; set; }
+        public virtual DbSet<Parameter> Parameters { get; set; }
+        public virtual DbSet<ProviderServiceConfigeration> ProviderServiceConfigerations { get; set; }
+        public virtual DbSet<ProviderServiceRequest> ProviderServiceRequests { get; set; }
+        public virtual DbSet<ProviderServiceRequestParams> ProviderServiceRequestParams { get; set; }
+        public virtual DbSet<ProviderServiceRequestStatus> ProviderServiceRequestStatus { get; set; }
+        public virtual DbSet<ProviderServiceResponse> ProviderServiceResponses { get; set; }
+        public virtual DbSet<ProviderServiceResponseParam> ProviderServiceResponseParams { get; set; }
+        public virtual DbSet<ReceiptBodyParam> ReceiptBodyParams { get; set; }
+        public virtual DbSet<RequestType> RequestTypes { get; set; }
+        public virtual DbSet<ServiceConfigeration> ServiceConfigerations { get; set; }
+        public virtual DbSet<ServiceConfigParms> ServiceConfigParms { get; set; }
+        public virtual DbSet<ServiceProvider> ServiceProviders { get; set; }
         public override int SaveChanges()
         {
             var entries = ChangeTracker
