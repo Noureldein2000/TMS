@@ -4,10 +4,10 @@ using System.Text;
 
 namespace TMS.Data.Entities
 {
-    public class BalanceType : BaseEntity<int>
+    public class FeesType : BaseEntity<int>
     {
         public string Name { get; set; }
         public string ArName { get; set; }
-
+        public virtual ICollection<Fee> Fees { get; set; }
     }
 }
