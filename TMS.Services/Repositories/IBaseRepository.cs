@@ -15,5 +15,6 @@ namespace TMS.Services.Repositories
         TEntity GetById(TKey key);
         bool Any(Expression<Func<TEntity, bool>> predicate);
         TEntity Delete(TKey key);
+        //int Max(Expression<Func<TEntity, int>> predicate);
     }
 }

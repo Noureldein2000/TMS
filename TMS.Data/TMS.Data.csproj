@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,6 +9,12 @@
     <Compile Remove="Migrations\20210823150015_Init.Designer.cs" />
     <Compile Remove="Migrations\20210823150309_Init.cs" />
     <Compile Remove="Migrations\20210823150309_Init.Designer.cs" />
+    <Compile Remove="Migrations\20210829082404_AddDenomination.cs" />
+    <Compile Remove="Migrations\20210829082404_AddDenomination.Designer.cs" />
+    <Compile Remove="Migrations\20210907090855_RequestAndTransaction.cs" />
+    <Compile Remove="Migrations\20210907090855_RequestAndTransaction.Designer.cs" />
+    <Compile Remove="Migrations\20210907091029_RequestAndTransaction.cs" />
+    <Compile Remove="Migrations\20210907091029_RequestAndTransaction.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\TMS.Infrastructure\TMS.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,6 +19,703 @@ namespace TMS.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("TMS.Data.Entities.AccountCommission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommessionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CommessionID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.ToTable("AccountCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountFee", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeesID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.HasIndex("FeesID");
+
+                    b.ToTable("AccountFees");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileCommission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountProfileDenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommissionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AccountProfileDenominationID");
+
+                    b.HasIndex("CommissionID");
+
+                    b.ToTable("AccountProfileCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileDenomination", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountProfileID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.ToTable("AccountProfileDenominations");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileFee", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountProfileDenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FeesID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AccountProfileDenominationID");
+
+                    b.HasIndex("FeesID");
+
+                    b.ToTable("AccountProfileFees");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTransactionCommission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("Commission")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TransactionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TransactionID");
+
+                    b.ToTable("AccountTransactionCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.BillPaymentMode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("BillPaymentModes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Commission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("AmountFrom")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<decimal>("AmountTo")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<int>("CommissionTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentModeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CommissionTypeID");
+
+                    b.HasIndex("PaymentModeID");
+
+                    b.ToTable("Commissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.CommissionType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("CommissionTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Currency", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Currencies");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Denomination", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("APIValue")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<int?>("BillPaymentModeID")
+                        .HasColumnType("int");
+
+                    b.Property<short>("ClassType")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CurrencyID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Inquirable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MaxValue")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<decimal>("MinValue")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldDenominationID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PathClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentModeID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceCategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BillPaymentModeID");
+
+                    b.HasIndex("CurrencyID");
+
+                    b.HasIndex("PaymentModeID");
+
+                    b.HasIndex("ServiceCategoryID");
+
+                    b.HasIndex("ServiceID");
+
+                    b.ToTable("Denominations");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationCommission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CommissionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CommissionID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.ToTable("DenominationCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationEntity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntityID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.ToTable("DenominationEntities");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationFee", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeesID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.HasIndex("FeesID");
+
+                    b.ToTable("DenominationFees");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParam", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("ParamKey")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ValueModeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ValueTypeID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ValueModeID");
+
+                    b.HasIndex("ValueTypeID");
+
+                    b.ToTable("DenominationParams");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParamValueMode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("DenominationParamValueModes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParamValueType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("DenominationParamValueTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParameter", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DenominationParamID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Optional")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ValidationExpression")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("ValidationMessage")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ValueList")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.HasIndex("DenominationParamID");
+
+                    b.ToTable("DenominationParameters");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationProviderConfiguration", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationProviderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationProviderID");
+
+                    b.ToTable("DenominationProviderConfigerations");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationReceiptData", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Disclaimer")
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
+
+                    b.Property<string>("Footer")
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.ToTable("DenominationReceiptData");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationReceiptParam", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Alignment")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Bold")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ParameterID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.HasIndex("ParameterID");
+
+                    b.ToTable("DenominationReceiptParams");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.DenominationServiceProvider", b =>
                 {
                     b.Property<int>("ID")
@@ -57,6 +754,8 @@ namespace TMS.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
 
                     b.HasIndex("ServiceProviderID");
 
@@ -100,7 +799,7 @@ namespace TMS.Data.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UpdatedBy")
+                    b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Value")
@@ -135,6 +834,36 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("FeesTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.FieldType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(250)")
+                        .HasMaxLength(250);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ValExp")
+                        .HasColumnType("nvarchar(250)")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("message")
+                        .HasColumnType("nvarchar(250)")
+                        .HasMaxLength(250);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("FieldTypes");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.InquiryBill", b =>
@@ -197,6 +926,63 @@ namespace TMS.Data.Migrations
                     b.ToTable("InquiryBillDetails");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.Log", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LogText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("LogTypeID")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("ProviderServiceRequestID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Logs");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.MainStatusCode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArMessage")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MainStatusCodes");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.Parameter", b =>
                 {
                     b.Property<int>("ID")
@@ -222,6 +1008,30 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Parameters");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.PaymentMode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PaymentModes");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.ProviderServiceConfigeration", b =>
@@ -262,7 +1072,7 @@ namespace TMS.Data.Migrations
                     b.Property<string>("BillingAccount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Brn")
+                    b.Property<int?>("Brn")
                         .HasColumnType("int");
 
                     b.Property<int>("CreatedBy")
@@ -283,7 +1093,7 @@ namespace TMS.Data.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UpdatedBy")
+                    b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -295,7 +1105,7 @@ namespace TMS.Data.Migrations
                     b.ToTable("ProviderServiceRequests");
                 });
 
-            modelBuilder.Entity("TMS.Data.Entities.ProviderServiceRequestParams", b =>
+            modelBuilder.Entity("TMS.Data.Entities.ProviderServiceRequestParam", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -395,6 +1205,9 @@ namespace TMS.Data.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("ParameterID");
@@ -402,6 +1215,42 @@ namespace TMS.Data.Migrations
                     b.HasIndex("ProviderServiceResponseID");
 
                     b.ToTable("ProviderServiceResponseParams");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ProviderStatusCode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProviderMessage")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("ServiceProviderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusCode")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("StatusCodeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ServiceProviderID");
+
+                    b.HasIndex("StatusCodeID");
+
+                    b.ToTable("ProviderStatusCodes");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.ReceiptBodyParam", b =>
@@ -438,6 +1287,94 @@ namespace TMS.Data.Migrations
                     b.ToTable("ReceiptBodyParams");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.Request", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<string>("BillingAccount")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("ChannelID")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ProviderServiceRequestID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RRN")
+                        .HasColumnType("nvarchar(150)")
+                        .HasMaxLength(150);
+
+                    b.Property<DateTime>("ResponseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ServiceDenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StatusID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TransactionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UUID")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ServiceDenominationID");
+
+                    b.HasIndex("StatusID");
+
+                    b.ToTable("Requests");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.RequestStatus", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ResponseCode")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("RequestStatus");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.RequestType", b =>
                 {
                     b.Property<int>("ID")
@@ -460,6 +1397,124 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("RequestTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Service", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("ClassType")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PathClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServiceCategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceEntityID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ServiceCategoryID");
+
+                    b.HasIndex("ServiceEntityID");
+
+                    b.HasIndex("ServiceTypeID");
+
+                    b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServiceBalanceType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BalanceTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ServiceID");
+
+                    b.ToTable("ServiceBalanceTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServiceCategory", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("LastNode")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceSubCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentID");
+
+                    b.ToTable("ServiceCategories");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.ServiceConfigParms", b =>
@@ -521,6 +1576,30 @@ namespace TMS.Data.Migrations
                     b.ToTable("ServiceConfigerations");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.ServiceEntity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ServiceEntities");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.ServiceProvider", b =>
                 {
                     b.Property<int>("ID")
@@ -542,8 +1621,399 @@ namespace TMS.Data.Migrations
                     b.ToTable("ServiceProviders");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.ServiceType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ServiceTypes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServicesField", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Display")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("EnglishFieldName")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("FieldName")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("FieldTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Printed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Req")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ServId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("fRank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("printed_rank")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("FieldTypeID");
+
+                    b.ToTable("ServicesFields");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.StatusCode", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArMessage")
+                        .HasColumnType("nvarchar(150)")
+                        .HasMaxLength(150);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MainStatusCodeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(150)")
+                        .HasMaxLength(150);
+
+                    b.Property<int>("RequestStatusID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MainStatusCodeID");
+
+                    b.HasIndex("RequestStatusID");
+
+                    b.ToTable("StatusCodes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Transaction", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AccountIDFrom")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AccountIDTo")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Fees")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<int?>("InvoiceID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsReversed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("OriginalAmount")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<string>("OriginalTrx")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RequestID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18, 3)");
+
+                    b.Property<string>("TransactionID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountCommission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Commission", "Commission")
+                        .WithMany("AccountCommissions")
+                        .HasForeignKey("CommessionID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("AccountCommissions")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountFee", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("AccountFees")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Fee", "Fee")
+                        .WithMany("AccountFees")
+                        .HasForeignKey("FeesID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileCommission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.AccountProfileDenomination", "AccountProfileDenomination")
+                        .WithMany("AccountProfileCommissions")
+                        .HasForeignKey("AccountProfileDenominationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Commission", "Commission")
+                        .WithMany("AccountProfileCommissions")
+                        .HasForeignKey("CommissionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileDenomination", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("AccountProfileDenominations")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountProfileFee", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.AccountProfileDenomination", "AccountProfileDenomination")
+                        .WithMany("AccountProfileFees")
+                        .HasForeignKey("AccountProfileDenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Fee", "Fee")
+                        .WithMany("AccountProfileFees")
+                        .HasForeignKey("FeesID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTransactionCommission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Transaction", "Transaction")
+                        .WithMany("AccountTransactionCommissions")
+                        .HasForeignKey("TransactionID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Commission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.CommissionType", "CommissionType")
+                        .WithMany("Commissions")
+                        .HasForeignKey("CommissionTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.PaymentMode", "PaymentMode")
+                        .WithMany("Commissions")
+                        .HasForeignKey("PaymentModeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Denomination", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.BillPaymentMode", "BillPaymentMode")
+                        .WithMany("Denominations")
+                        .HasForeignKey("BillPaymentModeID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TMS.Data.Entities.Currency", "Currency")
+                        .WithMany("Denominations")
+                        .HasForeignKey("CurrencyID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TMS.Data.Entities.PaymentMode", "PaymentMode")
+                        .WithMany("Denominations")
+                        .HasForeignKey("PaymentModeID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TMS.Data.Entities.ServiceCategory", "ServiceCategory")
+                        .WithMany("Denominations")
+                        .HasForeignKey("ServiceCategoryID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TMS.Data.Entities.Service", "Service")
+                        .WithMany("Denominations")
+                        .HasForeignKey("ServiceID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationCommission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Commission", "Commission")
+                        .WithMany("DenominationCommissions")
+                        .HasForeignKey("CommissionID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationCommissions")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationEntity", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationEntities")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationFee", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationFees")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Fee", "Fee")
+                        .WithMany("DenominationFees")
+                        .HasForeignKey("FeesID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParam", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.DenominationParamValueMode", "DenominationParamValueMode")
+                        .WithMany("DenominationParams")
+                        .HasForeignKey("ValueModeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.DenominationParamValueType", "DenominationParamValueType")
+                        .WithMany("DenominationParams")
+                        .HasForeignKey("ValueTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationParameter", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationParameters")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.DenominationParam", "DenominationParam")
+                        .WithMany("DenominationParameters")
+                        .HasForeignKey("DenominationParamID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationProviderConfiguration", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.DenominationServiceProvider", "DenominationServiceProvider")
+                        .WithMany("DenominationProviderConfigerations")
+                        .HasForeignKey("DenominationProviderID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationReceiptData", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationReceiptData")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationReceiptParam", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany()
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Parameter", "Parameter")
+                        .WithMany()
+                        .HasForeignKey("ParameterID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.DenominationServiceProvider", b =>
                 {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationServiceProviders")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("TMS.Data.Entities.ServiceProvider", "ServiceProvider")
                         .WithMany("DenominationServiceProviders")
                         .HasForeignKey("ServiceProviderID")
@@ -614,7 +2084,7 @@ namespace TMS.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TMS.Data.Entities.ProviderServiceRequestParams", b =>
+            modelBuilder.Entity("TMS.Data.Entities.ProviderServiceRequestParam", b =>
                 {
                     b.HasOne("TMS.Data.Entities.Parameter", "Parameter")
                         .WithMany("ProviderServiceRequestParams")
@@ -653,6 +2123,21 @@ namespace TMS.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.ProviderStatusCode", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.ServiceProvider", "ServiceProvider")
+                        .WithMany("ProviderStatusCodes")
+                        .HasForeignKey("ServiceProviderID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.StatusCode", "StatusCodeModel")
+                        .WithMany("ProviderStatusCodes")
+                        .HasForeignKey("StatusCodeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.ReceiptBodyParam", b =>
                 {
                     b.HasOne("TMS.Data.Entities.Parameter", "Parameter")
@@ -668,12 +2153,86 @@ namespace TMS.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.Request", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("Requests")
+                        .HasForeignKey("ServiceDenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.RequestStatus", "RequestStatus")
+                        .WithMany("Requests")
+                        .HasForeignKey("StatusID")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Service", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.ServiceCategory", null)
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceCategoryID");
+
+                    b.HasOne("TMS.Data.Entities.ServiceEntity", "ServiceEntity")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceEntityID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.ServiceType", "ServiceType")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServiceBalanceType", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Service", "Service")
+                        .WithMany("ServiceBalanceTypes")
+                        .HasForeignKey("ServiceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServiceCategory", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.ServiceCategory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentID")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.ServiceConfigParms", b =>
                 {
                     b.HasOne("TMS.Data.Entities.ServiceConfigeration", "ServiceConfigeration")
                         .WithMany("ServiceConfigParms")
                         .HasForeignKey("ServiceConfigerationID")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.ServicesField", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.FieldType", "FieldType")
+                        .WithMany("ServicesFields")
+                        .HasForeignKey("FieldTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.StatusCode", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.MainStatusCode", "MainStatusCode")
+                        .WithMany("StatusCodes")
+                        .HasForeignKey("MainStatusCodeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.RequestStatus", "RequestStatus")
+                        .WithMany("StatusCodes")
+                        .HasForeignKey("RequestStatusID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

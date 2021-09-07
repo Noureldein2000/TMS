@@ -28,9 +28,30 @@ namespace TMS.API.Controllers
             var response = new TMSErrorMessages
             {
                 Code = errorCode,
-                //Message = errorMessage
+                Message = errorMessage
             };
             return Ok(response);
+        }
+        public int UserIdentityId
+        {
+            get
+            {
+                return int.Parse(User.Identity.Name ?? "1");
+            }
+        }
+        public int AccountId
+        {
+            get
+            {
+                return int.Parse(User.Claims.Where(s => s.Type == "AccountId").Select(s => s.Value).FirstOrDefault() ?? "6");
+            }
+        }
+        public int AccountProfileId
+        {
+            get
+            {
+                return int.Parse(User.Claims.Where(s => s.Type == "AccountProfileId").Select(s => s.Value).FirstOrDefault() ?? "6");
+            }
         }
     }
 }

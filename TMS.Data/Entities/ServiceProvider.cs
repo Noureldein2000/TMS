@@ -8,5 +8,6 @@ namespace TMS.Data.Entities
     {
         public string Name { get; set; }
         public virtual ICollection<DenominationServiceProvider> DenominationServiceProviders { get; set; }
+        public virtual ICollection<ProviderStatusCode> ProviderStatusCodes { get; set; }
     }
 }

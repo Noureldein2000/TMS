@@ -10,5 +10,6 @@ namespace TMS.Data.Entities
         public virtual ProviderServiceResponse ProviderServiceResponse { get; set; }
         public int ParameterID { get; set; }
         public virtual Parameter Parameter { get; set; }
+        public string Value { get; set; }
     }
 }

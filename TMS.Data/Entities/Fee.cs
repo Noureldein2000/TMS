@@ -12,10 +12,13 @@ namespace TMS.Data.Entities
         public decimal Value { get; set; }
         public bool Status { get; set; }
         public int CreatedBy { get; set; }
-        public int UpdatedBy { get; set; }
+        public int? UpdatedBy { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int FeesTypeID { get; set; }
         public virtual FeesType FeesType { get; set; }
+        public virtual ICollection<DenominationFee> DenominationFees { get; set; }
+        public virtual ICollection<AccountFee> AccountFees { get; set; }
+        public virtual ICollection<AccountProfileFee> AccountProfileFees { get; set; }
     }
 }

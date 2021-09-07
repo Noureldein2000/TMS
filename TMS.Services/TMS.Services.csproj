@@ -1,15 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TMS.Data\TMS.Data.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="3.1.16" />
+    <PackageReference Include="RestSharp" Version="105.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\TMS.Data\TMS.Data.csproj" />
+    <ProjectReference Include="..\TMS.Infrastructure\TMS.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\SwaggerModels\" />
   </ItemGroup>
 
 </Project>

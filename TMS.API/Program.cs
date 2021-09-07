@@ -14,34 +14,34 @@ namespace TMS.API
     {
         public static void Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            //var config = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json")
+            //    .Build();
 
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .Enrich.FromLogContext()
-                //.WriteTo.Http("http://localhost:8080")
-                .CreateLogger();
+            //Log.Logger = new LoggerConfiguration()
+            //    .ReadFrom.Configuration(config)
+            //    .Enrich.FromLogContext()
+            //    //.WriteTo.Http("http://localhost:8080")
+            //    .CreateLogger();
 
             try
             {
-                Log.Information("Application Starting.");
+                //Log.Information("Application Starting.");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Application start-up failed");
+                //Log.Fatal(ex, "Application start-up failed");
             }
             finally
             {
-                Log.CloseAndFlush();
+                //Log.CloseAndFlush();
             }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog()
+                //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

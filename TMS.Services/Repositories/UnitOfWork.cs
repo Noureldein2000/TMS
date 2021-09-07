@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using TMS.Data;
 
 namespace TMS.Services.Repositories
@@ -38,6 +39,11 @@ namespace TMS.Services.Repositories
         public void SaveChanges()
         {
             _context.SaveChanges();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

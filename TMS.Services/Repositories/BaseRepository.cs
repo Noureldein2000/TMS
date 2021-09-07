@@ -47,5 +47,10 @@ namespace TMS.Services.Repositories
         {
             return _context.Set<TEntity>().Where(predicate);
         }
+
+        //public int Max(Expression<Func<TEntity, string>> predicate)
+        //{
+        //    return _context.Set<TEntity>().Max(predicate);
+        //}
     }
 }
