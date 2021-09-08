@@ -65,8 +65,8 @@ namespace TMS.Services.BusinessLayer
                     return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
                 //case DenominationClassType.Cancel:
                 //    break;
-                //case DenominationClassType.CashIn:
-                //    break;
+                case DenominationClassType.CashIn:
+                    return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
                 //case DenominationClassType.CashU:
                 //    break;
                 //case DenominationClassType.CashTopUp:

@@ -9,8 +9,6 @@ namespace TMS.Services.Models
         public int TransactionId { get; set; }
         public string UserId { get; private set; } = "momkn";
         public string Password { get; private set; } = "hZ3BGBayXUCXsTnr";
-        public int BillsCount { get; set; }
-        public string PaymentCode { get; set; }
     }
 
     public class SwitchPaymentRequestBodyDTO : SwitchRequestBodyDTO
@@ -20,5 +18,24 @@ namespace TMS.Services.Models
         public string Fees { get; set; }
         public string AsyncRqUID { get; set; }
         public string ExtraBillInfo { get; set; }
+        public string PaymentCode { get; set; }
+        public int BillsCount { get; set; }
+    }
+
+    //public class InquiryBTech : SwitchRequestBodyDTO
+    //{
+    //    public string PaymentCode { get; set; }
+    //    public int BillsCount { get; set; }
+    //}
+
+    public class InquiryCashIn : SwitchRequestBodyDTO
+    {
+        public string BillReference { get; set; }
+    }
+
+    class PaymentCashIn : InquiryCashIn
+    {
+        public decimal Amount { get; set; }
+        public string InquiryReference { get; set; }
     }
 }
