@@ -182,7 +182,7 @@ namespace TMS.Services.ProviderLayer
             //BalanceBefore = BR.TotalAvailableBalance;
             //BalanceTypeID = BR.Balances[0].ID;
             // check balance 
-            
+
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0)
@@ -212,7 +212,7 @@ namespace TMS.Services.ProviderLayer
                 BillsCount = 1,
                 PaymentCode = payModel.BillingAccount,
                 TransactionId = providerServiceRequestId,
-                AsyncRqUID = asyncRqUID.Select(s=>s.Value).FirstOrDefault().ToString(),
+                AsyncRqUID = asyncRqUID.Select(s => s.Value).FirstOrDefault().ToString(),
                 Amount = payModel.Amount,
                 BillRefNumber = billReferenceNumber.Select(s => s.Value).FirstOrDefault().ToString(),
                 ExtraBillInfo = extraBillInfo.Select(s => s.Value).FirstOrDefault().ToString(),
@@ -225,7 +225,7 @@ namespace TMS.Services.ProviderLayer
                 UserName = serviceConfiguration.UserName,
                 UserPassword = serviceConfiguration.UserPassword
             };
-           
+
 
             await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
               providerServiceRequestId,
@@ -278,7 +278,7 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.UpdateRequestStatus(newRequestId, 3);
                 // GET MESSAGE PROVIDER ID
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
-               
+
             }
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
@@ -329,7 +329,7 @@ namespace TMS.Services.ProviderLayer
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
 
-            var switchRequestDto = new SwitchRequestBodyDTO
+            var switchRequestDto = new SwitchPaymentRequestBodyDTO
             {
                 BillsCount = 1,
                 PaymentCode = inquiryModel.BillingAccount,
@@ -508,6 +508,7 @@ namespace TMS.Services.ProviderLayer
                     ProviderServiceResponseID = providerServiceResponseId,
                     Sequence = 1
                 });
+
                 _inquiryBillService.AddReceiptBodyParam(
                     new ReceiptBodyParamDTO
                     {
