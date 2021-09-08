@@ -58,8 +58,8 @@ namespace TMS.Services.ProviderLayer
             var feeResponse = new FeesResponseDTO();
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
-                ProviderServiceRequestStatusID = 1,
-                RequestTypeID = 2,
+                ProviderServiceRequestStatusID = (int)ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = (int)Infrastructure.RequestType.Fees,
                 BillingAccount = null,
                 Brn = feesModel.Brn,
                 CreatedBy = userId,
@@ -152,8 +152,8 @@ namespace TMS.Services.ProviderLayer
             var paymentResponse = new PaymentResponseDTO();
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
-                ProviderServiceRequestStatusID = 1,
-                RequestTypeID = 3,
+                ProviderServiceRequestStatusID = (int)ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = (int)Infrastructure.RequestType.Payment,
                 BillingAccount = payModel.BillingAccount,
                 Brn = payModel.Brn,
                 CreatedBy = userId,
@@ -296,8 +296,8 @@ namespace TMS.Services.ProviderLayer
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
-                ProviderServiceRequestStatusID = 1,
-                RequestTypeID = 1,
+                ProviderServiceRequestStatusID = (int)ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = (int)Infrastructure.RequestType.Inquiry,
                 BillingAccount = inquiryModel.BillingAccount,
                 Brn = null,
                 CreatedBy = userId,

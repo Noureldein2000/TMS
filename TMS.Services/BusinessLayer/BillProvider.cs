@@ -51,7 +51,7 @@ namespace TMS.Services.BusinessLayer
             if (!denomination.Inquirable && feesModel.Brn != 0)
                 throw new TMSException(_localizer["RequestNotFound"].Value, "14");
 
-            if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist(1, feesModel.Brn, 2, id, userId))
+            if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Inquiry, feesModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                 throw new TMSException(_localizer["RequestNotFound"].Value, "14");
 
             if (denomination.MinValue > 0 && denomination.MaxValue > 0 && (feesModel.Amount < denomination.MinValue || feesModel.Amount > denomination.MaxValue))
@@ -266,10 +266,10 @@ namespace TMS.Services.BusinessLayer
                 if (string.IsNullOrEmpty(payModel.BillingAccount))
                     throw new TMSException(_localizer["MissingData"].Value, "15");
 
-                if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist(1, payModel.Brn, 2, id, userId))
+                if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Inquiry, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                     throw new TMSException(_localizer["RequestNotFound"].Value, "14");
 
-                if (!_providerService.IsProviderServiceRequestExsist(2, payModel.Brn, 2, id, userId))
+                if (!_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Fees, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                     throw new TMSException(_localizer["RequestNotFound"].Value, "14");
 
                 if (denomination.Value != 0 && denomination.Value != payModel.Amount)
@@ -280,7 +280,7 @@ namespace TMS.Services.BusinessLayer
                     throw new TMSException(_localizer["InvalidInterval"].Value, "10");
                     //DtMsg.Rows[0][1] = DB_MessageMapping.ReplaceMessage(DtMsg.Rows[0][1].ToString(), D.MinValue, D.MaxValue, D.Interval);
                 }
-                if (payModel.Brn != 0 && _providerService.IsProviderServiceRequestExsist(3, payModel.Brn, 2, id, userId))
+                if (payModel.Brn != 0 && _providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Payment, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                 {
                     throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
                     //DtMsg = DB_MessageMapping.GetMessage((int)DB_MessageMapping.MomknMessage.DupplicatedTrx, 0, _PDTO.Language);
@@ -288,7 +288,7 @@ namespace TMS.Services.BusinessLayer
                 if (payModel.HostTransactionID == "" && _transactionService.IsRequestUUIDExist(payModel.AccountId, payModel.HostTransactionID))
                     throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
 
-                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, 2);
+                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
 
                 var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
                 decimal feesAmount = 0;

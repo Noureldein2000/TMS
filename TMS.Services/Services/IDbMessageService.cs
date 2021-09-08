@@ -8,6 +8,6 @@ namespace TMS.Services.Services
 {
     public interface IDbMessageService
     {
-        StatusCodeDTO GetMainStatusCodeMessage(int? id = null, int? providerId = null, string statusCode = "", string language = "en");
+        StatusCodeDTO GetMainStatusCodeMessage(int? id = null, int? providerId = null, string statusCode = "", string language = "ar");
     }
 }

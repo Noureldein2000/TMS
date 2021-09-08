@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using TMS.Data;
 using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
@@ -23,6 +24,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<AccountProfileCommission, int> _accountProfileCommission;
         private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context;
         //private readonly IBaseRepository<Invoice, int> _invoice;
         private readonly IUnitOfWork _unitOfWork;
         public TransactionService(IBaseRepository<Request, int> requests,
@@ -32,6 +34,7 @@ namespace TMS.Services.Services
             IBaseRepository<AccountProfileCommission, int> accountProfileCommission,
             IBaseRepository<DenominationCommission, int> denominationCommission,
             IConfiguration configuration,
+            ApplicationDbContext context,
             //IBaseRepository<Invoice, int> invoice,
             IUnitOfWork unitOfWork)
         {
@@ -44,6 +47,7 @@ namespace TMS.Services.Services
             _accountProfileCommission = accountProfileCommission;
             _denominationCommission = denominationCommission;
             _configuration = configuration;
+            _context = context;
         }
 
         public void AddCommission(int transactionId, int? accountId, int denominationId, decimal originalAmount, int? accountProfileId)
@@ -94,9 +98,11 @@ namespace TMS.Services.Services
 
         public int AddRequest(RequestDTO model)
         {
-            //var sequence = _requests.Max(S => S.UUID);
-
-            var sequence = "15151";
+            var p = new SqlParameter("@result", SqlDbType.Int);
+            p.Direction = ParameterDirection.Output;
+            _context.Database.ExecuteSqlRaw("set @result = next value for Request_seq", p);
+            var nextVal = (int)p.Value;
+            
             var request = _requests.Add(new Request
             {
                 AccountID = model.AccountId,
@@ -105,7 +111,7 @@ namespace TMS.Services.Services
                 BillingAccount = model.BillingAccount,
                 ServiceDenominationID = model.DenominationId,
                 StatusID = 1,
-                UUID = model.HostTransactionId == "0" ? sequence : model.HostTransactionId
+                UUID = model.HostTransactionId == "0" ? nextVal.ToString() : model.HostTransactionId
             });
             _unitOfWork.SaveChanges();
             return request.ID;
@@ -113,10 +119,14 @@ namespace TMS.Services.Services
 
         public int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId)
         {
-            var sequence = "15151";
+            var p = new SqlParameter("@result", SqlDbType.Int);
+            p.Direction = ParameterDirection.Output;
+            _context.Database.ExecuteSqlRaw("set @result = next value for Transaction_Seq", p);
+            var nextVal = (int)p.Value;
+            
             var transaction = _transactions.Add(new Transaction
             {
-                TransactionID = $"MOMKN-{denominationId}-{sequence}",
+                TransactionID = $"MOMKN-{denominationId}-{nextVal}",
                 AccountIDFrom = accountIdFrom,
                 Fees = fees,
                 InvoiceID = invoiceId,

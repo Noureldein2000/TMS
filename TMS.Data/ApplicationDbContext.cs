@@ -101,9 +101,9 @@ namespace TMS.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            //modelBuilder.ForSqlServerHasSequence<int>("DBSequence")
-            //                  .StartsAt(1000).IncrementsBy(2);
-            
+            modelBuilder.HasSequence<int>("Request_seq").StartsAt(1000).IncrementsBy(1);
+            modelBuilder.HasSequence<int>("Transaction_Seq").StartsAt(1000).IncrementsBy(1);
+
 
         }
     }

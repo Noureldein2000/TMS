@@ -142,4 +142,17 @@ namespace TMS.Infrastructure
         Partial = 2,
         InAdvance = 3,
     }
+    public enum RequestType
+    {
+        Inquiry = 1,
+        Fees = 2,
+        Payment = 3
+    }
+    public enum ProviderServiceRequestStatusType
+    {
+        UnderProcess = 1,
+        Success = 2,
+        Failed = 3,
+        Canceled = 4
+    }
 }
