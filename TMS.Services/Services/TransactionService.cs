@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
@@ -8,7 +11,6 @@ using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
-
 
 namespace TMS.Services.Services
 {
@@ -20,6 +22,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<AccountCommission, int> _accountCommission;
         private readonly IBaseRepository<AccountProfileCommission, int> _accountProfileCommission;
         private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
+        private readonly IConfiguration _configuration;
         //private readonly IBaseRepository<Invoice, int> _invoice;
         private readonly IUnitOfWork _unitOfWork;
         public TransactionService(IBaseRepository<Request, int> requests,
@@ -28,6 +31,7 @@ namespace TMS.Services.Services
             IBaseRepository<AccountCommission, int> accountCommission,
             IBaseRepository<AccountProfileCommission, int> accountProfileCommission,
             IBaseRepository<DenominationCommission, int> denominationCommission,
+            IConfiguration configuration,
             //IBaseRepository<Invoice, int> invoice,
             IUnitOfWork unitOfWork)
         {
@@ -39,6 +43,7 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
             _accountProfileCommission = accountProfileCommission;
             _denominationCommission = denominationCommission;
+            _configuration = configuration;
         }
 
         public void AddCommission(int transactionId, int? accountId, int denominationId, decimal originalAmount, int? accountProfileId)
@@ -54,7 +59,37 @@ namespace TMS.Services.Services
 
         public void AddInvoice(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo)
         {
+            var sqlConnString = _configuration.GetConnectionString("OldConnectionString");
+            //"Data Source=164.160.104.66;User ID=Ebram;Password =P@$$w0rd123;Initial Catalog=momkentest;Integrated Security=false;Min Pool Size=5;Max Pool Size=30000;Connect Timeout=10000;";
+            using var conn = new SqlConnection(sqlConnString);
+            using var cmd = new SqlCommand("[BTech_send]", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@PaymentCode", billingAccount);
+            cmd.Parameters.AddWithValue("@Fees", fees);
+            cmd.Parameters.AddWithValue("@BillInfo", billingInfo);
+            conn.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            finally
+            {
+                conn.Close();
+            }
 
+
+            //using (var adapter = new SqlDataAdapter(cmd))
+            //{
+            //    var resultTable = new DataTable();
+            //    adapter.Fill(resultTable);
+            //}
+            //return 1;
+            //return Convert.ToInt32(DB.ExecuteScalar(
+            //    _configuration.GetConnectionString("MomknConnection"),
+            //                "[BTech_send]", requestId, amount, userId, billingAccount, fees, billingInfo).ToString());
         }
 
         public int AddRequest(RequestDTO model)

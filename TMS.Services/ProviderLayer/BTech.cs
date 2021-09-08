@@ -176,11 +176,6 @@ namespace TMS.Services.ProviderLayer
                 DenominationId = id,
                 HostTransactionId = payModel.HostTransactionID
             });
-
-            ////Conncet Balance System
-            //BalancesResponse BR = IntegerationLayer.IL_Balance.Connect("GET", int.Parse(_LoginedUser.AccountID), _DenominationID);
-            //BalanceBefore = BR.TotalAvailableBalance;
-            //BalanceTypeID = BR.Balances[0].ID;
             // check balance 
             
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
@@ -247,7 +242,7 @@ namespace TMS.Services.ProviderLayer
                     new List<int?> { transactionId });
 
                 // send add invoice to another data base system
-                //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Values);
+                _transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Select(s => s.Value).FirstOrDefault());
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 2, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
