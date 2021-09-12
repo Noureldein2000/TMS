@@ -11,7 +11,36 @@ namespace TMS.Services.Models
         public string Password { get; private set; } = "hZ3BGBayXUCXsTnr";
     }
 
+    public class SwitchPaymentRequestBodyDTO : SwitchRequestBodyDTO
+    {
+        public string BillRefNumber { get; set; }
+        public decimal Amount { get; set; }
+        public string Fees { get; set; }
+        public string AsyncRqUID { get; set; }
+        public string ExtraBillInfo { get; set; }
+        public string PaymentCode { get; set; }
+        public int BillsCount { get; set; }
+    }
+
     public class CashUCoupon
+    {
+        public string CardNumber { get; set; }
+        private string creationDate;
+        public string CreationDate
+        {
+            get { return creationDate; }
+            set { creationDate = value; }
+        }
+        public string DenominationValue { get; set; }
+        private string expirationDate;
+        public string ExpirationDate
+        {
+            get { return expirationDate; }
+            set { expirationDate = value; }
+        }
+        public string Serial { get; set; }
+    }
+    public class CashUCoupon2
     {
         public string BillRefNumber { get; set; }
         public decimal Amount { get; set; }
@@ -41,7 +70,6 @@ namespace TMS.Services.Models
     public class InquiryCashIn : SwitchRequestBodyDTO
     {
         public string BillReference { get; set; }
-    }
         public string CardNumber { get; set; }
         private string creationDate;
         public string CreationDate
@@ -78,4 +106,4 @@ namespace TMS.Services.Models
     }
 }
 
-   
+

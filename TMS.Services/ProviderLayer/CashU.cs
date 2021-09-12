@@ -59,8 +59,8 @@ namespace TMS.Services.ProviderLayer
             var feeResponse = new FeesResponseDTO();
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
-                ProviderServiceRequestStatusID = (int)ProviderServiceRequestStatusType.UnderProcess,
-                RequestTypeID = (int)Infrastructure.RequestType.Fees,
+                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = Infrastructure.RequestType.Fees,
                 BillingAccount = null,
                 Brn = feesModel.Brn,
                 CreatedBy = userId,
@@ -152,7 +152,7 @@ namespace TMS.Services.ProviderLayer
                 ProviderServiceResponseID = providerServiceResponseId,
                 Sequence = 1
             });
-            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 2, userId);
+            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Success, userId);
 
             if (feesModel.Brn == 0)
                 feeResponse.Brn = providerServiceRequestId;
@@ -175,8 +175,8 @@ namespace TMS.Services.ProviderLayer
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
-                ProviderServiceRequestStatusID = (int)ProviderServiceRequestStatusType.UnderProcess,
-                RequestTypeID = (int)Infrastructure.RequestType.Payment,
+                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = Infrastructure.RequestType.Payment,
                 BillingAccount = payModel.BillingAccount,
                 Brn = payModel.Brn,
                 CreatedBy = userId,
@@ -261,7 +261,7 @@ namespace TMS.Services.ProviderLayer
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
 
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 2, userId);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Success, userId);
 
                 var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
                 {
@@ -336,7 +336,7 @@ namespace TMS.Services.ProviderLayer
                 //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Select(s => s.Value).FirstOrDefault());
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", 2, userId, payModel.Brn);
+                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
                 // add commission
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
@@ -345,8 +345,8 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 3, userId);
-                _transactionService.UpdateRequestStatus(newRequestId, 3);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Failed, userId);
+                _transactionService.UpdateRequestStatus(newRequestId,  RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
 

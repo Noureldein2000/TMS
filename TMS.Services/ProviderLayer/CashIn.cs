@@ -442,9 +442,9 @@ namespace TMS.Services.ProviderLayer
                         // send add invoice to another data base system
                         //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Values);
 
-                        _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 2, userId);
+                        _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                         _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                        _transactionService.UpdateRequest(transactionId, newRequestId, "", 4, userId, payModel.Brn);
+                        _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
 
                         // add commission
                         _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
@@ -452,13 +452,13 @@ namespace TMS.Services.ProviderLayer
                     }
                     else
                     {
-                        _transactionService.UpdateRequestStatus(3, newRequestId);
+                        _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                     }
                 }
                 else
                 {
-                        _transactionService.UpdateRequestStatus(3, newRequestId);
+                        _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                 }
             }
