@@ -23,6 +23,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<AccountCommission, int> _accountCommission;
         private readonly IBaseRepository<AccountProfileCommission, int> _accountProfileCommission;
         private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
+        private readonly IBaseRepository<TransactionReceipt, int> _transactionReceipt;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
         //private readonly IBaseRepository<Invoice, int> _invoice;
@@ -33,6 +34,7 @@ namespace TMS.Services.Services
             IBaseRepository<AccountCommission, int> accountCommission,
             IBaseRepository<AccountProfileCommission, int> accountProfileCommission,
             IBaseRepository<DenominationCommission, int> denominationCommission,
+            IBaseRepository<TransactionReceipt, int> transactionReceipt,
             IConfiguration configuration,
             ApplicationDbContext context,
             //IBaseRepository<Invoice, int> invoice,
@@ -48,6 +50,7 @@ namespace TMS.Services.Services
             _denominationCommission = denominationCommission;
             _configuration = configuration;
             _context = context;
+            _transactionReceipt = transactionReceipt;
         }
 
         public void AddCommission(int transactionId, int? accountId, int denominationId, decimal originalAmount, int? accountProfileId)
@@ -61,40 +64,7 @@ namespace TMS.Services.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void AddInvoice(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo)
-        {
-            var sqlConnString = _configuration.GetConnectionString("OldConnectionString");
-            //"Data Source=164.160.104.66;User ID=Ebram;Password =P@$$w0rd123;Initial Catalog=momkentest;Integrated Security=false;Min Pool Size=5;Max Pool Size=30000;Connect Timeout=10000;";
-            using var conn = new SqlConnection(sqlConnString);
-            using var cmd = new SqlCommand("[BTech_send]", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@RequestId", requestId);
-            cmd.Parameters.AddWithValue("@basic_value", amount);
-            cmd.Parameters.AddWithValue("@UserId", userId);
-            cmd.Parameters.AddWithValue("@PaymentCode", billingAccount);
-            cmd.Parameters.AddWithValue("@Fees", fees);
-            cmd.Parameters.AddWithValue("@BillInfo", billingInfo);
-            conn.Open();
-            try
-            {
-                cmd.ExecuteNonQuery();
-            }
-            finally
-            {
-                conn.Close();
-            }
 
-
-            //using (var adapter = new SqlDataAdapter(cmd))
-            //{
-            //    var resultTable = new DataTable();
-            //    adapter.Fill(resultTable);
-            //}
-            //return 1;
-            //return Convert.ToInt32(DB.ExecuteScalar(
-            //    _configuration.GetConnectionString("MomknConnection"),
-            //                "[BTech_send]", requestId, amount, userId, billingAccount, fees, billingInfo).ToString());
-        }
 
         public int AddRequest(RequestDTO model)
         {
@@ -102,7 +72,7 @@ namespace TMS.Services.Services
             p.Direction = ParameterDirection.Output;
             _context.Database.ExecuteSqlRaw("set @result = next value for Request_seq", p);
             var nextVal = (int)p.Value;
-            
+
             var request = _requests.Add(new Request
             {
                 AccountID = model.AccountId,
@@ -123,7 +93,7 @@ namespace TMS.Services.Services
             p.Direction = ParameterDirection.Output;
             _context.Database.ExecuteSqlRaw("set @result = next value for Transaction_Seq", p);
             var nextVal = (int)p.Value;
-            
+
             var transaction = _transactions.Add(new Transaction
             {
                 TransactionID = $"MOMKN-{denominationId}-{nextVal}",
@@ -212,23 +182,27 @@ namespace TMS.Services.Services
                 .GroupBy(s => s.CommissionTypeID)
                   .Sum(s => s.Sum(ss => ss.Commission));
         }
-        public void UpdateRequest(int? transactionId, int requestId, string RRN, int requestStatus, int userId, int providerServiceRequestId)
+        public void UpdateRequest(int? transactionId, int requestId, string RRN, RequestStatusCodeType requestStatus, int userId, int providerServiceRequestId)
         {
             var request = _requests.GetById(requestId);
             //if(transactionId.HasValue)
             request.TransactionID = transactionId;
             request.RRN = RRN;
-            request.StatusID = 2;
+            request.StatusID = (int)requestStatus;
             request.UserID = userId;
             request.ProviderServiceRequestID = providerServiceRequestId;
             request.ResponseDate = DateTime.Now;
+
+            if (transactionId.HasValue)
+                AddTransactionRecipe(transactionId.Value);
+
             _unitOfWork.SaveChanges();
         }
 
-        public void UpdateRequestStatus(int requestId, int requestStatus)
+        public void UpdateRequestStatus(int requestId, RequestStatusCodeType requestStatus)
         {
             var request = _requests.GetById(requestId);
-            request.StatusID = requestStatus;
+            request.StatusID = (int)requestStatus;
             _unitOfWork.SaveChanges();
         }
 
@@ -247,6 +221,84 @@ namespace TMS.Services.Services
         public bool IsRequestUUIDExist(int accountId, string UUID)
         {
             return _requests.Any(s => s.AccountID == accountId && s.UUID == UUID);
+        }
+
+        public void AddTransactionRecipe(int transactionId)
+        {
+            var reciept = GetReceipt(transactionId);
+            _transactionReceipt.Add(new TransactionReceipt
+            {
+                TransactionID = transactionId,
+                Receipt = reciept
+            });
+            _unitOfWork.SaveChanges();
+        }
+
+        private string GetReceipt(int transactionId)
+        {
+            var query = _transactions.Getwhere(s => s.ID == transactionId).Select(t => new
+            {
+                Reciept1 = "{'title':{'serviceName':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Title + "'}," +
+                "header:{" +
+                 "data:[" +
+                "{ 'Key':'التاريخ','Value' :'" + t.CreationDate + " " + t.CreationDate + "'}," +
+                "{ 'Key':'كود الخدمه','Value' :'" + t.Request.ServiceDenominationID + "'}," +
+                "{ 'Key':'رقم العمليه','Value' :'" + t.InvoiceID + "'}," +
+                "{ 'Key':'رقم الحساب','Value' :'" + t.AccountIDFrom + "'}," +
+                "{ 'Key':'المبلغ المدفوع','Value':'" + t.TotalAmount + "'}" +
+                "]}," +
+                "body:{" +
+                "data:[{ 'Key':'رقم العميل','Value' :'" + t.Request.BillingAccount + "'},",
+                Reciept2 = t.TotalAmount != t.OriginalAmount ?
+                "{'Key':'المبلغ','Value' :'" + t.OriginalAmount + "'}" : "" +
+                "]},'disclaimer':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Disclaimer + "','footer':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Footer + "'}"
+                ,
+                BodyParameters = "{'Key':'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Parameter.ArName + "','Value' :'" + t.ReceiptBodyParams.FirstOrDefault().Value + "','Bold' :'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Bold + "','Alignment' :'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Alignment + "'}"
+            }).FirstOrDefault();
+            return query.Reciept1 + (query.BodyParameters ?? "") + query.Reciept2;
+        }
+        public int AddInvoiceBTech(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo)
+        {
+            using var cmd = new SqlCommand("[BTech_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@PaymentCode", billingAccount);
+            cmd.Parameters.AddWithValue("@Fees", fees);
+            cmd.Parameters.AddWithValue("@BillInfo", billingInfo);
+            return InitiateSqlCommand(cmd);
+        }
+        public int AddInvoiceEducationService(int requestId, decimal basic_value, int userId, string ssn, decimal fees, int subServId, string customerName, string fcrn)
+        {
+            using var cmd = new SqlCommand("[EducationServices_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", basic_value);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@SSN", ssn);
+            cmd.Parameters.AddWithValue("@Fees", fees);
+            cmd.Parameters.AddWithValue("@SubServId", subServId);
+            cmd.Parameters.AddWithValue("@CustomerName", customerName);
+            cmd.Parameters.AddWithValue("@FCRN", fcrn);
+            return InitiateSqlCommand(cmd);
+        }
+        private int InitiateSqlCommand(SqlCommand cmd)
+        {
+            var sqlConnString = _configuration.GetConnectionString("OldConnectionString");
+            //"Data Source=164.160.104.66;User ID=Ebram;Password =P@$$w0rd123;Initial Catalog=momkentest;Integrated Security=false;Min Pool Size=5;Max Pool Size=30000;Connect Timeout=10000;";
+            using var conn = new SqlConnection(sqlConnString);
+            cmd.Connection = conn;
+            conn.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return 1;
         }
     }
 }

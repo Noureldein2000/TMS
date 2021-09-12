@@ -148,7 +148,7 @@ namespace TMS.Infrastructure
         Fees = 2,
         Payment = 3
     }
-    public enum ProviderServiceRequestStatusType
+    public enum ProviderServiceRequestStatusType : int
     {
         UnderProcess = 1,
         Success = 2,

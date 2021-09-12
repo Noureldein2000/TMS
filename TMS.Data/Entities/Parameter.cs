@@ -13,5 +13,6 @@ namespace TMS.Data.Entities
         public virtual ICollection<ProviderServiceResponseParam> ProviderServiceResponseParams { get; set; }
         public virtual ICollection<ReceiptBodyParam> ReceiptBodyParams { get; set; }
         public virtual ICollection<InquiryBillDetails> InquiryBillDetails { get; set; }
+        public virtual ICollection<DenominationReceiptParam> DenominationReceiptParams { get; set; }
     }
 }

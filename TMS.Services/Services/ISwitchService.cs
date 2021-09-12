@@ -7,6 +7,6 @@ namespace TMS.Services.Services
 {
     public interface ISwitchService
     {
-        string Connect(SwitchRequestBodyDTO obj, SwitchEndPointDTO PSC, string BaseAddress, string TokenType);
+        string Connect<T>(T obj, SwitchEndPointDTO PSC, string BaseAddress, string TokenType);
     }
 }

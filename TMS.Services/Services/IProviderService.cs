@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TMS.Infrastructure;
 using TMS.Services.Models;
 
 namespace TMS.Services.Services
@@ -13,7 +14,7 @@ namespace TMS.Services.Services
         void AddProviderServiceRequestParam(ProviderServiceRequestParamDTO model);
         void AddProviderServiceResponseParam(params ProviderServiceResponseParamDTO[] model);
         //GetProviderServiceResponseParamDTO GetProviderServiceResponseParam();
-        void UpdateProviderServiceRequestStatus(int ID, int ProviderServiceRequestStatusID, int UpdatedBy);
+        void UpdateProviderServiceRequestStatus(int ID, ProviderServiceRequestStatusType ProviderServiceRequestStatusID, int UpdatedBy);
         int GetMaxProviderServiceRequest(int brn, int requestTypeId);
         string GetProviderServiceRequestBillingAccount(int brn, int userId, int denominationId);
     }

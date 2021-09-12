@@ -70,8 +70,11 @@ namespace TMS.Services.Services
 
         public void UpdateReceiptBodyParam(int providerServiceRequestId, int transactionId)
         {
-            var receiptBodyParam = _receiptBodyParam.Getwhere(p => p.ProviderServiceRequestID == providerServiceRequestId).FirstOrDefault();
-            receiptBodyParam.TransactionID = transactionId;
+            var receiptBodyParam = _receiptBodyParam.Getwhere(p => p.ProviderServiceRequestID == providerServiceRequestId).ToList();
+            foreach (var bodyParams in receiptBodyParam)
+            {
+                bodyParams.TransactionID = transactionId;
+            }
             _unitOfWork.SaveChanges();
         }
     }

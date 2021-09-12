@@ -17,5 +17,6 @@ namespace TMS.Services.Models
         public int AccountId { get; set; }
         public int AccountProfileId { get; set; }
         public string ChannelId { get; set; }
+        public string ChannelIdentifier { get; set; }
     }
 }

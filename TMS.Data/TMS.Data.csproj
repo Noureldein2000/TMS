@@ -15,6 +15,8 @@
     <Compile Remove="Migrations\20210907090855_RequestAndTransaction.Designer.cs" />
     <Compile Remove="Migrations\20210907091029_RequestAndTransaction.cs" />
     <Compile Remove="Migrations\20210907091029_RequestAndTransaction.Designer.cs" />
+    <Compile Remove="Migrations\20210909122718_AddTransactionReceipt.cs" />
+    <Compile Remove="Migrations\20210909122718_AddTransactionReceipt.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

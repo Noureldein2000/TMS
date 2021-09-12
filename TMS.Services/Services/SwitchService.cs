@@ -13,7 +13,7 @@ namespace TMS.Services.Services
 {
     public class SwitchService : ISwitchService
     {
-        public string Connect(SwitchRequestBodyDTO obj, SwitchEndPointDTO PSC, string baseAddress, string tokenType)
+        public string Connect<T>(T obj, SwitchEndPointDTO PSC, string baseAddress, string tokenType)
         {
             try
             {

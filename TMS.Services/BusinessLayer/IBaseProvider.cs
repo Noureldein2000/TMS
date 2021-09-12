@@ -8,8 +8,8 @@ namespace TMS.Services.BusinessLayer
 {
     public interface IBaseProvider
     {
-        Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiry, int userId, int id, int serviceProviderId);
-        FeesResponseDTO Fees(FeesRequestDTO inquiry, int userId, int id);
-        Task<PaymentResponseDTO> Pay(PaymentRequestDTO inquiry, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId);
+        Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId);
+        FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id);
+        Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId);
     }
 }

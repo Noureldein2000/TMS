@@ -117,10 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ProviderError" xml:space="preserve">
-    <value>خطأ مزود الخدمة</value>
-  </data>
-  <data name="Success" xml:space="preserve">
-    <value>عمليه ناجحة</value>
+  <data name="GeneralError" xml:space="preserve">
+    <value>خطأ عام</value>
   </data>
 </root>

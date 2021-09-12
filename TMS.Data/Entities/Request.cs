@@ -20,5 +20,6 @@ namespace TMS.Data.Entities
         public string BillingAccount { get; set; }
         public string ChannelID { get; set; }
         public int? ProviderServiceRequestID { get; set; }
+        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

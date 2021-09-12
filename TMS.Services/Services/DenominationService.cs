@@ -14,7 +14,7 @@ namespace TMS.Services.Services
     public class DenominationService : IDenominationService
     {
         private readonly IBaseRepository<Denomination, int> _denominationRepository;
-        //private readonly IBaseRepository<Service, int> _serviceRepository;
+        private readonly IBaseRepository<DenominationProviderConfiguration, int> _denominationProviderConfigurationRepository;
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
         private readonly IBaseRepository<ProviderServiceResponseParam, int> _providerServiceResponseParamRepository;
@@ -26,7 +26,8 @@ namespace TMS.Services.Services
             IBaseRepository<Denomination, int> denominationRepository,
             //IBaseRepository<Service, int> serviceRepository,
             IBaseRepository<ProviderServiceRequestParam, int> providerServiceRequestParamRepository,
-            IBaseRepository<ProviderServiceResponseParam, int> providerServiceResponseParamRepository
+            IBaseRepository<ProviderServiceResponseParam, int> providerServiceResponseParamRepository,
+            IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository
             //IBaseRepository<Parameter, int> parameters
             )
         {
@@ -37,6 +38,7 @@ namespace TMS.Services.Services
             _providerServiceResponseParamRepository = providerServiceResponseParamRepository;
             //_parameters = parameters;
             _providerServiceRequestParamRepository = providerServiceRequestParamRepository;
+            _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
         }
 
         public DenominationDTO GetDenomination(int id)
@@ -129,6 +131,18 @@ namespace TMS.Services.Services
         {
             return _denominationRepository.Getwhere(s => s.ID == denominationId)
                 .Select(s => s.Service.ServiceBalanceTypes.Select(b => b.BalanceTypeID).FirstOrDefault()).FirstOrDefault();
+        }
+
+        public IEnumerable<DenominationProviderConfigurationDTO> GetDenominationProviderConfigurationDetails(int denominationId)
+        {
+            return _denominationProviderConfigurationRepository.Getwhere(s => s.DenominationServiceProvider.DenominationID == denominationId)
+                 .Select(s => new DenominationProviderConfigurationDTO
+                 {
+                     ID = s.ID,
+                     Name = s.Name,
+                     DenominationProviderID = s.DenominationProviderID,
+                     Value = s.Value,
+                 }).ToList();
         }
     }
 }

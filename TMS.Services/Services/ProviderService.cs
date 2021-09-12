@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -40,8 +41,8 @@ namespace TMS.Services.Services
                 Brn = model.Brn,
                 CreatedBy = model.CreatedBy,
                 DenominationID = model.DenominationID,
-                ProviderServiceRequestStatusID = model.ProviderServiceRequestStatusID,
-                RequestTypeID = model.RequestTypeID,
+                ProviderServiceRequestStatusID = (int)model.ProviderServiceRequestStatusID,
+                RequestTypeID = (int)model.RequestTypeID,
 
             });
             _unitOfWork.SaveChanges();
@@ -111,10 +112,10 @@ namespace TMS.Services.Services
 
         }
 
-        public void UpdateProviderServiceRequestStatus(int id, int providerServiceRequestStatusId, int updatedBy)
+        public void UpdateProviderServiceRequestStatus(int id, ProviderServiceRequestStatusType providerServiceRequestStatusId, int updatedBy)
         {
             var request = _providerServiceRequests.GetById(id);
-            request.ProviderServiceRequestStatusID = providerServiceRequestStatusId;
+            request.ProviderServiceRequestStatusID = (int)providerServiceRequestStatusId;
             request.UpdatedBy = updatedBy;
             _unitOfWork.SaveChanges();
         }

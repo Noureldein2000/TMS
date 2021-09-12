@@ -9,6 +9,6 @@ namespace TMS.Services.Models
         public int ProviderServiceRequestID { get; set; }
         public string ParameterName { get; set; }
         public string Value { get; set; }
-        public int TransactionID { get; set; }
+        public int? TransactionID { get; set; }
     }
 }

@@ -69,8 +69,8 @@ namespace TMS.Data
         public virtual DbSet<ServiceBalanceType> ServiceBalanceTypes { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<AccountTransactionCommission> AccountTransactionCommissions { get; set; }
+        public virtual DbSet<TransactionReceipt> TransactionReceipts { get; set; }
         
-
 
         public override int SaveChanges()
         {

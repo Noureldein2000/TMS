@@ -38,5 +38,6 @@ namespace TMS.Data.Entities
         public virtual ICollection<AccountCommission> AccountCommissions { get; set; }
         public virtual ICollection<AccountProfileDenomination> AccountProfileDenominations { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
+        public virtual ICollection<DenominationReceiptParam> DenominationReceiptParams { get; set; }
     }
 }

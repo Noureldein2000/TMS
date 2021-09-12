@@ -11,6 +11,7 @@ namespace TMS.Data.Entities
         public int ParameterID { get; set; }
         public virtual Parameter Parameter { get; set; }
         public string Value { get; set; }
-        public int TransactionID { get; set; }
+        public int? TransactionID { get; set; }
+        public virtual Transaction Transaction { get; set; }
     }
 }
