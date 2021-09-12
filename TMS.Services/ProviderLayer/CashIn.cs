@@ -409,19 +409,58 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if (response.Contains("timed out"))
+            else if (response.Contains("The operation has timed out"))
             {
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
 
-                paymentResponse.TransactionId = transactionId;
-                // confirm sof
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                    new List<int?> { transactionId });
+                var switchRequestDto2 = new CheckPaymentStatusCashIn
+                {
+                    TransactionId = int.Parse("C" + providerServiceRequestId.ToString()),
+                    PaymentTransactionId = providerServiceRequestId.ToString(),
+                };
 
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
-                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
+                await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
+                  providerServiceRequestId,
+                  LoggingType.ProviderRequest);
+
+                response = _switchService.Connect(switchRequestDto, switchEndPoint, "check-status", "Basic ");
+
+                //Logging Provider Response
+                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                if (!string.IsNullOrEmpty(response))
+                {
+
+                    if (Validates.CheckJSON(response))
+                    {
+
+                        var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
+                        paymentResponse.TransactionId = transactionId;
+
+                        // confirm sof
+                        await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                            new List<int?> { transactionId });
+
+                        // send add invoice to another data base system
+                        //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Values);
+
+                        _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, 2, userId);
+                        _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                        _transactionService.UpdateRequest(transactionId, newRequestId, "", 4, userId, payModel.Brn);
+
+                        // add commission
+                        _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
+
+                    }
+                    else
+                    {
+                        _transactionService.UpdateRequestStatus(3, newRequestId);
+
+                    }
+                }
+                else
+                {
+                        _transactionService.UpdateRequestStatus(3, newRequestId);
+
+                }
             }
             else
             {
@@ -432,6 +471,7 @@ namespace TMS.Services.ProviderLayer
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
 
             }
+
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.InvoiceId = 0;

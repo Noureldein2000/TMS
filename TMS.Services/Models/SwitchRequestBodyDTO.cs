@@ -4,14 +4,14 @@ using System.Text;
 
 namespace TMS.Services.Models
 {
-    public class SwitchRequestBodyDTO
+    public class SwitchResponseBodyDTO
     {
         public int TransactionId { get; set; }
         public string UserId { get; private set; } = "momkn";
         public string Password { get; private set; } = "hZ3BGBayXUCXsTnr";
     }
 
-    public class SwitchPaymentRequestBodyDTO : SwitchRequestBodyDTO
+    public class CashUCoupon
     {
         public string BillRefNumber { get; set; }
         public decimal Amount { get; set; }
@@ -42,11 +42,22 @@ namespace TMS.Services.Models
     {
         public string BillReference { get; set; }
     }
+        public string CardNumber { get; set; }
+        private string creationDate;
+        public string CreationDate
+        {
+            get { return creationDate; }
+            set { creationDate = value; }
+        }
+        public string DenominationValue { get; set; }
+        private string expirationDate;
+        public string ExpirationDate
+        {
+            get { return expirationDate; }
+            set { expirationDate = value; }
+        }
+        public string Serial { get; set; }
 
-    class PaymentCashIn : InquiryCashIn
-    {
-        public decimal Amount { get; set; }
-        public string InquiryReference { get; set; }
     }
 
     public class InquiryEducationServiceDTO //: SwitchRequestBodyDTO
@@ -66,3 +77,5 @@ namespace TMS.Services.Models
         //public string serviceId { get; set; }
     }
 }
+
+   

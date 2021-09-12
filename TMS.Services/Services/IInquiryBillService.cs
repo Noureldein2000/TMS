@@ -10,6 +10,7 @@ namespace TMS.Services.Services
         int AddInquiryBill(InquiryBillDTO model);
         void AddReceiptBodyParam(params ReceiptBodyParamDTO[] model);
         IEnumerable<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId);
+        IEnumerable<ReceiptBodyParamDTO> GetReceiptListByTransacationId(int id);
         void UpdateReceiptBodyParam(int providerServiceRequestId, int transactionId);
     }
 }

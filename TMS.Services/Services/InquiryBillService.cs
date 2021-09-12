@@ -62,10 +62,21 @@ namespace TMS.Services.Services
                 .Select(s => new InquiryBillDTO
                 {
                     Amount = s.Amount,
-                    Id =s.ID,
+                    Id = s.ID,
                     ProviderServiceResponseID = s.ProviderServiceResponseID,
                     Sequence = s.Sequence
                 }).ToList();
+        }
+
+        public IEnumerable<ReceiptBodyParamDTO> GetReceiptListByTransacationId(int id)
+        {
+            return _receiptBodyParam.Getwhere(rbp => rbp.TransactionID == id).Select(rbp => new ReceiptBodyParamDTO()
+            {
+                ParameterName = rbp.Parameter.ArName,
+                ProviderServiceRequestID = rbp.ProviderServiceRequestID,
+                TransactionID = rbp.TransactionID,
+                Value = rbp.Value
+            }).ToList();
         }
 
         public void UpdateReceiptBodyParam(int providerServiceRequestId, int transactionId)

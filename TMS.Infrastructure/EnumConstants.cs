@@ -45,7 +45,7 @@ namespace TMS.Infrastructure
         WEInternetExtra = 25
     }
 
-    public enum ParameterProviderNames 
+    public enum ParameterProviderNames
     {
         ServiceFees = 1,
         Tax = 2,
@@ -111,6 +111,7 @@ namespace TMS.Infrastructure
         inquiry = 1,
         fees = 2,
         payment = 3,
+        generateCoupon = 4
     }
 
     public enum MainStatusCodeType
