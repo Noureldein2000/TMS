@@ -13,7 +13,8 @@ namespace TMS.Services.Models
         public int InvoiceId { get; set; }
         public string LocalDate { get; set; }
         public string ServerDate { get; set; }
-        //public List<Root> Receipt { get; set; }
+        //public List<Root> Recept { get; set; }
         public List<DataListDTO> DataList { get; set; } = new List<DataListDTO>();
+        public List<ReceiptBodyParamDTO> ReceiptList { get; set; }
     }
 }

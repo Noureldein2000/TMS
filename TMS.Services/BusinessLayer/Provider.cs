@@ -52,7 +52,7 @@ namespace TMS.Services.BusinessLayer
                 case ServiceClassType.Topup:
                     return new TopupProvider();
                 case ServiceClassType.Voucher:
-                    return new VoucherProvider();
+                    return new VoucherProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
                 default:
                     return null;
             }
@@ -67,8 +67,8 @@ namespace TMS.Services.BusinessLayer
                 //    break;
                 case DenominationClassType.CashIn:
                     return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
-                //case DenominationClassType.CashU:
-                //    break;
+                case DenominationClassType.CashU:
+                    return new CashU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
                 //case DenominationClassType.CashTopUp:
                 //    break;
                 //case DenominationClassType.Donation:
