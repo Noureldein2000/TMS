@@ -17,5 +17,6 @@ namespace TMS.Services.Services
         Dictionary<string, decimal> GetProviderServiceRequestParam(int providerServiceRequestId, string parameterName, string language = "ar");
         int GetServiceBalanceType(int denominationId);
         IEnumerable<DenominationProviderConfigurationDTO> GetDenominationProviderConfigurationDetails(int denominationId);
+        decimal GetCurrencyValue(int denominationId);
     }
 }

@@ -22,7 +22,7 @@ namespace TMS.Infrastructure
         Cancel = 2,
         CashIn = 3,
         CashU = 4,
-        CashTopUp = 5,
+        CashUTopUp = 5,
         Donation = 6,
         EducationService = 7,
         ElectricityBill = 8,
@@ -111,7 +111,9 @@ namespace TMS.Infrastructure
         inquiry = 1,
         fees = 2,
         payment = 3,
-        generateCoupon = 4
+        generateCoupon = 4,
+        getAccountInfo = 5,
+        topupAccount = 6,
     }
 
     public enum MainStatusCodeType

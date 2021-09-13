@@ -14,6 +14,7 @@ namespace TMS.Services.Services
         void UpdateRequestStatus(int requestId, RequestStatusCodeType requestStatus);
         int AddInvoiceEducationService(int requestId, decimal basic_value, int userId, string ssn, decimal fees, int subServId, string customerName, string fcrn);
         int AddInvoiceBTech(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo);
+        int AddInvoiceCashUTopUp(int requestId, decimal amount, int userId, string currency, string holderName);
         int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId);
         void AddCommission(int transactionId, int? accountId, int denominationId, decimal originalAmount, int? accountProfileId);
         decimal GetTotalCommissions(int denominationId, decimal originalAmount, int? accountId, int? accountProfileId);

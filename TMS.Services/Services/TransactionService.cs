@@ -225,13 +225,21 @@ namespace TMS.Services.Services
 
         public void AddTransactionRecipe(int transactionId)
         {
-            var reciept = GetReceipt(transactionId);
-            _transactionReceipt.Add(new TransactionReceipt
+            try
             {
-                TransactionID = transactionId,
-                Receipt = reciept
-            });
-            _unitOfWork.SaveChanges();
+                var reciept = GetReceipt(transactionId);
+                _transactionReceipt.Add(new TransactionReceipt
+                {
+                    TransactionID = transactionId,
+                    Receipt = reciept
+                });
+                _unitOfWork.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
         }
 
         private string GetReceipt(int transactionId)
@@ -300,5 +308,18 @@ namespace TMS.Services.Services
             }
             return 1;
         }
+
+        public int AddInvoiceCashUTopUp(int requestId, decimal amount, int userId, string currency, string holderName)
+        {
+            using var cmd = new SqlCommand("[CashUTopUp_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Currency", currency);
+            cmd.Parameters.AddWithValue("@HolderName", holderName);
+            return InitiateSqlCommand(cmd);
+        }
+
     }
 }
