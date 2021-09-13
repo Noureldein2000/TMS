@@ -409,6 +409,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
+            string printedReciept = "";
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -545,7 +546,7 @@ namespace TMS.Services.ProviderLayer
                            });
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
 
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceEducationService(newRequestId, payModel.Amount, userId, payModel.BillingAccount,
@@ -577,13 +578,12 @@ namespace TMS.Services.ProviderLayer
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
-            var ssss = _transactionService.GetTransactionReceipt(paymentResponse.TransactionId);
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
-                JsonConvert.DeserializeObject<Root>(_transactionService.GetTransactionReceipt(paymentResponse.TransactionId))
+                JsonConvert.DeserializeObject<Root>(printedReciept)
             };
 
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);

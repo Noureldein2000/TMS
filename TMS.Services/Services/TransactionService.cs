@@ -183,7 +183,7 @@ namespace TMS.Services.Services
                 .GroupBy(s => s.CommissionTypeID)
                   .Sum(s => s.Sum(ss => ss.Commission));
         }
-        public void UpdateRequest(int? transactionId, int requestId, string RRN, RequestStatusCodeType requestStatus, int userId, int providerServiceRequestId)
+        public string UpdateRequest(int? transactionId, int requestId, string RRN, RequestStatusCodeType requestStatus, int userId, int providerServiceRequestId)
         {
             var request = _requests.GetById(requestId);
             //if(transactionId.HasValue)
@@ -194,10 +194,11 @@ namespace TMS.Services.Services
             request.ProviderServiceRequestID = providerServiceRequestId;
             request.ResponseDate = DateTime.Now;
 
-            if (transactionId.HasValue)
-                AddTransactionRecipe(transactionId.Value);
+            //if (transactionId.HasValue)
+            var reciept = AddTransactionRecipe(transactionId.Value);
 
             _unitOfWork.SaveChanges();
+            return reciept;
         }
 
         public void UpdateRequestStatus(int requestId, RequestStatusCodeType requestStatus)
@@ -224,7 +225,7 @@ namespace TMS.Services.Services
             return _requests.Any(s => s.AccountID == accountId && s.UUID == UUID);
         }
 
-        public void AddTransactionRecipe(int transactionId)
+        private string AddTransactionRecipe(int transactionId)
         {
             var reciept = GetReceipt(transactionId);
             _transactionReceipt.Add(new TransactionReceipt
@@ -232,6 +233,7 @@ namespace TMS.Services.Services
                 TransactionID = transactionId,
                 Receipt = reciept
             });
+            return reciept;
             //_unitOfWork.SaveChanges();
         }
         //Denomination.DenominationReceiptData.FirstOrDefault().Title
