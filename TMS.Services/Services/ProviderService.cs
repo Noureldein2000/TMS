@@ -119,5 +119,50 @@ namespace TMS.Services.Services
             request.UpdatedBy = updatedBy;
             _unitOfWork.SaveChanges();
         }
+        public Dictionary<string, string> GetProviderServiceRequestParams(int providerServiceRequestId, string language = "ar", params string[] parameterNames)
+        {
+            return _providerServiceRequestParams.Getwhere(s => parameterNames.Contains(s.Parameter.ProviderName)
+           && s.ProviderServiceRequestID == providerServiceRequestId).Select(s => new Dictionary<string, string>
+           {
+                { language == "ar" ? s.Parameter.ArName : s.Parameter.Name, s.Value }
+           }).FirstOrDefault();
+        }
+        //public Dictionary<string, decimal> GetProviderServiceRequestParam(int providerServiceRequestId, string parameterName, string language = "ar")
+        //{
+        //    return _providerServiceRequestParams.Getwhere(s => s.Parameter.ProviderName == parameterName
+        //    && s.ProviderServiceRequestID == providerServiceRequestId).Select(s => new Dictionary<string, decimal>
+        //    {
+        //        { language == "ar" ? s.Parameter.ArName : s.Parameter.Name, decimal.Parse(s.Value) }
+        //    }).FirstOrDefault();
+
+        //}
+
+        //public Dictionary<string, string> GetProviderServiceResponseParam(int providerServiceRequestId, string parameterName, string language = "ar")
+        //{
+        //    var resp = _providerServiceResponseParams.Getwhere(s => s.Parameter.ProviderName == parameterName
+        //   && s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId).Include(s => s.Parameter).FirstOrDefault();
+
+        //    return new Dictionary<string, string>
+        //    {
+        //        { language == "ar" ? resp.Parameter.ArName : resp.Parameter.Name, resp.Value }
+        //    };
+        //}
+
+        public IEnumerable<ProviderServiceResponseParamDTO> GetProviderServiceResponseParams(int providerServiceRequestId, string language = "ar", params string[] parameterNames)
+        {
+            return _providerServiceResponseParams.Getwhere(s => parameterNames.Contains(s.Parameter.ProviderName)
+           && s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId).Include(s => s.Parameter)
+           .Select(s => new ProviderServiceResponseParamDTO
+           {
+               ParameterName = language == "ar" ? s.Parameter.ArName : s.Parameter.Name,
+               ProviderName = s.Parameter.ProviderName,
+               Value = s.Value
+           }).ToList();
+
+            //return new Dictionary<string, string>
+            //{
+            //    { language == "ar" ? resp.Parameter.ArName : resp.Parameter.Name, resp.Value }
+            //};
+        }
     }
 }

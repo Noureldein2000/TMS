@@ -17,5 +17,9 @@ namespace TMS.Services.Services
         void UpdateProviderServiceRequestStatus(int ID, ProviderServiceRequestStatusType ProviderServiceRequestStatusID, int UpdatedBy);
         int GetMaxProviderServiceRequest(int brn, int requestTypeId);
         string GetProviderServiceRequestBillingAccount(int brn, int userId, int denominationId);
+        //Dictionary<string, string> GetProviderServiceResponseParam(int providerServiceRequestId, string parameterName, string language = "ar");
+        IEnumerable<ProviderServiceResponseParamDTO> GetProviderServiceResponseParams(int providerServiceRequestId, string language = "ar", params string[] parameterNames);
+        Dictionary<string, string> GetProviderServiceRequestParams(int providerServiceRequestId, string language = "ar", params string[] parameterNames);
+        //Dictionary<string, decimal> GetProviderServiceRequestParam(int providerServiceRequestId, string parameterName, string language = "ar");
     }
 }

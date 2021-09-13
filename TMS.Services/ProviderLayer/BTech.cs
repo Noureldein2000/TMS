@@ -65,7 +65,9 @@ namespace TMS.Services.ProviderLayer
                 CreatedBy = userId,
                 DenominationID = id
             });
-            var providerFees = _denominationService.GetProviderServiceResponseParam(feesModel.Brn, "amountFees").FirstOrDefault();
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees");
+            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+
             var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
             foreach (var item in bills)
             {
@@ -73,7 +75,7 @@ namespace TMS.Services.ProviderLayer
             }
             var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
             feeResponse.Amount = Math.Round(feesModel.Amount, 3);
-            feeResponse.Fees = Math.Round(feesAmount + decimal.Parse(providerFees.Value), 3);
+            feeResponse.Fees = Math.Round(feesAmount + decimal.Parse(amountFees), 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
             {
@@ -196,22 +198,26 @@ namespace TMS.Services.ProviderLayer
               LoggingType.CustomerRequest);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
-            var billReferenceNumber = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "billReferenceNumber");
-            var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
-            var asyncRqUID = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "AsyncRqUID");
-            var extraBillInfo = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "ExtraBillInfo");
-            var amountFees = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "amountFees");
+
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber",
+                "AsyncRqUID", "ExtraBillInfo", "amountFees");
+
+            var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
+            var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
+            var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
+            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
 
             var switchRequestDto = new SwitchPaymentRequestBodyDTO
             {
                 BillsCount = 1,
                 PaymentCode = payModel.BillingAccount,
                 TransactionId = newRequestId,
-                AsyncRqUID = asyncRqUID.Select(s => s.Value).FirstOrDefault().ToString(),
+                AsyncRqUID = asyncRqUID,
                 Amount = payModel.Amount,
-                BillRefNumber = billReferenceNumber.Select(s => s.Value).FirstOrDefault().ToString(),
-                ExtraBillInfo = extraBillInfo.Select(s => s.Value).FirstOrDefault().ToString(),
-                Fees = amountFees.Select(s => s.Value).FirstOrDefault().ToString(),
+                BillRefNumber = billReferenceNumber,
+                ExtraBillInfo = extraBillInfo,
+                Fees = amountFees,
             };
             var switchEndPoint = new SwitchEndPointDTO
             {
@@ -241,8 +247,8 @@ namespace TMS.Services.ProviderLayer
                     new List<int?> { transactionId });
 
                 // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId, 
-                    payModel.BillingAccount, fees, extraBillInfo.Select(s => s.Value).FirstOrDefault());
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
+                    payModel.BillingAccount, fees, extraBillInfo);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
@@ -266,7 +272,7 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
 
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo.Select(s => s.Value).FirstOrDefault());
+                    payModel.BillingAccount, fees, extraBillInfo);
 
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
             }
@@ -283,6 +289,9 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
+            paymentResponse.Receipt = new List<Root> {
+                JsonConvert.DeserializeObject<Root>(_transactionService.GetTransactionReceipt(paymentResponse.TransactionId))
+            };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;

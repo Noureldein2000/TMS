@@ -84,9 +84,10 @@ namespace TMS.Services.ProviderLayer
             var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
             var currency = _denominationService.GetCurrencyValue(id);
 
-            feeResponse.Amount = Math.Round(feesModel.Amount * currency, 3);
+            feesModel.Amount = Math.Round(feesModel.Amount * currency, 3);
             feeResponse.Fees = Math.Round(feesAmount + providerFees, 3);
-            feeResponse.TotalAmount = feeResponse.Amount + feeResponse.Fees;
+            feeResponse.Amount = Math.Round(feesModel.Amount , 3);
+            feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
 
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
             {
@@ -207,7 +208,7 @@ namespace TMS.Services.ProviderLayer
             var switchRequestDto = new InquiryCashUTopUP
             {
                 AccountId = inquiryModel.BillingAccount,
-                Amount = _denominationService.GetProviderServiceRequestParam(providerServiceRequestId, "Amount", inquiryModel.Language).Where(k => k.Key == "Amount")
+                Amount = _providerService.GetProviderServiceRequestParams(providerServiceRequestId, inquiryModel.Language, "Amount").Where(k => k.Key == "Amount")
                 .Select(x => x.Value).FirstOrDefault().ToString(),
                 TransactionId = providerServiceRequestId.ToString()
             };
@@ -290,7 +291,7 @@ namespace TMS.Services.ProviderLayer
                        ParameterName = "arabicName",
                        ProviderServiceRequestID = providerServiceRequestId,
                        Value = o["holderName"].ToString(),
-                       TransactionID = 0
+                       TransactionID = null
                    });
             }
             else
@@ -322,12 +323,6 @@ namespace TMS.Services.ProviderLayer
                 CreatedBy = userId,
                 DenominationID = id
             });
-
-            //var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
-            //foreach (var item in bills)
-            //{
-            //    payModel.Amount = item.Amount;
-            //}
 
             var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
             var currency = _denominationService.GetCurrencyValue(id);
@@ -398,7 +393,7 @@ namespace TMS.Services.ProviderLayer
 
 
                 // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashUTopUp(newRequestId, payModel.Amount, userId, currency.ToString(),
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashUTopUp(newRequestId, payModel.Amount, userId, "USD",
                     payModel.BillingAccount);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);

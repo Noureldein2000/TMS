@@ -15,6 +15,6 @@ namespace TMS.Services.Models
         public string ServerDate { get; set; }
         //public List<Root> Recept { get; set; }
         public List<DataListDTO> DataList { get; set; } = new List<DataListDTO>();
-        public List<ReceiptBodyParamDTO> ReceiptList { get; set; }
+        public List<Root> Receipt { get; set; } = new List<Root>();
     }
 }
