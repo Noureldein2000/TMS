@@ -344,7 +344,8 @@ namespace TMS.Services.ProviderLayer
                     Convert.ToDateTime(coupons[0].ExpirationDate, CultureInfo.InvariantCulture.DateTimeFormat), id);
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+                //_inquiryBillService.GetReceiptListByTransacationId(paymentResponse.TransactionId);
+                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
                 // add commission
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
@@ -365,7 +366,6 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.InvoiceId = 0; //note related to CashU_send Stroed Procedure
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.Receipt = new List<Root> { JsonConvert.DeserializeObject<Root>(printedReciept) };
-            //_inquiryBillService.GetReceiptListByTransacationId(paymentResponse.TransactionId);
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;
