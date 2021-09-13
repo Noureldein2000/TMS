@@ -19,5 +19,6 @@ namespace TMS.Services.Services
         decimal GetTotalCommissions(int denominationId, decimal originalAmount, int? accountId, int? accountProfileId);
         bool IsIntervalTransationExist(int accountId, int denominationId, string billingAccount, decimal amount);
         bool IsRequestUUIDExist(int accountId, string UUID);
+        string GetTransactionReceipt(int transactionId);
     }
 }

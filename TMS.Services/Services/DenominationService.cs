@@ -17,16 +17,13 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<DenominationProviderConfiguration, int> _denominationProviderConfigurationRepository;
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
-        private readonly IBaseRepository<ProviderServiceResponseParam, int> _providerServiceResponseParamRepository;
-        private readonly IBaseRepository<ProviderServiceRequestParam, int> _providerServiceRequestParamRepository;
+
         //private readonly IBaseRepository<Parameter, int> _parameters;
         public DenominationService(
              IBaseRepository<DenominationServiceProvider, int> denominationServiceProviderRepository,
             IBaseRepository<ServiceConfigeration, int> serviceConfigurationRepository,
             IBaseRepository<Denomination, int> denominationRepository,
             //IBaseRepository<Service, int> serviceRepository,
-            IBaseRepository<ProviderServiceRequestParam, int> providerServiceRequestParamRepository,
-            IBaseRepository<ProviderServiceResponseParam, int> providerServiceResponseParamRepository,
             IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository
             //IBaseRepository<Parameter, int> parameters
             )
@@ -35,9 +32,6 @@ namespace TMS.Services.Services
             _serviceConfigurationRepository = serviceConfigurationRepository;
             _denominationRepository = denominationRepository;
             //_serviceRepository = serviceRepository;
-            _providerServiceResponseParamRepository = providerServiceResponseParamRepository;
-            //_parameters = parameters;
-            _providerServiceRequestParamRepository = providerServiceRequestParamRepository;
             _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
         }
 
@@ -83,30 +77,6 @@ namespace TMS.Services.Services
             return denominatiaon;
         }
 
-        public Dictionary<string, string> GetProviderServiceResponseParam(int providerServiceRequestId, string parameterName, string language = "ar")
-        {
-            var resp = _providerServiceResponseParamRepository.Getwhere(s => s.Parameter.ProviderName == parameterName
-           && s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId).Include(s => s.Parameter).FirstOrDefault();
-
-            return new Dictionary<string, string>
-            {
-                { language == "ar" ? resp.Parameter.ArName : resp.Parameter.Name, resp.Value }
-            };
-            //resp.Select(s => new Dictionary<string, decimal>
-            //{
-            //    { language == "ar" ? s.Parameter.ArName : s.Parameter.Name, decimal.Parse(s.Value) }
-            //}).FirstOrDefault();
-
-        }
-        public Dictionary<string, decimal> GetProviderServiceRequestParam(int providerServiceRequestId, string parameterName, string language = "ar")
-        {
-            return _providerServiceRequestParamRepository.Getwhere(s => s.Parameter.ProviderName == parameterName
-            && s.ProviderServiceRequestID == providerServiceRequestId).Select(s => new Dictionary<string, decimal>
-            {
-                { language == "ar" ? s.Parameter.ArName : s.Parameter.Name, decimal.Parse(s.Value) }
-            }).FirstOrDefault();
-
-        }
         public ServiceClassType GetServiceClassType(int id)
         {
             return _denominationRepository.Getwhere(d => d.ID == id).Select(d => d.Service.ClassType).FirstOrDefault();
@@ -144,5 +114,7 @@ namespace TMS.Services.Services
                      Value = s.Value,
                  }).ToList();
         }
+
+
     }
 }

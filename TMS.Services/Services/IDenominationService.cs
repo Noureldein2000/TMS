@@ -13,8 +13,6 @@ namespace TMS.Services.Services
         DenominationServiceProviderDTO GetDenominationServiceProvider(int denominationId);
         ServiceClassType GetServiceClassType(int id);
         DenominationClassType GetDenominationClassType(int id);
-        Dictionary<string, string> GetProviderServiceResponseParam(int providerServiceRequestId, string parameterName, string language = "ar");
-        Dictionary<string, decimal> GetProviderServiceRequestParam(int providerServiceRequestId, string parameterName, string language = "ar");
         int GetServiceBalanceType(int denominationId);
         IEnumerable<DenominationProviderConfigurationDTO> GetDenominationProviderConfigurationDetails(int denominationId);
     }

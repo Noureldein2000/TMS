@@ -81,7 +81,8 @@ namespace TMS.Services.Services
                 BillingAccount = model.BillingAccount,
                 ServiceDenominationID = model.DenominationId,
                 StatusID = 1,
-                UUID = model.HostTransactionId == "0" ? nextVal.ToString() : model.HostTransactionId
+                UUID = model.HostTransactionId == "0" ? nextVal.ToString() : model.HostTransactionId,
+                ResponseDate = DateTime.Now
             });
             _unitOfWork.SaveChanges();
             return request.ID;
@@ -231,31 +232,43 @@ namespace TMS.Services.Services
                 TransactionID = transactionId,
                 Receipt = reciept
             });
-            _unitOfWork.SaveChanges();
+            //_unitOfWork.SaveChanges();
         }
-
+        //Denomination.DenominationReceiptData.FirstOrDefault().Title
         private string GetReceipt(int transactionId)
         {
             var query = _transactions.Getwhere(s => s.ID == transactionId).Select(t => new
             {
-                Reciept1 = "{'title':{'serviceName':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Title + "'}," +
+                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Title,
+                t.CreationDate,
+                t.Request.ServiceDenominationID,
+                t.InvoiceID,
+                t.AccountIDFrom,
+                t.TotalAmount,
+                t.Request.BillingAccount,
+                t.OriginalAmount,
+                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Disclaimer,
+                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Footer,
+                t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Parameter.ArName,
+                t.ReceiptBodyParams.FirstOrDefault().Value,
+                t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Bold,
+                t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Alignment,
+
+            }).FirstOrDefault();
+            return "{'title':{ 'serviceName':'" + query.Title + "'}," +
                 "header:{" +
                  "data:[" +
-                "{ 'Key':'التاريخ','Value' :'" + t.CreationDate + " " + t.CreationDate + "'}," +
-                "{ 'Key':'كود الخدمه','Value' :'" + t.Request.ServiceDenominationID + "'}," +
-                "{ 'Key':'رقم العمليه','Value' :'" + t.InvoiceID + "'}," +
-                "{ 'Key':'رقم الحساب','Value' :'" + t.AccountIDFrom + "'}," +
-                "{ 'Key':'المبلغ المدفوع','Value':'" + t.TotalAmount + "'}" +
+                "{ 'Key':'التاريخ','Value' :'" + query.CreationDate + "'}," +
+                "{ 'Key':'كود الخدمه','Value' :'" + query.ServiceDenominationID + "'}," +
+                "{ 'Key':'رقم العمليه','Value' :'" + query.InvoiceID + "'}," +
+                "{ 'Key':'رقم الحساب','Value' :'" + query.AccountIDFrom + "'}," +
+                "{ 'Key':'المبلغ المدفوع','Value':'" + query.TotalAmount + "'}" +
                 "]}," +
                 "body:{" +
-                "data:[{ 'Key':'رقم العميل','Value' :'" + t.Request.BillingAccount + "'},",
-                Reciept2 = t.TotalAmount != t.OriginalAmount ?
-                "{'Key':'المبلغ','Value' :'" + t.OriginalAmount + "'}" : "" +
-                "]},'disclaimer':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Disclaimer + "','footer':'" + t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Footer + "'}"
-                ,
-                BodyParameters = "{'Key':'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Parameter.ArName + "','Value' :'" + t.ReceiptBodyParams.FirstOrDefault().Value + "','Bold' :'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Bold + "','Alignment' :'" + t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Alignment + "'}"
-            }).FirstOrDefault();
-            return query.Reciept1 + (query.BodyParameters ?? "") + query.Reciept2;
+                "data:[{ 'Key':'رقم العميل','Value' :'" + query.BillingAccount + "'}," +
+                    "{'Key':'" + query.ArName + "','Value' :'" + query.Value + "','Bold' :'" + query.Bold + "','Alignment' :'" + query.Alignment + "'}," +
+                    "{ 'Key':'المبلغ','Value' :'" + query.OriginalAmount + "'}]}," +
+                    "'disclaimer':'" + query.Disclaimer + "','footer':'" + query.Footer + "'}";
         }
         public int AddInvoiceBTech(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo)
         {
@@ -299,6 +312,11 @@ namespace TMS.Services.Services
                 conn.Close();
             }
             return 1;
+        }
+
+        public string GetTransactionReceipt(int transactionId)
+        {
+            return _transactionReceipt.Getwhere(s => s.TransactionID == transactionId).Select(s => s.Receipt).FirstOrDefault();
         }
     }
 }

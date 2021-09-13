@@ -152,7 +152,7 @@ namespace TMS.Services.ProviderLayer
                 ProviderServiceResponseID = providerServiceResponseId,
                 Sequence = 1
             });
-            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Success, userId);
+            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
             if (feesModel.Brn == 0)
                 feeResponse.Brn = providerServiceRequestId;
@@ -210,7 +210,7 @@ namespace TMS.Services.ProviderLayer
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
                 new Models.SwaggerModels.HoldBalanceModel
-                (   
+                (
                     amount: (double)totalAmount
                 ));
 
@@ -261,7 +261,7 @@ namespace TMS.Services.ProviderLayer
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
 
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Success, userId);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
                 var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
                 {
@@ -345,18 +345,19 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId,  ProviderServiceRequestStatusType.Failed, userId);
-                _transactionService.UpdateRequestStatus(newRequestId,  RequestStatusCodeType.Fail);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
+                _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
-
+                throw new TMSException(message.Message, message.Code);
             }
 
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.InvoiceId = 0; //note related to CashU_send Stroed Procedure
             paymentResponse.ServerDate = DateTime.Now.ToString();
-            paymentResponse.ReceiptList = _inquiryBillService.GetReceiptListByTransacationId(paymentResponse.TransactionId).ToList();
+            paymentResponse.Receipt = new List<Root> { JsonConvert.DeserializeObject<Root>(_transactionService.GetTransactionReceipt(paymentResponse.TransactionId)) };
+            //_inquiryBillService.GetReceiptListByTransacationId(paymentResponse.TransactionId);
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;

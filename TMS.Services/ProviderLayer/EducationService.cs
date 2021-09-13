@@ -68,7 +68,7 @@ namespace TMS.Services.ProviderLayer
             var denominationProviderConfiguration = _denominationService.GetDenominationServiceProvider(id);
             if (denominationProviderConfiguration.ProviderHasFees)
             {
-                providerFees = decimal.Parse(_denominationService.GetProviderServiceResponseParam(feesModel.Brn, "amountFees").FirstOrDefault().Value);
+                providerFees = decimal.Parse(_providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees").FirstOrDefault().Value);
             }
             var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
             foreach (var item in bills)
@@ -156,12 +156,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId)
         {
             var inquiryResponse = new InquiryResponseDTO();
-            string countRemainInstalment = "",
-                requestCode,
-                countInstalmentPenalty = "",
-                valueInstalmentPenalty = "";
             decimal totalAmount;
-            string[] countRemainInstalmentList, requestCodeList;
             string name = "", school = "", stage = "", educationYear = "";
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
@@ -459,20 +454,30 @@ namespace TMS.Services.ProviderLayer
              LoggingType.CustomerRequest);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
-            var billReferenceNumber = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "billReferenceNumber");
-            var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
-            var asyncRqUID = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "AsyncRqUID");
-            var extraBillInfo = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "ExtraBillInfo");
-            var amountFees = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "amountFees");
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber",
+               "AsyncRqUID", "ExtraBillInfo", "amountFees", "providerPaymentId");
+
+            var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
+            var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
+            var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
+            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+            //var providerPaymentId = providerResponseParams.Where(s => s.ProviderName == "providerPaymentId").Select(s => s.Value).FirstOrDefault();
+
+            //var billReferenceNumber = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "billReferenceNumber");
+            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
+            //var asyncRqUID = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "AsyncRqUID");
+            //var extraBillInfo = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "ExtraBillInfo");
+            //var amountFees = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "amountFees");
 
             var switchRequestDto = new SwitchPaymentRequestEducationBodyDTO
             {
                 TransactionId = newRequestId,
-                AsyncRqUID = asyncRqUID.Select(s => s.Value).FirstOrDefault().ToString(),
+                AsyncRqUID = asyncRqUID,
                 Amount = payModel.Amount,
-                BillRefNumber = billReferenceNumber.Select(s => s.Value).FirstOrDefault().ToString(),
-                ExtraBillInfo = extraBillInfo.Select(s => s.Value).FirstOrDefault().ToString(),
-                Fees = amountFees.Select(s => s.Value).FirstOrDefault().ToString(),
+                BillRefNumber = billReferenceNumber,
+                ExtraBillInfo = extraBillInfo,
+                Fees = amountFees,
                 SfId = denominationProviderConfiguration.FirstOrDefault(t => t.Name == "KhadamatyServiceFieldID").Value,
                 ServiceId = denominationProviderConfiguration.FirstOrDefault(t => t.Name == "KhadamatyServiceId").Value,
                 Ssn = payModel.BillingAccount
@@ -518,19 +523,16 @@ namespace TMS.Services.ProviderLayer
                     new List<int?> { transactionId });
 
                 // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceEducationService(newRequestId, payModel.Amount, userId, payModel.BillingAccount, 
-                    fees, int.Parse(denominationProviderConfiguration.FirstOrDefault(t => t.Name == "KhadamatyServiceId").Value), 
-                    extraBillInfo.Select(s => s.Value).FirstOrDefault().ToString(), "");
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceEducationService(newRequestId, payModel.Amount, userId, payModel.BillingAccount,
+                    fees, int.Parse(denominationProviderConfiguration.FirstOrDefault(t => t.Name == "KhadamatyServiceId").Value),
+                    extraBillInfo, "");
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-               
-                
 
-                var paymentIdParam = _denominationService.GetProviderServiceResponseParam(providerServiceRequestId, "providerPaymentId").FirstOrDefault();
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = paymentIdParam.Key,
-                    Value = paymentIdParam.Value
+                    Key = "providerPaymentId",
+                    Value = o["providerTransactionId"].ToString()
                 });
 
                 _inquiryBillService.AddReceiptBodyParam(
@@ -539,21 +541,21 @@ namespace TMS.Services.ProviderLayer
                                ParameterName = "providerPaymentId",
                                ProviderServiceRequestID = payModel.Brn,
                                TransactionID = transactionId,
-                               Value = paymentIdParam.Value
+                               Value = o["providerTransactionId"].ToString()
                            });
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
                 _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
-                
+
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceEducationService(newRequestId, payModel.Amount, userId, payModel.BillingAccount,
                    fees, int.Parse(denominationProviderConfiguration.FirstOrDefault(t => t.Name == "KhadamatyServiceId").Value),
-                   extraBillInfo.Select(s => s.Value).FirstOrDefault().ToString(), "");
+                   extraBillInfo, "");
                 // add commission
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if(response.Contains("timed out"))
+            else if (response.Contains("timed out"))
             {
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;
@@ -575,10 +577,15 @@ namespace TMS.Services.ProviderLayer
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
+            var ssss = _transactionService.GetTransactionReceipt(paymentResponse.TransactionId);
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
+            paymentResponse.Receipt = new List<Root> {
+                JsonConvert.DeserializeObject<Root>(_transactionService.GetTransactionReceipt(paymentResponse.TransactionId))
+            };
+
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;

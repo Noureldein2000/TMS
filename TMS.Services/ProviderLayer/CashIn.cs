@@ -359,7 +359,7 @@ namespace TMS.Services.ProviderLayer
               LoggingType.CustomerRequest);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
-            var billReferenceNumber = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "billReferenceNumber");
+            var billReferenceNumber = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber");
 
             var switchRequestDto = new PaymentCashIn
             {
