@@ -15,6 +15,7 @@ using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 using TMS.Services.Services;
+using System.Globalization;
 
 namespace TMS.Services.ProviderLayer
 {
@@ -77,10 +78,12 @@ namespace TMS.Services.ProviderLayer
             {
                 feesModel.Amount = item.Amount;
             }
+            var currency = _denominationService.GetCurrencyValue(id);
 
             var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
-            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
+            feesModel.Amount = Math.Round(feesModel.Amount * currency, 3);
             feeResponse.Fees = Math.Round(feesAmount + providerFees, 3);
+            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
 
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
@@ -333,7 +336,12 @@ namespace TMS.Services.ProviderLayer
                });
 
                 // send add invoice to another data base system
-                //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Select(s => s.Value).FirstOrDefault());
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashU(newRequestId, payModel.Amount, userId,
+                    "USD",
+                    coupons[0].CardNumber,
+                    coupons[0].Serial,
+                    Convert.ToDateTime(coupons[0].CreationDate, CultureInfo.InvariantCulture.DateTimeFormat),
+                    Convert.ToDateTime(coupons[0].ExpirationDate, CultureInfo.InvariantCulture.DateTimeFormat), id);
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
                 _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);

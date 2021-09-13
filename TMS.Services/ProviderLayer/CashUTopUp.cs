@@ -18,7 +18,7 @@ using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
 {
-    public class CashIn : IBaseProvider
+    public class CashUTopUp : IBaseProvider
     {
         private readonly IDenominationService _denominationService;
         private readonly IProviderService _providerService;
@@ -30,7 +30,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ITransactionService _transactionService;
         private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
-        public CashIn(
+        public CashUTopUp(
            IDenominationService denominationService,
            IProviderService providerService,
            ISwitchService switchService,
@@ -56,9 +56,8 @@ namespace TMS.Services.ProviderLayer
 
         public FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id)
         {
+            int providerFees = 0;
             var feeResponse = new FeesResponseDTO();
-
-            //Add ProviderServiceRequest
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -69,19 +68,27 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            // var providerFees = 0;
-            var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
-            foreach (var item in bills)
-            {
-                feesModel.Amount = item.Amount;
-            }
+            var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+
+            //if (demonationServiceProvider.ProviderHasFees)
+            //    providerFees = 0;
+
+            //var providerFees = _denominationService.GetProviderServiceResponseParam(feesModel.Brn, "amountFees").FirstOrDefault();
+
+            //var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
+            //foreach (var item in bills)
+            //{
+            //    feesModel.Amount = item.Amount;
+            //}
 
             var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
-            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
-            feeResponse.Fees = Math.Round(feesAmount, 3);
+            var currency = _denominationService.GetCurrencyValue(id);
+
+            feesModel.Amount = Math.Round(feesModel.Amount * currency, 3);
+            feeResponse.Fees = Math.Round(feesAmount + providerFees, 3);
+            feeResponse.Amount = Math.Round(feesModel.Amount , 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
 
-            //Add ProviderServiceResponse
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
             {
                 ProviderServiceRequestID = providerServiceRequestId,
@@ -99,6 +106,7 @@ namespace TMS.Services.ProviderLayer
                             Key = item.FeesTypeName,
                             Value = item.Fees.ToString("0.000")
                         });
+
                         _providerService.AddProviderServiceResponseParam(
                             new ProviderServiceResponseParamDTO
                             {
@@ -106,6 +114,7 @@ namespace TMS.Services.ProviderLayer
                                 ServiceRequestID = providerServiceResponseId,
                                 Value = item.Fees.ToString("0.000")
                             });
+
                         _inquiryBillService.AddReceiptBodyParam(
                            new ReceiptBodyParamDTO
                            {
@@ -132,6 +141,7 @@ namespace TMS.Services.ProviderLayer
                             ServiceRequestID = providerServiceResponseId,
                             Value = feesAmount.ToString("0.000")
                         });
+
                     _inquiryBillService.AddReceiptBodyParam(
                        new ReceiptBodyParamDTO
                        {
@@ -158,6 +168,7 @@ namespace TMS.Services.ProviderLayer
 
         public async Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId)
         {
+            int count = 1;
             var inquiryResponse = new InquiryResponseDTO();
             decimal totalAmount;
 
@@ -171,14 +182,16 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
+            var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+
             if (inquiryModel.Data != null)
             {
-                var billCount = inquiryModel.Data.Where(d => d.Key == "BillCount").FirstOrDefault();
+                var billCount = inquiryModel.Data.Where(d => d.Key == "Amount").FirstOrDefault();
                 if (billCount != null)
                 {
                     _providerService.AddProviderServiceRequestParam(new ProviderServiceRequestParamDTO
                     {
-                        ParameterName = "BillCount",
+                        ParameterName = "Amount",
                         Value = billCount.Value,
                         ProviderServiceRequestID = providerServiceRequestId
                     });
@@ -187,15 +200,17 @@ namespace TMS.Services.ProviderLayer
 
             //Logging Client Request
             await _loggingService.Log($"-DenominationID:{id}-BillingAccount:{inquiryModel.BillingAccount}-{JsonConvert.SerializeObject(inquiryModel.Data)}",
-                 providerServiceRequestId,
-                 LoggingType.CustomerRequest);
+                providerServiceRequestId,
+                LoggingType.CustomerRequest);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
 
-            var switchRequestDto = new InquiryCashIn
+            var switchRequestDto = new InquiryCashUTopUP
             {
-                BillReference = inquiryModel.BillingAccount,
-                TransactionId = providerServiceRequestId
+                AccountId = inquiryModel.BillingAccount,
+                Amount = _providerService.GetProviderServiceRequestParams(providerServiceRequestId, inquiryModel.Language, "Amount").Where(k => k.Key == "Amount")
+                .Select(x => x.Value).FirstOrDefault().ToString(),
+                TransactionId = providerServiceRequestId.ToString()
             };
             var switchEndPoint = new SwitchEndPointDTO
             {
@@ -204,29 +219,24 @@ namespace TMS.Services.ProviderLayer
                 UserName = serviceConfiguration.UserName,
                 UserPassword = serviceConfiguration.UserPassword
             };
-
             //Logging Provider Request
             await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
                providerServiceRequestId,
                LoggingType.ProviderRequest);
+            var d = 5;
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.getAccountInfo.ToString(), "Basic ");
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
-
 
             if (Validates.CheckJSON(response))
             {
                 JObject o = JObject.Parse(response);
 
-                string inquiryReference = o["inquiryReference"].ToString();
-                o = JObject.Parse(o["inquireData"].ToString());
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
-                totalAmount = decimal.Parse(o["cashinAmount"].ToString());
-
-                string customerName = o["clientName"].ToString();
+                totalAmount = decimal.Parse(o["amount"].ToString());
 
                 var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
                 {
@@ -235,51 +245,22 @@ namespace TMS.Services.ProviderLayer
                 });
 
                 _providerService.AddProviderServiceResponseParam(
-               new ProviderServiceResponseParamDTO
-               {
-                   ParameterName = "billReferenceNumber",
-                   ServiceRequestID = providerServiceResponseId,
-                   Value = inquiryReference
-               },
-               new ProviderServiceResponseParamDTO
-               {
-                   ParameterName = "arabicName",
-                   ServiceRequestID = providerServiceResponseId,
-                   Value = customerName
-               });
+
+                    new ProviderServiceResponseParamDTO
+                    {
+                        ParameterName = "arabicName",
+                        ServiceRequestID = providerServiceResponseId,
+                        Value = o["holderName"].ToString()
+                    });
 
                 inquiryModel.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
                         Key = _localizer["arabicName"].Value,
-                        Value = customerName
-                    },
-                    new DataDTO
-                    {
-                        Key = _localizer["billReferenceNumber"].Value,
-                        Value = o["billReference"].ToString()
+                        Value = o["holderName"].ToString()
                     }
                 });
-
-
-                //Add InquiryBill
-                var inquiryId = _inquiryBillService.AddInquiryBill(new InquiryBillDTO
-                {
-                    Amount = totalAmount,
-                    ProviderServiceResponseID = providerServiceResponseId,
-                    Sequence = 1
-                });
-
-                //Add Value To Receipt Body
-                _inquiryBillService.AddReceiptBodyParam(
-               new ReceiptBodyParamDTO
-               {
-                   ParameterName = "arabicName",
-                   ProviderServiceRequestID = providerServiceRequestId,
-                   TransactionID = 0,
-                   Value = customerName
-               });
 
 
                 inquiryResponse.Brn = providerServiceRequestId;
@@ -288,12 +269,30 @@ namespace TMS.Services.ProviderLayer
                 {
                     new InvoiceDTO
                     {
-                        Amount = decimal.Parse(o["cashinAmount"].ToString()),
+                        Amount = decimal.Parse(o["amount"].ToString()),
                         Sequence = 1
                     }
                 };
 
+                foreach (var item in inquiryResponse.Invoices)
+                {
+                    var inquiryId = _inquiryBillService.AddInquiryBill(new InquiryBillDTO
+                    {
+                        Amount = totalAmount,
+                        ProviderServiceResponseID = providerServiceResponseId,
+                        Sequence = count
+                    });
+                    count++;
+                }
 
+                _inquiryBillService.AddReceiptBodyParam(
+                   new ReceiptBodyParamDTO
+                   {
+                       ParameterName = "arabicName",
+                       ProviderServiceRequestID = providerServiceRequestId,
+                       Value = o["holderName"].ToString(),
+                       TransactionID = null
+                   });
             }
             else
             {
@@ -314,6 +313,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
+
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -323,14 +323,9 @@ namespace TMS.Services.ProviderLayer
                 CreatedBy = userId,
                 DenominationID = id
             });
-            var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
-            foreach (var item in bills)
-            {
-                payModel.Amount = item.Amount;
-            }
 
             var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
-
+            var currency = _denominationService.GetCurrencyValue(id);
             var newRequestId = _transactionService.AddRequest(new RequestDTO
             {
                 AccountId = payModel.AccountId,
@@ -340,10 +335,11 @@ namespace TMS.Services.ProviderLayer
                 DenominationId = id,
                 HostTransactionId = payModel.HostTransactionID
             });
+            // check balance 
 
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
-            if ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0)
+            if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
                 throw new TMSException(_localizer["BalanceError"].Value, "-5");
 
             // post to hold
@@ -359,14 +355,12 @@ namespace TMS.Services.ProviderLayer
               LoggingType.CustomerRequest);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
-            var billReferenceNumber = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber");
 
-            var switchRequestDto = new PaymentCashIn
+            var switchRequestDto = new InquiryCashUTopUP
             {
-                BillReference = payModel.BillingAccount,
-                TransactionId = providerServiceRequestId,
-                Amount = payModel.Amount,
-                InquiryReference = billReferenceNumber.Select(s => s.Value).FirstOrDefault().ToString(),
+                AccountId = payModel.BillingAccount,
+                Amount = payModel.Amount.ToString(),
+                TransactionId = providerServiceRequestId.ToString()
             };
             var switchEndPoint = new SwitchEndPointDTO
             {
@@ -381,8 +375,7 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ");
-
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.topupAccount.ToString(), "Basic ");
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 
@@ -390,17 +383,18 @@ namespace TMS.Services.ProviderLayer
             {
                 JObject o = JObject.Parse(response);
 
-
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;
-
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
 
+                //Add balance before to  History method
+
+
                 // send add invoice to another data base system
-                _transactionService.AddInvoiceCashIn(newRequestId, payModel.Amount, userId, o["providerTransactionId"].ToString(), int.Parse(denominationServiceProviderDetails.ProviderCode),
-                    _providerService.GetProviderServiceResponseParams(providerServiceRequestId, "ar", "arabicName").Select(x => x.Value).FirstOrDefault());
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashUTopUp(newRequestId, payModel.Amount, userId, "USD",
+                    payModel.BillingAccount);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
@@ -410,58 +404,23 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if (response.Contains("The operation has timed out"))
+            else if (response.Contains("timed out"))
             {
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
 
-                var switchRequestDto2 = new CheckPaymentStatusCashIn
-                {
-                    TransactionId = int.Parse("C" + providerServiceRequestId.ToString()),
-                    PaymentTransactionId = providerServiceRequestId.ToString(),
-                };
+                paymentResponse.TransactionId = transactionId;
+                // confirm sof
+                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                    new List<int?> { transactionId });
 
-                await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
-                  providerServiceRequestId,
-                  LoggingType.ProviderRequest);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
 
-                response = _switchService.Connect(switchRequestDto, switchEndPoint, "check-status", "Basic ");
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashUTopUp(newRequestId, payModel.Amount, userId, currency.ToString(),
+                    payModel.BillingAccount);
 
-                //Logging Provider Response
-                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
-                if (!string.IsNullOrEmpty(response))
-                {
-
-                    if (Validates.CheckJSON(response))
-                    {
-
-                        var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
-                        paymentResponse.TransactionId = transactionId;
-
-                        // confirm sof
-                        await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                            new List<int?> { transactionId });
-
-                        // send add invoice to another data base system
-                        //_transactionService.AddInvoice(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, extraBillInfo.Values);
-
-                        _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-                        _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                        _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
-
-                        // add commission
-                        _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
-
-                    }
-                    else
-                    {
-                        _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-
-                    }
-                }
-                else
-                {
-                    _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-
-                }
+                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
             }
             else
             {
@@ -470,12 +429,10 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
                 var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
-
+                throw new TMSException(message.Message, message.Code);
             }
-
             paymentResponse.Code = 200;
             paymentResponse.Message = _localizer["Success"].Value;
-            paymentResponse.InvoiceId = 0;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
