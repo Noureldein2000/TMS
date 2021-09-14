@@ -69,7 +69,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-           // var providerFees = 0;
+            // var providerFees = 0;
             var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
             foreach (var item in bills)
             {
@@ -313,7 +313,9 @@ namespace TMS.Services.ProviderLayer
 
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
+
             var paymentResponse = new PaymentResponseDTO();
+            string printedReciept = "";
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -393,17 +395,18 @@ namespace TMS.Services.ProviderLayer
 
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;
-                
+
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
 
                 // send add invoice to another data base system
-                _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId, payModel.BillingAccount, fees, payModel.ChannelIdentifier);
+                _transactionService.AddInvoiceCashIn(newRequestId, payModel.Amount, userId, o["providerTransactionId"].ToString(), int.Parse(denominationServiceProviderDetails.ProviderCode),
+                    _providerService.GetProviderServiceResponseParams(providerServiceRequestId, "ar", "arabicName").Select(x => x.Value).FirstOrDefault());
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+                printedReciept= _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
                 // add commission
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
@@ -458,7 +461,7 @@ namespace TMS.Services.ProviderLayer
                 }
                 else
                 {
-                        _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
+                    _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                 }
             }
@@ -477,6 +480,9 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.InvoiceId = 0;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
+            paymentResponse.Receipt = new List<Root> {
+                JsonConvert.DeserializeObject<Root>(printedReciept)
+            };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;

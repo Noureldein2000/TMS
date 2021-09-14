@@ -115,6 +115,9 @@ namespace TMS.Services.Services
                  }).ToList();
         }
 
-
+        public decimal GetCurrencyValue(int denominationId)
+        {
+            return _denominationRepository.Getwhere(x => x.ID == denominationId).Include(x => x.Currency).Select(x => x.Currency.Value).FirstOrDefault();
+        }
     }
 }

@@ -339,9 +339,51 @@ namespace TMS.Services.Services
             return 1;
         }
 
+        public int AddInvoiceCashUTopUp(int requestId, decimal amount, int userId, string currency, string holderName)
+        {
+            using var cmd = new SqlCommand("[CashUTopUp_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Currency", currency);
+            cmd.Parameters.AddWithValue("@HolderName", holderName);
+            return InitiateSqlCommand(cmd);
+        }
+
+
         public string GetTransactionReceipt(int transactionId)
         {
             return _transactionReceipt.Getwhere(s => s.TransactionID == transactionId).Select(s => s.Receipt).FirstOrDefault();
+        }
+
+        public int AddInvoiceCashU(int requestId, decimal amount, int userId, string currency, string cardNumber, string serial, DateTime creationDate, DateTime expirationDate, int denominationId)
+        {
+            using var cmd = new SqlCommand("[CashU_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Currency", currency);
+            cmd.Parameters.AddWithValue("@CardNumber", cardNumber);
+            cmd.Parameters.AddWithValue("@Serial", serial);
+            cmd.Parameters.AddWithValue("@CreationDate", creationDate);
+            cmd.Parameters.AddWithValue("@ExpirationDate", expirationDate);
+            cmd.Parameters.AddWithValue("@DenominationId", denominationId);
+            return InitiateSqlCommand(cmd);
+        }
+
+        public int AddInvoiceCashIn(int requestId, decimal amount, int userId, string payment_ref_number, int serviceId, string accountName)
+        {
+            using var cmd = new SqlCommand("[CashIn_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", amount);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@payment_ref_number", payment_ref_number);
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            return InitiateSqlCommand(cmd);
         }
     }
 }

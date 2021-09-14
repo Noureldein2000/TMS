@@ -30,9 +30,9 @@ namespace TMS.API
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-            var connrction = Configuration.GetConnectionString("DefaultConnection");
+            var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(option =>
-                option.UseSqlServer(connrction)
+                option.UseSqlServer(connection)
             );
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
