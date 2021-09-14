@@ -86,7 +86,7 @@ namespace TMS.Services.ProviderLayer
 
             feesModel.Amount = Math.Round(feesModel.Amount * currency, 3);
             feeResponse.Fees = Math.Round(feesAmount + providerFees, 3);
-            feeResponse.Amount = Math.Round(feesModel.Amount , 3);
+            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
 
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
@@ -313,7 +313,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
+            Root printedReciept = null;
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -398,7 +398,7 @@ namespace TMS.Services.ProviderLayer
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                printedReciept= _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
                 // add commission
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
@@ -435,7 +435,7 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
-            paymentResponse.Receipt = new List<Root> { JsonConvert.DeserializeObject<Root>(printedReciept) };
+            paymentResponse.Receipt = new List<Root> { printedReciept };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
             return paymentResponse;
