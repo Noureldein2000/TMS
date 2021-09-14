@@ -269,7 +269,7 @@ namespace TMS.Services.ProviderLayer
                             ServiceRequestID = providerServiceResponseId,
                             Value = name
                         });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["arabicName"].Value,
                         Value = name
@@ -285,7 +285,7 @@ namespace TMS.Services.ProviderLayer
                            ServiceRequestID = providerServiceResponseId,
                            Value = school
                        });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["School"].Value,
                         Value = school
@@ -301,7 +301,7 @@ namespace TMS.Services.ProviderLayer
                             ServiceRequestID = providerServiceResponseId,
                             Value = stage
                         });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["Stage"].Value,
                         Value = stage
@@ -317,7 +317,7 @@ namespace TMS.Services.ProviderLayer
                           ServiceRequestID = providerServiceResponseId,
                           Value = educationYear
                       });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["educationYear"].Value,
                         Value = educationYear
@@ -409,7 +409,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
+            Root printedReciept = null;
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -583,7 +583,7 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
-                JsonConvert.DeserializeObject<Root>(printedReciept)
+                printedReciept
             };
 
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);

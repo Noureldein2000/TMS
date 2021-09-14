@@ -248,7 +248,7 @@ namespace TMS.Services.ProviderLayer
                    Value = customerName
                });
 
-                inquiryModel.Data.AddRange(new List<DataDTO>
+                inquiryResponse.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {

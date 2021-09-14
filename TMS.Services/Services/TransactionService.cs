@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -183,7 +184,7 @@ namespace TMS.Services.Services
                 .GroupBy(s => s.CommissionTypeID)
                   .Sum(s => s.Sum(ss => ss.Commission));
         }
-        public string UpdateRequest(int? transactionId, int requestId, string RRN, RequestStatusCodeType requestStatus, int userId, int providerServiceRequestId)
+        public Root UpdateRequest(int? transactionId, int requestId, string RRN, RequestStatusCodeType requestStatus, int userId, int providerServiceRequestId)
         {
             var request = _requests.GetById(requestId);
             //if(transactionId.HasValue)
@@ -225,22 +226,23 @@ namespace TMS.Services.Services
             return _requests.Any(s => s.AccountID == accountId && s.UUID == UUID);
         }
 
-        private string AddTransactionRecipe(int transactionId)
+        private Root AddTransactionRecipe(int transactionId)
         {
             var reciept = GetReceipt(transactionId);
             _transactionReceipt.Add(new TransactionReceipt
             {
                 TransactionID = transactionId,
-                Receipt = reciept
+                Receipt = JsonConvert.SerializeObject(reciept)
             });
             return reciept;
             //_unitOfWork.SaveChanges();
         }
         //Denomination.DenominationReceiptData.FirstOrDefault().Title
-        private string GetReceipt(int transactionId)
+        private Root GetReceipt(int transactionId)
         {
             var query = _transactions.Getwhere(s => s.ID == transactionId).Select(t => new
             {
+                t.ID,
                 t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Title,
                 t.CreationDate,
                 t.Request.ServiceDenominationID,
@@ -251,27 +253,48 @@ namespace TMS.Services.Services
                 t.OriginalAmount,
                 t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Disclaimer,
                 t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Footer,
-                t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Parameter.ArName,
-                t.ReceiptBodyParams.FirstOrDefault().Value,
+                parameterNames = t.Request.Denomination.DenominationReceiptParams.Select(s => new { s.Parameter.ArName, t.ReceiptBodyParams.Where(sd => sd.ParameterID == s.ParameterID).FirstOrDefault().Value }).ToList(),
                 t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Bold,
                 t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Alignment,
 
             }).FirstOrDefault();
-            return "{'title':{ 'serviceName':'" + query.Title + "'}," +
-                "header:{" +
-                 "data:[" +
-                "{ 'Key':'التاريخ','Value' :'" + query.CreationDate + "'}," +
-                "{ 'Key':'كود الخدمه','Value' :'" + query.ServiceDenominationID + "'}," +
-                "{ 'Key':'رقم العمليه','Value' :'" + query.InvoiceID + "'}," +
-                "{ 'Key':'رقم الحساب','Value' :'" + query.AccountIDFrom + "'}," +
-                "{ 'Key':'المبلغ المدفوع','Value':'" + query.TotalAmount + "'}" +
-                "]}," +
-                "body:{" +
-                "data:[{ 'Key':'رقم العميل','Value' :'" + query.BillingAccount + "'}," +
-                    "{'Key':'" + query.ArName + "','Value' :'" + query.Value + "','Bold' :'" + query.Bold + "','Alignment' :'" + query.Alignment + "'}," +
-                    "{ 'Key':'المبلغ','Value' :'" + query.OriginalAmount + "'}]}," +
-                    "'disclaimer':'" + query.Disclaimer + "','footer':'" + query.Footer + "'}";
+            var root = new Root
+            {
+                title = new Title
+                {
+                    serviceName = query.Title
+                },
+                header = new Header
+                {
+                    data = new List<Datum>
+                    {
+                        new Datum{Key = "التاريخ", Value = query.CreationDate.ToString()},
+                        new Datum{ Key ="كود الخدمه", Value =query.ServiceDenominationID.ToString()},
+                        new Datum{Key = "رقم العمليه", Value = query.ID.ToString()},
+                        new Datum{Key = "رقم الحساب", Value = query.AccountIDFrom.ToString()},
+                        new Datum{Key = "المبلغ المدفوع", Value = query.TotalAmount.ToString()},
+                    }
+                },
+                body = new Body
+                {
+                    data = new List<Datum>
+                    {
+                        new Datum{Key = "رقم العميل", Value = query.BillingAccount.ToString()},
+                        new Datum{Key = "المبلغ", Value = query.OriginalAmount.ToString()},
+                    }
+                },
+                disclaimer = query.Disclaimer,
+                footer = query.Footer
+            };
+            if (query.TotalAmount != query.OriginalAmount)
+                foreach (var item in query.parameterNames)
+                {
+                    root.body.data.Add(new Datum { Key = item.ArName, Value = item.Value });
+                }
+
+            return root;
         }
+
         public int AddInvoiceBTech(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo)
         {
             using var cmd = new SqlCommand("[BTech_send]");

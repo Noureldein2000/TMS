@@ -152,7 +152,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
+            Root printedReciept = null;
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
                 ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
@@ -291,7 +291,7 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
-                JsonConvert.DeserializeObject<Root>(printedReciept)
+                printedReciept
             };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
@@ -453,7 +453,7 @@ namespace TMS.Services.ProviderLayer
                         ServiceRequestID = providerServiceResponseId,
                         Value = countInstalmentPenalty
                     });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["CountInstalmentPenalty"].Value,
                         Value = countInstalmentPenalty
@@ -468,7 +468,7 @@ namespace TMS.Services.ProviderLayer
                         ServiceRequestID = providerServiceResponseId,
                         Value = valueInstalmentPenalty
                     });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["ValueInstalmentPenalty"].Value,
                         Value = valueInstalmentPenalty
@@ -483,7 +483,7 @@ namespace TMS.Services.ProviderLayer
                         ServiceRequestID = providerServiceResponseId,
                         Value = countRemainInstalment
                     });
-                    inquiryModel.Data.Add(new DataDTO
+                    inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = _localizer["CountRemainInstalment"].Value,
                         Value = countRemainInstalment
