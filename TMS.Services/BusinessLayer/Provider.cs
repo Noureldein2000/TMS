@@ -107,10 +107,10 @@ namespace TMS.Services.BusinessLayer
                 //    break;
                 //case DenominationClassType.WaterBill:
                 //    break;
-                //case DenominationClassType.WEInternet:
-                //    break;
-                //case DenominationClassType.WEInternetExtra:
-                //    break;
+                case DenominationClassType.WEInternet:
+                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                case DenominationClassType.WEInternetExtra:
+                    return new WEInternetExtra(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
                 default:
                     return null;
             }

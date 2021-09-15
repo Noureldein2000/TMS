@@ -6,8 +6,9 @@ namespace TMS.Infrastructure.Utils
 {
     public static class GetData
     {
-        public static string GetCode(string msg)
+        public static int GetCode(string msg)
         {
+            int code = 0;
             try
             {
                 if (msg.Contains('(') && msg.Contains(')'))
@@ -24,14 +25,14 @@ namespace TMS.Infrastructure.Utils
 
                     }
                     start++;
-                    return msg.Substring(start, end - start);
+                    return int.Parse(msg.Substring(start, end - start));
                 }
-                return "";
+                return code;
             }
             catch
             {
                 //Trace.WriteLine(ex);
-                return "";
+                return code;
             }
         }
     }

@@ -241,15 +241,14 @@ namespace TMS.Services.ProviderLayer
             {
                 JObject o = JObject.Parse(response);
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
+                    payModel.BillingAccount, fees, extraBillInfo);
+
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
-
-                // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
@@ -283,10 +282,10 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
-            paymentResponse.Code = 200;
+            paymentResponse.Code = "200";
             paymentResponse.Message = _localizer["Success"].Value;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
@@ -580,7 +579,7 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 

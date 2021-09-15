@@ -9,6 +9,7 @@ namespace TMS.Services.Models
         public InquiryResponseDTO()
         {
             Data = new List<DataDTO>();
+            Invoices = new List<InvoiceDTO>();
         }
         public string Code { get; set; }
         public string Message { get; set; }

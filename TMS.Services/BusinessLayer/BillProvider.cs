@@ -80,7 +80,7 @@ namespace TMS.Services.BusinessLayer
                 if (sequenceBills == null || sequenceBills.Count <= 0)
                     throw new TMSException(_localizer["InvalidData"].Value, "12");
 
-                var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn).ToList();
+                var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
 
                 if (denomination.PaymentModeID == (int)PaymentModeType.Fixed)
                 {
@@ -288,7 +288,7 @@ namespace TMS.Services.BusinessLayer
                 if (payModel.HostTransactionID == "" && _transactionService.IsRequestUUIDExist(payModel.AccountId, payModel.HostTransactionID))
                     throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
 
-                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
+                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
 
                 var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
                 decimal feesAmount = 0;

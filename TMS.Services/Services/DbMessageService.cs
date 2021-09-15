@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
@@ -30,7 +31,7 @@ namespace TMS.Services.Services
             StatusCodeDTO response;
             if (!providerId.HasValue)
             {
-                response = _statusCodes.Getwhere(s => s.ID == id).Select(s => new StatusCodeDTO
+                response = _statusCodes.Getwhere(s => s.ID == (int)id).Select(s => new StatusCodeDTO
                 {
                     Id = s.ID,
                     Code = s.Code,

@@ -13,7 +13,7 @@ namespace TMS.Services.Models
         public decimal Amount { get; set; }
         public string HostTransactionID { get; set; } = "0";
         public DateTime LocalDate { get; set; }
-        //public List<DataDTO> Data { get; set; } = new List<DataDTO>();
+        public List<DataDTO> Data { get; set; } = new List<DataDTO>();
         public int AccountId { get; set; }
         public int AccountProfileId { get; set; }
         public string ChannelId { get; set; }

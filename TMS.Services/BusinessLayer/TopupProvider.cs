@@ -83,7 +83,7 @@ namespace TMS.Services.BusinessLayer
             else
                 throw new TMSException(_localizer["InvalidMobileNumber"].Value, "34");
 
-            int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
+            int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
 
             var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
             decimal feesAmount = 0;

@@ -14,6 +14,8 @@ namespace TMS.Services.Services
         void UpdateRequestStatus(int requestId, RequestStatusCodeType requestStatus);
         int AddInvoiceEducationService(int requestId, decimal basic_value, int userId, string ssn, decimal fees, int subServId, string customerName, string fcrn);
         int AddInvoiceBTech(int requestId, decimal amount, int userId, string billingAccount, decimal fees, string billingInfo);
+        int AddInvoiceTedataEgyptCharge(string teleCode, string teleNumber, decimal basicValue, decimal addedMoney, int status, int userId, string msg, string transInv, int fawBillerId, string serviceName);
+        int AddInvoiceTedataTest(string teleCode, string teleNumber, string billDate, decimal basicValue, decimal addedMoney, int status, int userId, string accountName, string msg, string transInv, string code, string messageTitle, int fawBillerId, string data, int servId);
         int AddInvoiceCashUTopUp(int requestId, decimal amount, int userId, string currency, string holderName);
         int AddInvoiceCashU(int requestId, decimal amount, int userId, string currency,string cardNumber,string serial,DateTime creationDate,DateTime expirationDate, int denominationId);
         int AddInvoiceCashIn(int requestId, decimal amount, int userId, string payment_ref_number, int serviceId, string accountName);
@@ -23,5 +25,7 @@ namespace TMS.Services.Services
         bool IsIntervalTransationExist(int accountId, int denominationId, string billingAccount, decimal amount);
         bool IsRequestUUIDExist(int accountId, string UUID);
         string GetTransactionReceipt(int transactionId);
+        void TEDataLogUpdate(string chargeStatus, int requestId);
+        int AddTEDataProcLog(string providerCompany, string mobileNumber, decimal value, string chargeStatus, int statusTransfer, int userId, int servId, int transId);
     }
 }

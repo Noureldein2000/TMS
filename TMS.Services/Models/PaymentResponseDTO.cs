@@ -6,7 +6,7 @@ namespace TMS.Services.Models
 {
     public class PaymentResponseDTO
     {
-        public int Code { get; set; }
+        public string Code { get; set; }
         public string Message { get; set; }
         public decimal AvailableBalance { get; set; }
         public int TransactionId { get; set; }

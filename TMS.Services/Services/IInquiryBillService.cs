@@ -9,8 +9,11 @@ namespace TMS.Services.Services
     {
         int AddInquiryBill(InquiryBillDTO model);
         void AddReceiptBodyParam(params ReceiptBodyParamDTO[] model);
-        IEnumerable<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId);
+        List<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId);
         IEnumerable<ReceiptBodyParamDTO> GetReceiptListByTransacationId(int id);
         void UpdateReceiptBodyParam(int providerServiceRequestId, int transactionId);
+        bool CheckBillAmountExist(int brn, decimal amount);
+        void AddInquiryBillDetail(params InquiryBillDetailDTO[] model);
+        List<InquiryBillDetailDTO> GetInquiryBillDetails(int providerServiceRequestID, int sequence, string language = "ar");
     }
 }

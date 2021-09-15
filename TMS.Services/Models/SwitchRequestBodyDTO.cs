@@ -96,14 +96,8 @@ namespace TMS.Services.Models
         public string Ssn { get; set; }
         public string SfId { get; set; }
         public string ServiceId { get; set; }
-
-        //public string userId = "momkn";
-        //public string password = "hZ3BGBayXUCXsTnr";
-        //public string transactionId { get; set; }
-        //public string ssn { get; set; }
-        //public string sfId { get; set; }
-        //public string serviceId { get; set; }
     }
+
 }
 
 
