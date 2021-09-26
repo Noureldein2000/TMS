@@ -49,6 +49,7 @@ namespace TMS.API
             services.AddScoped<IDbMessageService, DbMessageService>();
             services.AddScoped<IFeesService, FeesService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ICancelService, CancelService>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

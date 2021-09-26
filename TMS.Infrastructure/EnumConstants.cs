@@ -114,6 +114,14 @@ namespace TMS.Infrastructure
         generateCoupon = 4,
         getAccountInfo = 5,
         topupAccount = 6,
+        inquireBills = 7,
+        paymentBills = 8,
+        calculateFees = 9,
+        printPin = 10,
+        getProductInfo = 11,
+        purchaseProduct = 12,
+        cancelPayment = 13,
+        cancel = 14
     }
 
     public enum MainStatusCodeType
@@ -149,7 +157,8 @@ namespace TMS.Infrastructure
     {
         Inquiry = 1,
         Fees = 2,
-        Payment = 3
+        Payment = 3,
+        Cancel = 4
     }
     public enum ProviderServiceRequestStatusType : int
     {
@@ -157,5 +166,11 @@ namespace TMS.Infrastructure
         Success = 2,
         Failed = 3,
         Canceled = 4
+    }
+
+    public enum UrlType : int
+    {
+        Fixed = 1,
+        Custom = 2
     }
 }

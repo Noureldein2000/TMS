@@ -257,7 +257,15 @@ namespace TMS.Services.ProviderLayer
 
                 //Note:Implement  stored  proc CashU_send adding invoices and other table inserted rows
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
+                // send add invoice to another data base system
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashU(newRequestId, payModel.Amount, userId,
+                    "USD",
+                    coupons[0].CardNumber,
+                    coupons[0].Serial,
+                    Convert.ToDateTime(coupons[0].CreationDate, CultureInfo.InvariantCulture.DateTimeFormat),
+                    Convert.ToDateTime(coupons[0].ExpirationDate, CultureInfo.InvariantCulture.DateTimeFormat), id);
+
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
 
                 // confirm sof
@@ -335,13 +343,7 @@ namespace TMS.Services.ProviderLayer
                    Value = coupons[0].ExpirationDate
                });
 
-                // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceCashU(newRequestId, payModel.Amount, userId,
-                    "USD",
-                    coupons[0].CardNumber,
-                    coupons[0].Serial,
-                    Convert.ToDateTime(coupons[0].CreationDate, CultureInfo.InvariantCulture.DateTimeFormat),
-                    Convert.ToDateTime(coupons[0].ExpirationDate, CultureInfo.InvariantCulture.DateTimeFormat), id);
+               
 
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
                 //_inquiryBillService.GetReceiptListByTransacationId(paymentResponse.TransactionId);

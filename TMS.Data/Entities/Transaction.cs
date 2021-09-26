@@ -16,10 +16,11 @@ namespace TMS.Data.Entities
         public string OriginalTrx { get; set; }
         public int? InvoiceID { get; set; }
         public int? RequestID { get; set; }
-        public virtual Request Request { get; set; }
         public string TransactionID { get; set; }
+        public virtual Request Request { get; set; }
         public virtual ICollection<AccountTransactionCommission> AccountTransactionCommissions { get; set; }
         public virtual ICollection<TransactionReceipt> TransactionReceipts { get; set; }
         public virtual ICollection<ReceiptBodyParam> ReceiptBodyParams { get; set; }
+        public virtual ICollection<PendingPaymentCard> PendingPaymentCards { get; set; }
     }
 }

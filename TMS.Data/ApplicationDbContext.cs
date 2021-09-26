@@ -70,6 +70,9 @@ namespace TMS.Data
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<AccountTransactionCommission> AccountTransactionCommissions { get; set; }
         public virtual DbSet<TransactionReceipt> TransactionReceipts { get; set; }
+        public virtual DbSet<PendingPaymentCard> PendingPaymentCards{ get; set; }
+        public virtual DbSet<PendingPaymentCardStatus> PendingPaymentCardStatuses{ get; set; }
+        public virtual DbSet<CardType> CardTypes{ get; set; }
         
 
         public override int SaveChanges()

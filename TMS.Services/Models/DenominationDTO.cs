@@ -10,6 +10,7 @@ namespace TMS.Services.Models
         public string Name { get; set; }
         public decimal Value { get; set; }
         public int ServiceID { get; set; }
+        public string OldDenominationID { get; set; }
         public bool Status { get; set; }
         public int CurrencyID { get; set; }
         public decimal APIValue { get; set; }
@@ -19,6 +20,7 @@ namespace TMS.Services.Models
         public int ServiceCategoryID { get; set; }
         public DenominationClassType ClassType { get; set; }
         public int ServiceProviderId { get; set; }
+        public string ServiceEntity { get; set; }
         public bool Inquirable { get; set; }
         public int? BillPaymentModeID { get; set; }
         public int? PaymentModeID { get; set; }

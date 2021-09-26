@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,17 +12,20 @@ namespace TMS.Services.Services
     public class InquiryBillService : IInquiryBillService
     {
         private readonly IBaseRepository<InquiryBill, int> _inquiryBill;
+        private readonly IBaseRepository<InquiryBillDetails, int> _inquiryBillDetail;
         private readonly IBaseRepository<ReceiptBodyParam, int> _receiptBodyParam;
         private readonly IBaseRepository<Parameter, int> _parameters;
         private readonly IUnitOfWork _unitOfWork;
         public InquiryBillService(
             IBaseRepository<InquiryBill, int> inquiryBill,
+            IBaseRepository<InquiryBillDetails, int> inquiryBillDetails,
             IBaseRepository<ReceiptBodyParam, int> receiptBodyParam,
              IBaseRepository<Parameter, int> parameters,
             IUnitOfWork unitOfWork
             )
         {
             _inquiryBill = inquiryBill;
+            _inquiryBillDetail = inquiryBillDetails;
             _receiptBodyParam = receiptBodyParam;
             _parameters = parameters;
             _unitOfWork = unitOfWork;
@@ -36,6 +40,23 @@ namespace TMS.Services.Services
             });
             _unitOfWork.SaveChanges();
             return obj.ID;
+        }
+
+        public void AddInquiryBillDetail(params InquiryBillDetailDTO[] model)
+        {
+            var paramNames = model.Select(s => s.ParameterName).ToList();
+            var parameters = _parameters.Getwhere(s => paramNames.Contains(s.ProviderName)).ToList();
+            foreach (var param in parameters)
+            {
+                var bodyParam = model.Where(s => s.ParameterName == param.ProviderName).FirstOrDefault();
+                _inquiryBillDetail.Add(new InquiryBillDetails
+                {
+                    InquiryBillID = bodyParam.InquiryBillID,
+                    ParameterID = param.ID,
+                    Value = bodyParam.Value
+                });
+            }
+            _unitOfWork.SaveChanges();
         }
 
         public void AddReceiptBodyParam(params ReceiptBodyParamDTO[] model)
@@ -54,6 +75,20 @@ namespace TMS.Services.Services
                 });
             }
             _unitOfWork.SaveChanges();
+        }
+
+        public IEnumerable<InquiryBillDetailDTO> GetInquiryBillDetails(int providerServiceRequestId, int sequence)
+        {
+            return _inquiryBill.Getwhere(s => s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId && s.Sequence == sequence).Include(x => x.InquiryBillDetails)
+                .Select(s => new InquiryBillDetailDTO
+                {
+                    Amount = s.Amount,
+                    Id = s.ID,
+                    ProviderServiceResponseID = s.ProviderServiceResponseID,
+                    Sequence = s.Sequence,
+                    Value = s.InquiryBillDetails.Select(x => x.Value).FirstOrDefault(),
+                    ParameterID = s.InquiryBillDetails.Select(x => x.ParameterID).FirstOrDefault()
+                }).ToList();
         }
 
         public IEnumerable<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId)

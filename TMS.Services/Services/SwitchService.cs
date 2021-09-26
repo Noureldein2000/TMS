@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 
@@ -13,7 +14,7 @@ namespace TMS.Services.Services
 {
     public class SwitchService : ISwitchService
     {
-        public string Connect<T>(T obj, SwitchEndPointDTO PSC, string baseAddress, string tokenType)
+        public string Connect<T>(T obj, SwitchEndPointDTO PSC, string baseAddress, string tokenType, UrlType urlType = UrlType.Custom)
         {
             try
             {
@@ -34,9 +35,21 @@ namespace TMS.Services.Services
                 //return "";
 
                 //PSC.URL = "http://164.160.104.66:7001/btech/rest/service/";
+                var newUrl = "";
                 var splitedUrl = PSC.URL.Split('/');
-                var newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
-                PSC.URL = newUrl;
+                if (urlType == UrlType.Fixed)
+                {
+                    splitedUrl[2] = "164.160.104.66:7001";
+                    PSC.URL = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+                }
+                else
+                {
+                    if (splitedUrl.Length > 5)
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
+                    else
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+                    PSC.URL = newUrl;
+                }
                 var http = (HttpWebRequest)WebRequest.Create(new Uri(PSC.URL + baseAddress));
                 if (tokenType.Contains("Bearer"))
                     http.Headers.Add(HttpRequestHeader.Authorization, tokenType + (PSC.UserPassword));
@@ -48,7 +61,8 @@ namespace TMS.Services.Services
 
                 using (var streamWriter = new StreamWriter(http.GetRequestStream()))
                 {
-                    string json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings { 
+                    string json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+                    {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()
                     }); //new JavaScriptSerializer().Serialize(obj);
 
@@ -68,7 +82,42 @@ namespace TMS.Services.Services
                 //return ex.Message;
                 throw new TMSException(ex.Message, "");
             }
-           
+
+        }
+
+        public string Connect(SwitchEndPointDTO PSC, string baseAddress)
+        {
+
+            try
+            {
+                //var splitedUrl = PSC.URL.Split('/');
+                //var newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
+                //PSC.URL = newUrl;
+                string newUrl = "";
+
+                var splitedUrl = baseAddress.Split('/');
+
+                if (splitedUrl.Length > 5)
+                    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
+                else
+                    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+
+                var http = (HttpWebRequest)WebRequest.Create(new Uri(newUrl));
+                http.ContentType = "application/json";
+                http.Method = "GET";
+                http.Timeout = PSC.TimeOut;
+
+                HttpStatusCode statusCode;
+                var httpResponse = (HttpWebResponse)http.GetResponse();
+                statusCode = httpResponse.StatusCode;
+                using var streamReader = new StreamReader(httpResponse.GetResponseStream());
+                return streamReader.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                //return ex.Message;
+                throw new TMSException(ex.Message, "");
+            }
         }
     }
 }

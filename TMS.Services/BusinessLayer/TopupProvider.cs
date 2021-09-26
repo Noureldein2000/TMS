@@ -70,7 +70,7 @@ namespace TMS.Services.BusinessLayer
                         throw new TMSException(_localizer["InvalidData"].Value, "12");
                     else if (string.IsNullOrEmpty(payModel.BillingAccount))
                         throw new TMSException(_localizer["MissingData"].Value, "15");
-                    else if (payModel.Brn == 0 || !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Payment, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
+                    else if (payModel.Brn == 0 || !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Fees, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                         throw new TMSException(_localizer["RequestNotFound"].Value, "14");
                     else if (_transactionService.IsIntervalTransationExist(userId, id, payModel.BillingAccount, payModel.Amount))
                         throw new TMSException(_localizer["InvalidInterval"].Value, "10");
@@ -83,9 +83,7 @@ namespace TMS.Services.BusinessLayer
             else
                 throw new TMSException(_localizer["InvalidMobileNumber"].Value, "34");
 
-            int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
-
-            var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
+            var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
             decimal feesAmount = 0;
             foreach (var item in inquiryBillList)
             {

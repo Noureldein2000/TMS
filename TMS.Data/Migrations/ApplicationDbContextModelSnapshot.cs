@@ -218,6 +218,33 @@ namespace TMS.Data.Migrations
                     b.ToTable("BillPaymentModes");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.CardType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Abbreviation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("CardTypes");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.Commission", b =>
                 {
                     b.Property<int>("ID")
@@ -1034,6 +1061,102 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("PaymentModes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.PendingPaymentCard", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("Brn")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CardTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HostTransactionID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentRefInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PengingPaymentCardStatusID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CardTypeID");
+
+                    b.HasIndex("PengingPaymentCardStatusID");
+
+                    b.HasIndex("TransactionID");
+
+                    b.ToTable("PendingPaymentCards");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.PendingPaymentCardStatus", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PendingPaymentCardStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 706, DateTimeKind.Local).AddTicks(3278),
+                            Name = "Initiated",
+                            NameAr = "بدأت"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6296),
+                            Name = "Canceled",
+                            NameAr = "ألغيت"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6326),
+                            Name = "Confirmed",
+                            NameAr = "مؤكد"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6329),
+                            Name = "AutoCanceled",
+                            NameAr = "مُلغى تلقائيًا"
+                        });
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.ProviderServiceConfigeration", b =>
@@ -2082,6 +2205,27 @@ namespace TMS.Data.Migrations
                     b.HasOne("TMS.Data.Entities.Parameter", "Parameter")
                         .WithMany("InquiryBillDetails")
                         .HasForeignKey("ParameterID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.PendingPaymentCard", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.CardType", "CardType")
+                        .WithMany("PendingPaymentCards")
+                        .HasForeignKey("CardTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.PendingPaymentCardStatus", "PendingPaymentCardStatus")
+                        .WithMany("PendingPaymentCards")
+                        .HasForeignKey("PengingPaymentCardStatusID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Transaction", "Transaction")
+                        .WithMany("PendingPaymentCards")
+                        .HasForeignKey("TransactionID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
