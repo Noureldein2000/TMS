@@ -12,4 +12,6 @@ namespace TMS.Services.Models
         public string UserPassword { get; set; }
         public IEnumerable<ServiceConfigParmsDTO> ServiceConfigParms { get; set; }
     }
+
+    public class test { }
 }

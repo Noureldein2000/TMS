@@ -95,8 +95,28 @@ namespace TMS.API.Controllers
                     Amount = model.Amount,
                     Brn = model.Brn,
                     AccountId = 6,
-                    AccountProfileId = 7
+                    AccountProfileId = 7,
+                    BillingAccount = model.BillingAccount
                 }, UserIdentityId, serviceId);
+                return Ok(response);
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(ex.Message, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("General Error", "-1");
+            }
+        }
+        [HttpDelete]
+        [Route("{serviceId}/{transactionId}/{accountId}/payment")]
+        [ProducesResponseType(typeof(PaymentResponseDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Cancel(int serviceId, int transactionId, int accountId)
+        {
+            try
+            {
+                var response = await _service.Cancel(transactionId, accountId, UserIdentityId, serviceId);
                 return Ok(response);
             }
             catch (TMSException ex)

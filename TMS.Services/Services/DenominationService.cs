@@ -37,7 +37,7 @@ namespace TMS.Services.Services
 
         public DenominationDTO GetDenomination(int id)
         {
-            var denomination = _denominationRepository.Getwhere(d => d.ID == id)
+            var denomination = _denominationRepository.Getwhere(d => d.ID == id).Include(s => s.Service).ThenInclude(x => x.ServiceEntity)
                 .Select(denomination => new DenominationDTO
                 {
                     APIValue = denomination.APIValue,
@@ -52,7 +52,9 @@ namespace TMS.Services.Services
                     Inquirable = denomination.Inquirable,
                     Value = denomination.Value,
                     BillPaymentModeID = denomination.BillPaymentModeID,
-                    PaymentModeID = denomination.PaymentModeID
+                    PaymentModeID = denomination.PaymentModeID,
+                    OldDenominationID = denomination.OldDenominationID,
+                    ServiceEntity = denomination.Service.ServiceEntity.ArName
                 }).FirstOrDefault();
             if (denomination == null)
                 throw new TMSException("", "");
@@ -72,7 +74,9 @@ namespace TMS.Services.Services
                  .Select(s => new DenominationServiceProviderDTO
                  {
                      Id = s.ID,
-                     ServiceProviderId = s.ServiceProviderID
+                     ServiceProviderId = s.ServiceProviderID,
+                     ProviderCode=s.ProviderCode,
+                     ProviderHasFees=s.ProviderHasFees
                  }).FirstOrDefault();
             return denominatiaon;
         }
@@ -118,6 +122,11 @@ namespace TMS.Services.Services
         public decimal GetCurrencyValue(int denominationId)
         {
             return _denominationRepository.Getwhere(x => x.ID == denominationId).Include(x => x.Currency).Select(x => x.Currency.Value).FirstOrDefault();
+        }
+
+        public IEnumerable<DenominationProviderConfigurationDTO> GetServiceDenomination(int denominationId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -52,13 +52,17 @@ namespace TMS.Services.Services
         public void AddProviderServiceRequestParam(ProviderServiceRequestParamDTO model)
         {
             var parameter = _parameters.Getwhere(s => s.ProviderName == model.ParameterName).FirstOrDefault();
-            _providerServiceRequestParams.Add(new ProviderServiceRequestParam
+            if (parameter != null)
             {
-                ParameterID = parameter.ID,
-                ProviderServiceRequestID = model.ProviderServiceRequestID,
-                Value = model.Value
-            });
-            _unitOfWork.SaveChanges();
+
+                _providerServiceRequestParams.Add(new ProviderServiceRequestParam
+                {
+                    ParameterID = parameter.ID,
+                    ProviderServiceRequestID = model.ProviderServiceRequestID,
+                    Value = model.Value
+                });
+                _unitOfWork.SaveChanges();
+            }
         }
 
         public int AddProviderServiceResponse(ProviderServiceResponseDTO model)

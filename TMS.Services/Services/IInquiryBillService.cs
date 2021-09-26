@@ -8,8 +8,10 @@ namespace TMS.Services.Services
     public interface IInquiryBillService
     {
         int AddInquiryBill(InquiryBillDTO model);
+        void AddInquiryBillDetail(params InquiryBillDetailDTO[] model);
         void AddReceiptBodyParam(params ReceiptBodyParamDTO[] model);
         IEnumerable<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId);
+        IEnumerable<InquiryBillDetailDTO> GetInquiryBillDetails(int providerServiceRequestId,int sequence);
         IEnumerable<ReceiptBodyParamDTO> GetReceiptListByTransacationId(int id);
         void UpdateReceiptBodyParam(int providerServiceRequestId, int transactionId);
     }
