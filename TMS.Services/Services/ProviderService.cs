@@ -7,6 +7,7 @@ using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
+using RequestType = TMS.Infrastructure.RequestType;
 
 namespace TMS.Services.Services
 {
@@ -93,10 +94,10 @@ namespace TMS.Services.Services
             _unitOfWork.SaveChanges();
         }
 
-        public int GetMaxProviderServiceRequest(int brn, int requestTypeId)
+        public int GetMaxProviderServiceRequest(int brn, RequestType requestTypeId)
         {
             return _providerServiceRequests.Getwhere(s => s.Brn == brn && s.ProviderServiceRequestStatusID == 2
-            && s.RequestTypeID == requestTypeId).Max(s => s.ID);
+            && s.RequestTypeID == (int)requestTypeId).Max(s => s.ID);
         }
 
         public string GetProviderServiceRequestBillingAccount(int brn, int userId, int denominationId)

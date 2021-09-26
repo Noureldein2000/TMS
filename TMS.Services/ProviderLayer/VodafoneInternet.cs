@@ -28,7 +28,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public VodafoneInternet(
            IDenominationService denominationService,
@@ -38,14 +37,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -164,8 +161,8 @@ namespace TMS.Services.ProviderLayer
             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
             feeResponse.Brn = feesModel.Brn == 0 ? providerServiceRequestId : feesModel.Brn;
-            feeResponse.Code = 200.ToString();
-            feeResponse.Message = _localizer["Success"].Value;
+            feeResponse.Code = 200;
+            feeResponse.Message = "Success";
             return feeResponse;
         }
         public Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId)
@@ -234,7 +231,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-                throw new TMSException(_localizer["BalanceError"].Value, "-5");
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -331,7 +328,7 @@ namespace TMS.Services.ProviderLayer
                     _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                     // GET MESSAGE PROVIDER ID
-                    var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
@@ -387,12 +384,12 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.TransactionId = transactionId;
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;

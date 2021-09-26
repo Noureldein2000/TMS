@@ -28,7 +28,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public BTech(
            IDenominationService denominationService,
@@ -38,14 +37,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -145,8 +142,8 @@ namespace TMS.Services.ProviderLayer
             });
             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
             feeResponse.Brn = feesModel.Brn;
-            feeResponse.Code = 200.ToString();
-            feeResponse.Message = _localizer["Success"].Value;
+            feeResponse.Code = 200;
+            feeResponse.Message = "Success";
             return feeResponse;
         }
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
@@ -184,7 +181,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-                throw new TMSException(_localizer["BalanceError"].Value, "-5");
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -241,15 +238,14 @@ namespace TMS.Services.ProviderLayer
             {
                 JObject o = JObject.Parse(response);
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
+                    payModel.BillingAccount, fees, extraBillInfo);
+
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                     new List<int?> { transactionId });
-
-                // send add invoice to another data base system
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
@@ -283,11 +279,11 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
@@ -444,18 +440,12 @@ namespace TMS.Services.ProviderLayer
                         ServiceRequestID = providerServiceResponseId,
                         Value = requestCode
                     });
-
                 if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
                 {
                     _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
                     {
                         ParameterName = "CountInstalmentPenalty",
                         ServiceRequestID = providerServiceResponseId,
-                        Value = countInstalmentPenalty
-                    });
-                    inquiryResponse.Data.Add(new DataDTO
-                    {
-                        Key = _localizer["CountInstalmentPenalty"].Value,
                         Value = countInstalmentPenalty
                     });
                 }
@@ -468,9 +458,46 @@ namespace TMS.Services.ProviderLayer
                         ServiceRequestID = providerServiceResponseId,
                         Value = valueInstalmentPenalty
                     });
+                }
+
+                if (string.IsNullOrEmpty(countRemainInstalment))
+                {
+                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
+                    {
+                        ParameterName = "CountRemainInstalment",
+                        ServiceRequestID = providerServiceResponseId,
+                        Value = countRemainInstalment
+                    });
+                }
+
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "ValueInstalmentPenalty", "CountRemainInstalment", "arabicName", "PaymentDueDate", "RequestCode", "CountInstalmentPenalty");
+
+                if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
+                {
+                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
+                    {
+                        ParameterName = "CountInstalmentPenalty",
+                        ServiceRequestID = providerServiceResponseId,
+                        Value = countInstalmentPenalty
+                    });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = _localizer["ValueInstalmentPenalty"].Value,
+                        Key = responseParams.Where(p => p.ProviderName == "CountInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
+                        Value = countInstalmentPenalty
+                    });
+                }
+                
+                if (!string.IsNullOrEmpty(valueInstalmentPenalty))
+                {
+                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
+                    {
+                        ParameterName = "ValueInstalmentPenalty",
+                        ServiceRequestID = providerServiceResponseId,
+                        Value = valueInstalmentPenalty
+                    });
+                    inquiryResponse.Data.Add(new DataDTO
+                    {
+                        Key = responseParams.Where(p => p.ProviderName == "ValueInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = valueInstalmentPenalty
                     });
                 }
@@ -485,27 +512,27 @@ namespace TMS.Services.ProviderLayer
                     });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = _localizer["CountRemainInstalment"].Value,
+                        Key = responseParams.Where(p => p.ProviderName == "CountRemainInstalment").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = countRemainInstalment
                     });
                 }
 
-                inquiryModel.Data.AddRange(new List<DataDTO>
+                inquiryResponse.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = _localizer["arabicName"].Value,
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = customerName[1]
                     },
                     new DataDTO
                     {
-                        Key = _localizer["PaymentDueDate"].Value,
+                        Key = responseParams.Where(p => p.ProviderName == "PaymentDueDate").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = instalmentDate[2]
                     },
 
                     new DataDTO
                     {
-                        Key = _localizer["RequestCode"].Value,
+                        Key = responseParams.Where(p => p.ProviderName == "RequestCode").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = requestCode
                     },
                 });
@@ -580,12 +607,12 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
-            inquiryResponse.Code = 200.ToString();
-            inquiryResponse.Message = _localizer["Success"].Value;
+            inquiryResponse.Code = 200;
+            inquiryResponse.Message = "Success";
 
             //Logging Client Response
             await _loggingService.Log(JsonConvert.SerializeObject(inquiryResponse), providerServiceRequestId, LoggingType.CustomerResponse);

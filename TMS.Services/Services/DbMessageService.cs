@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
@@ -14,15 +15,12 @@ namespace TMS.Services.Services
     {
         //private readonly IBaseRepository<ProviderStatusCode, int> _providerStatusCodes;
         private readonly IBaseRepository<StatusCode, int> _statusCodes;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public DbMessageService(
             //IBaseRepository<ProviderStatusCode, int> providerStatusCodes,
-            IStringLocalizer<ServiceLanguageResource> localizer,
             IBaseRepository<StatusCode, int> statusCodes)
         {
             //_providerStatusCodes = providerStatusCodes;
             _statusCodes = statusCodes;
-            _localizer = localizer;
         }
 
         public StatusCodeDTO GetMainStatusCodeMessage(int? id = null, int? providerId = null, string statusCode = "", string language = "ar")
@@ -30,7 +28,7 @@ namespace TMS.Services.Services
             StatusCodeDTO response;
             if (!providerId.HasValue)
             {
-                response = _statusCodes.Getwhere(s => s.ID == id).Select(s => new StatusCodeDTO
+                response = _statusCodes.Getwhere(s => s.ID == (int)id).Select(s => new StatusCodeDTO
                 {
                     Id = s.ID,
                     Code = s.Code,
@@ -50,7 +48,7 @@ namespace TMS.Services.Services
                     }).FirstOrDefault();
             }
             if (response == null)
-                throw new TMSException(_localizer["ProviderError"].Value, "-15");
+                throw new TMSException("ProviderError", "-15");
             return response;
         }
     }

@@ -12,11 +12,11 @@ namespace TMS.Services.Models
         public int Id { get; set; }
     }
 
-    public class InquiryBillDetailDTO : InquiryBillDTO
-    {
-        public int InquiryBillID { get; set; }
-        public string ParameterName { get; set; }
-        public int ParameterID { get; set; }
-        public string Value { get; set; }
-    }
+    //public class InquiryBillDetailDTO : InquiryBillDTO
+    //{
+    //    public int InquiryBillID { get; set; }
+    //    public string ParameterName { get; set; }
+    //    public int ParameterID { get; set; }
+    //    public string Value { get; set; }
+    //}
 }

@@ -29,7 +29,6 @@ namespace TMS.Services.Services
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         private readonly IUnitOfWork _unitOfWork;
         public CancelService(
@@ -41,13 +40,11 @@ namespace TMS.Services.Services
            IDbMessageService dbMessageService,
            IFeesService feesService,
            ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer,
             IUnitOfWork unitOfWork)
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -83,7 +80,7 @@ namespace TMS.Services.Services
             });
 
             //Get Max ProviderServiceRequestFees
-            var brnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, 2);
+            var brnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
 
             var denomaotionServicerProvider = _denominationService.GetDenominationServiceProvider(id);
 
@@ -106,7 +103,7 @@ namespace TMS.Services.Services
                         PaymentCardAmounts PA = new PaymentCardAmounts();
 
                         //PA.amount = IBDList
-                        PA.CurrentCode = IBDList.FirstOrDefault(t => t.ParameterID == 15).Value;
+                        PA.CurrentCode = IBDList.FirstOrDefault(t => t.ParameterId == 15).Value;
                         PA.Sequence = item.Sequence.ToString();
 
                         PA.Amount = item.Amount.ToString();
@@ -166,11 +163,11 @@ namespace TMS.Services.Services
                 }
                 else if (response.Contains("timed out"))
                 {
-                    throw new TMSException(_localizer["PendingTrx"].Value, "3");
+                    throw new TMSException("PendingTrx", "3");
                 }
                 else
                 {
-                    var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
@@ -222,13 +219,13 @@ namespace TMS.Services.Services
 
                 }
                 else
-                    throw new TMSException(_localizer["DupplicatedRefund"].Value, "38");
+                    throw new TMSException("DupplicatedRefund", "38");
             }
             else
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
 
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
@@ -312,7 +309,7 @@ namespace TMS.Services.Services
                 isCancelled = Validates.CheckJSON(response);
             }
             else
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
 
             return response;
         }

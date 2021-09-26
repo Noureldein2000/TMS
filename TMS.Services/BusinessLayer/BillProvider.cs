@@ -21,19 +21,16 @@ namespace TMS.Services.BusinessLayer
         private readonly IProviderService _providerService;
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public BillProvider(
             IDenominationService denominationService,
             Provider provider,
             IProviderService providerService,
             IInquiryBillService inquiryBillService,
-            ITransactionService transactionService,
-            IStringLocalizer<ServiceLanguageResource> localizer
+            ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _provider = provider;
-            _localizer = localizer;
             _providerService = providerService;
             _inquiryBillService = inquiryBillService;
             _transactionService = transactionService;
@@ -43,44 +40,44 @@ namespace TMS.Services.BusinessLayer
             decimal totalAmount = 0;
             var denomination = _denominationService.GetDenomination(id);
             if (feesModel.Amount <= 0)
-                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                throw new TMSException("InvalidData", "12");
 
             if (feesModel.Brn == 0 && denomination.Inquirable)
-                throw new TMSException(_localizer["MissingData"].Value, "15");
+                throw new TMSException("MissingData", "15");
 
             if (!denomination.Inquirable && feesModel.Brn != 0)
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
 
             if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Inquiry, feesModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
 
             if (denomination.MinValue > 0 && denomination.MaxValue > 0 && (feesModel.Amount < denomination.MinValue || feesModel.Amount > denomination.MaxValue))
-                throw new TMSException(_localizer["InvalidAmount"].Value, "11");
+                throw new TMSException("InvalidAmount", "11");
             //{
             //    DtMsg = DB_MessageMapping.GetMessage((int)DB_MessageMapping.MomknMessage.InvalidAmount, 0, _FDTO.Language);
             //    DtMsg.Rows[0][1] = DB_MessageMapping.ReplaceMessage(DtMsg.Rows[0][1].ToString(), D.MinValue, D.MaxValue, D.Interval);
             //}
             if (denomination.Value != 0 && denomination.Value != feesModel.Amount)
-                throw new TMSException(_localizer["InvalidAmount"].Value, "11");
+                throw new TMSException("InvalidAmount", "11");
             //{
             //    DtMsg = DB_MessageMapping.GetMessage((int)DB_MessageMapping.MomknMessage.InvalidAmount, 0, _FDTO.Language);
             //    DtMsg.Rows[0][1] = DB_MessageMapping.ReplaceMessage(DtMsg.Rows[0][1].ToString(), D.MinValue, D.MaxValue, D.Interval);
             //}
             //if ((feesModel.Data == null || feesModel.Data.Count == 0) && denomination.Inquirable)
-            //    throw new TMSException(_localizer["MissingData", "15");
+            //    throw new TMSException("MissingData", "15");
 
             if (feesModel.Data != null && denomination.Inquirable)
             {
                 var sequence = feesModel.Data.Where(f => f.Key == "Sequence").Select(x => x.Value).FirstOrDefault();
 
                 if (string.IsNullOrEmpty(sequence))
-                    throw new TMSException(_localizer["InvalidData"].Value, "12");
+                    throw new TMSException("InvalidData", "12");
 
                 var sequenceBills = sequence.Split(',').Select(s => int.Parse(s)).ToList();
                 if (sequenceBills == null || sequenceBills.Count <= 0)
-                    throw new TMSException(_localizer["InvalidData"].Value, "12");
+                    throw new TMSException("InvalidData", "12");
 
-                var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn).ToList();
+                var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
 
                 if (denomination.PaymentModeID == (int)PaymentModeType.Fixed)
                 {
@@ -90,44 +87,44 @@ namespace TMS.Services.BusinessLayer
                             //Check Only One Sequence & Amount
                             if (sequenceBills[0] != inquiryBillList.FirstOrDefault(u => u.Sequence == sequenceBills[0]).Sequence ||
                                 feesModel.Amount != inquiryBillList.FirstOrDefault(u => u.Sequence == sequenceBills[0]).Amount)
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
                             break;
 
                         case (int)BillPaymentModeType.MustAll:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count() || sequenceBills.Count != inquiryBillList.Count)
-                                throw new TMSException(_localizer["AmountNotMatched"].Value, "22");
+                                throw new TMSException("AmountNotMatched", "22");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                                 else
                                     totalAmount += item.Amount;
                             }
 
                             if (feesModel.Amount != totalAmount)
-                                throw new TMSException(_localizer["CanNotPayPartial"].Value, "52");
+                                throw new TMSException("CanNotPayPartial", "52");
 
                             break;
                         case (int)BillPaymentModeType.Multiple:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count())
-                                throw new TMSException(_localizer["AmountNotMatched"].Value, "22");
+                                throw new TMSException("AmountNotMatched", "22");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
                                 {
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                                 }
                                 else
                                     totalAmount += item.Amount;
                             }
 
                             if (feesModel.Amount != totalAmount)
-                                throw new TMSException(_localizer["CanNotPayMoreThanOneBill"].Value, "179");
+                                throw new TMSException("CanNotPayMoreThanOneBill", "179");
                             break;
                         default:
-                            throw new TMSException(_localizer["NotSupportedMode"].Value, "147");
+                            throw new TMSException("NotSupportedMode", "147");
                     }
                 }
                 else if (denomination.PaymentModeID == (int)PaymentModeType.Partial)
@@ -136,42 +133,42 @@ namespace TMS.Services.BusinessLayer
                     {
                         case (int)BillPaymentModeType.OnlyOne:
                             if (!sequenceBills.Contains(1) || feesModel.Amount > inquiryBillList.FirstOrDefault(u => u.Sequence == 1).Amount)
-                                throw new TMSException(_localizer["CanNotPayPartial"].Value, "52");
+                                throw new TMSException("CanNotPayPartial", "52");
                             break;
                         case (int)BillPaymentModeType.MustAll:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count() || inquiryBillList.Count != sequenceBills.Count)
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                                 else
                                     totalAmount += item.Amount;
                             }
 
                             if (feesModel.Amount > totalAmount)
-                                throw new TMSException(_localizer["CanNotPayMoreThanOneBill"].Value, "179");
+                                throw new TMSException("CanNotPayMoreThanOneBill", "179");
 
                             break;
                         case (int)BillPaymentModeType.Multiple:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count())
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                                 else
                                     totalAmount += item.Amount;
                             }
 
                             if (feesModel.Amount > totalAmount)
-                                throw new TMSException(_localizer["CanNotPayMoreThanOneBill"].Value, "179");
+                                throw new TMSException("CanNotPayMoreThanOneBill", "179");
 
                             break;
                         default:
-                            throw new TMSException(_localizer["NotSupportedMode"].Value, "147");
+                            throw new TMSException("NotSupportedMode", "147");
                     }
                 }
                 else if (denomination.PaymentModeID == (int)PaymentModeType.InAdvance)
@@ -180,31 +177,31 @@ namespace TMS.Services.BusinessLayer
                     {
                         case (int)BillPaymentModeType.OnlyOne:
                             if (sequenceBills.Count != 1 || sequenceBills[0] != inquiryBillList.FirstOrDefault(u => u.Sequence == sequenceBills[0]).Sequence)
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
                             break;
                         case (int)BillPaymentModeType.MustAll:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count() || sequenceBills.Count != inquiryBillList.Count)
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                             }
                             break;
                         case (int)BillPaymentModeType.Multiple:
                             if (sequenceBills.Count != sequenceBills.Distinct().Count())
-                                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                                throw new TMSException("InvalidData", "12");
 
                             foreach (var item in inquiryBillList)
                             {
                                 if (!sequenceBills.Contains(item.Sequence))
-                                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                                    throw new TMSException("MissingData", "15");
                             }
 
                             break;
                         default:
-                            throw new TMSException(_localizer["NotSupportedMode"].Value, "147");
+                            throw new TMSException("NotSupportedMode", "147");
                     }
                 }
             }
@@ -225,23 +222,23 @@ namespace TMS.Services.BusinessLayer
                 || (Validates.CheckMobileNumber(inquiry.BillingAccount) || Validates.CheckLandLineNumber(inquiry.BillingAccount)))
             {
                 if (denomination.Status == false)
-                    throw new TMSException(_localizer["ServiceUnavailable"].Value, "");
+                    throw new TMSException("ServiceUnavailable", "");
 
                 if (denomination.ClassType == 0)
-                    throw new TMSException(_localizer["UnsupportedService"].Value, "");
+                    throw new TMSException("UnsupportedService", "");
 
                 var denoProvider = _provider.CreateDenominationProvider(denomination.ClassType);
                 return await denoProvider.Inquiry(inquiry, userId, id, denomination.ServiceProviderId);
             }
 
             if (Validates.CheckMobileNumber(inquiry.BillingAccount))
-                throw new TMSException(_localizer["InvalidMobileNumber"].Value, "");
+                throw new TMSException("InvalidMobileNumber", "");
 
             else if (Validates.CheckLandLineNumber(inquiry.BillingAccount))
-                throw new TMSException(_localizer["InvalidTelephoneNumber"].Value, "");
+                throw new TMSException("InvalidTelephoneNumber", "");
 
             else
-                throw new TMSException(_localizer["Invalid"].Value, "");
+                throw new TMSException("Invalid", "");
         }
 
         public override async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id)
@@ -258,37 +255,37 @@ namespace TMS.Services.BusinessLayer
             {
 
                 if (denomination.Status != true)
-                    throw new TMSException(_localizer["ServiceUnavailable"].Value, "8");
+                    throw new TMSException("ServiceUnavailable", "8");
 
                 if (payModel.Amount <= 0)
-                    throw new TMSException(_localizer["InvalidData"].Value, "12");
+                    throw new TMSException("InvalidData", "12");
 
                 if (string.IsNullOrEmpty(payModel.BillingAccount))
-                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                    throw new TMSException("MissingData", "15");
 
                 if (denomination.Inquirable && !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Inquiry, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                    throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                    throw new TMSException("RequestNotFound", "14");
 
                 if (!_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Fees, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                    throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                    throw new TMSException("RequestNotFound", "14");
 
                 if (denomination.Value != 0 && denomination.Value != payModel.Amount)
-                    throw new TMSException(_localizer["InvalidAmount"].Value, "11");
+                    throw new TMSException("InvalidAmount", "11");
 
                 if (_transactionService.IsIntervalTransationExist(userId, id, payModel.BillingAccount, payModel.Amount))
                 {
-                    throw new TMSException(_localizer["InvalidInterval"].Value, "10");
+                    throw new TMSException("InvalidInterval", "10");
                     //DtMsg.Rows[0][1] = DB_MessageMapping.ReplaceMessage(DtMsg.Rows[0][1].ToString(), D.MinValue, D.MaxValue, D.Interval);
                 }
                 if (payModel.Brn != 0 && _providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Payment, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
                 {
-                    throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
+                    throw new TMSException("DupplicatedTrx", "7");
                     //DtMsg = DB_MessageMapping.GetMessage((int)DB_MessageMapping.MomknMessage.DupplicatedTrx, 0, _PDTO.Language);
                 }
                 if (payModel.HostTransactionID == "" && _transactionService.IsRequestUUIDExist(payModel.AccountId, payModel.HostTransactionID))
-                    throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
+                    throw new TMSException("DupplicatedTrx", "7");
 
-                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
+                int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
 
                 var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
                 decimal feesAmount = 0;
@@ -307,13 +304,13 @@ namespace TMS.Services.BusinessLayer
                     ServiceListVersion = payModel.ServiceListVersion,
                     Version = payModel.Version,
                 }, userId, id);
-                if (feesResponse.Code != "200")
-                    throw new TMSException(_localizer["InvalidFees"].Value, "47");
+                if (feesResponse.Code != 200)
+                    throw new TMSException("InvalidFees", "47");
 
                 return await denoProvider.Pay(payModel, userId, id, feesResponse.TotalAmount, feesResponse.Fees, denomination.ServiceProviderId);
             }
             else
-                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                throw new TMSException("InvalidData", "12");
         }
     }
 }

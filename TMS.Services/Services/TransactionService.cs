@@ -885,5 +885,65 @@ namespace TMS.Services.Services
             currenr.PengingPaymentCardStatusID = pendingPaymentCardStatusID;
             _unitOfWork.SaveChanges();
         }
+
+        public int AddInvoiceTedataEgyptCharge(string teleCode, string teleNumber, decimal basicValue, decimal addedMoney, int status, int userId, string msg, string transInv, int fawBillerId, string serviceName)
+        {
+            using var cmd = new SqlCommand("[Tedata_egypt_charge]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Tele_code", teleCode);
+            cmd.Parameters.AddWithValue("@Tele_number", teleNumber);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@msg", msg);
+            cmd.Parameters.AddWithValue("@TransInv", transInv);
+            cmd.Parameters.AddWithValue("@faw_BillerId", fawBillerId);
+            cmd.Parameters.AddWithValue("@ServiceName", serviceName);
+            return InitiateSqlCommand(cmd);
+        }
+        public void TEDataLogUpdate(string chargeStatus, int requestId)
+        {
+            using var cmd = new SqlCommand("[TE_log_update]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@charge_status", chargeStatus);
+            cmd.Parameters.AddWithValue("@Id", requestId);
+            InitiateSqlCommand(cmd);
+        }
+        public int AddInvoiceTedataTest(string teleCode, string teleNumber, string billDate, decimal basicValue, decimal addedMoney, int status, int userId, string accountName, string msg, string transInv, string code, string messageTitle, int fawBillerId, string data, int servId)
+        {
+            using var cmd = new SqlCommand("[Tedata_test]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Tele_code", teleCode);
+            cmd.Parameters.AddWithValue("@Tele_number", teleNumber);
+            cmd.Parameters.AddWithValue("@Bill_date", billDate);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            cmd.Parameters.AddWithValue("@msg",msg );
+            cmd.Parameters.AddWithValue("@TransInv", transInv);
+            cmd.Parameters.AddWithValue("@code", code);
+            cmd.Parameters.AddWithValue("@message_title", messageTitle);
+            cmd.Parameters.AddWithValue("@faw_BillerId", fawBillerId);
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            return InitiateSqlCommand(cmd);
+        }
+        public int AddTEDataProcLog(string providerCompany, string mobileNumber, decimal value, string chargeStatus, int statusTransfer, int userId, int servId, int transId)
+        {
+            using var cmd = new SqlCommand("[TE_proc_log]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@provider_company", providerCompany);
+            cmd.Parameters.AddWithValue("@mobile_number", mobileNumber);
+            cmd.Parameters.AddWithValue("@value", value);
+            cmd.Parameters.AddWithValue("@charge_status", chargeStatus);
+            cmd.Parameters.AddWithValue("@status_transfer", statusTransfer);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            cmd.Parameters.AddWithValue("@TransId", transId);
+            return InitiateSqlCommand(cmd);
+        }
     }
 }

@@ -121,7 +121,9 @@ namespace TMS.Infrastructure
         getProductInfo = 11,
         purchaseProduct = 12,
         cancelPayment = 13,
-        cancel = 14
+        cancel = 14,
+        submitPayment = 15,
+        queryTransaction = 16,
     }
 
     public enum MainStatusCodeType
@@ -172,5 +174,57 @@ namespace TMS.Infrastructure
     {
         Fixed = 1,
         Custom = 2
+    }
+
+    public enum MomknMessage
+    {
+        Sucess = 1,
+        FailedTrx = 2,
+        PendingTrx = 3,
+        UnderProcessing = 4,
+        InsufficientBalance = 5,
+        GeneralError = 6,
+        DupplicatedTrx = 7,
+        ServiceUnavailable = 8,
+        MustChangePassword = 9,
+        InvalidInterval = 10,
+        InvalidAmount = 11,
+        InvalidData = 12,
+        SucceesfulCancelation = 13,
+        RequestNotFound = 14,
+        MissingData = 15,
+        RequestAlreadyExists = 16,
+        TransactionRefunded = 17,
+        ProviderError = 18,
+        NoDataFounded = 19,
+        PasswordChangedSuccess = 20,
+        InActiveService = 21,
+        AmountNotMatched = 22,
+        MobileAlreadyExist = 23,
+        AccountCreationUnderProcess = 24,
+        Reserved = 25,
+        MustInputOTP = 26,
+        InActiveAccount = 27,
+        CannotUsedOldPassword = 28,
+        InvalidPasswordFormat = 29,
+        TimeExceedLimit = 30,
+        InvalidOTP = 31,
+        TrialsExceedLimit = 32,
+        ExceededLimit = 33,
+        InvalidMobileNumber = 34,
+        VoucherExceededLimit = 35,
+        InvalidNationalID = 36,
+        InvalidTelephoneNumber = 37,
+        DupplicatedRefund = 38,
+        DupplicatedRequest = 39,
+        PreviousRequestUnderProcess = 40,
+        NotTransferToSameAccount = 44,
+        NoBillsFound = 49,
+        CanNotPayPartial = 52,
+        RequiredQuantityNotAvailable = 54,
+        ServiceListUpToDate = 67,
+        CannotTransferBalanceToClosedAccount = 71,
+        CanNotPayMoreThanOneBill = 179,
+        BadRequest = 180
     }
 }

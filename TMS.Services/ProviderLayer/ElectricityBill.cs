@@ -29,7 +29,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public ElectricityBill(
            IDenominationService denominationService,
@@ -39,14 +38,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -81,7 +78,7 @@ namespace TMS.Services.ProviderLayer
                 }
                 if (!flag)
                 {
-                    var BrnFees = _providerService.GetMaxProviderServiceRequest(feesModel.Brn, 2);
+                    var BrnFees = _providerService.GetMaxProviderServiceRequest(feesModel.Brn, Infrastructure.RequestType.Fees);
                     //Get Payment Bills 
                     if (BrnFees != -1)
                     {
@@ -153,11 +150,11 @@ namespace TMS.Services.ProviderLayer
                                         PaymentAmounts PA = new PaymentAmounts();
 
                                         //PA.amount = IBDList
-                                        PA.CurrentCode = IBDList.Where(t => t.ParameterID == 15).Select(x => x.Value).FirstOrDefault();
-                                        PA.MinAmount = IBDList.Where(t => t.ParameterID == 16).Select(x => x.Value).FirstOrDefault();
-                                        PA.PaymentMode = IBDList.Where(t => t.ParameterID == 17).Select(x => x.Value).FirstOrDefault();
-                                        PA.ShortDescAR = IBDList.Where(t => t.ParameterID == 18).Select(x => x.Value).FirstOrDefault();
-                                        PA.ShortDescEN = IBDList.Where(t => t.ParameterID == 19).Select(x => x.Value).FirstOrDefault();
+                                        PA.CurrentCode = IBDList.Where(t => t.ParameterId == 15).Select(x => x.Value).FirstOrDefault();
+                                        PA.MinAmount = IBDList.Where(t => t.ParameterId == 16).Select(x => x.Value).FirstOrDefault();
+                                        PA.PaymentMode = IBDList.Where(t => t.ParameterId == 17).Select(x => x.Value).FirstOrDefault();
+                                        PA.ShortDescAR = IBDList.Where(t => t.ParameterId == 18).Select(x => x.Value).FirstOrDefault();
+                                        PA.ShortDescEN = IBDList.Where(t => t.ParameterId == 19).Select(x => x.Value).FirstOrDefault();
                                         PA.Sequence = SequenceValue;
 
                                         PA.Amount += IBDList.Select(x => x.Amount);
@@ -346,19 +343,19 @@ namespace TMS.Services.ProviderLayer
                             else
                             {
                                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                                throw new TMSException(_localizer["MissingData"].Value, "15");
+                                throw new TMSException("MissingData", "15");
                             }
                         }
                         else
                         {
                             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                            throw new TMSException(_localizer["InvalidData"].Value, "12");
+                            throw new TMSException("InvalidData", "12");
                         }
                     }
                     else
                     {
                         _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                        throw new TMSException(_localizer["MissingData"].Value, "15");
+                        throw new TMSException("MissingData", "15");
                     }
                 }
                 else
@@ -370,12 +367,12 @@ namespace TMS.Services.ProviderLayer
             }
             else
             {
-                throw new TMSException(_localizer["MissingData"].Value, "15");
+                throw new TMSException("MissingData", "15");
             }
 
             feeResponse.Brn = feesModel.Brn;
-            feeResponse.Code = 200.ToString();
-            feeResponse.Message = _localizer["Success"].Value;
+            feeResponse.Code = 200;
+            feeResponse.Message = "Success";
             return feeResponse;
         }
 
@@ -484,17 +481,17 @@ namespace TMS.Services.ProviderLayer
                 {
                     new DataDTO
                     {
-                        Key = _localizer["billNumber"].Value,
+                        Key = "billNumber",
                         Value = o["billNumber"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = _localizer["billRecId"].Value,
+                        Key = "billRecId",
                         Value = o["billRecId"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = _localizer["paymentRefInfo"].Value,
+                        Key = "paymentRefInfo",
                         Value = o["paymentRefInfo"].ToString()
                     }
                 });
@@ -544,12 +541,12 @@ namespace TMS.Services.ProviderLayer
                     {
                         new DataDTO
                         {
-                            Key = _localizer["amountFees"].Value,
+                            Key = "amountFees",
                             Value = item.Amount.ToString()
                         },
                          new DataDTO
                         {
-                            Key = _localizer["currentCode"].Value,
+                            Key = "currentCode",
                             Value = item.CurrentCode.ToString()
                         }
                     });
@@ -627,12 +624,12 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
-            inquiryResponse.Code = 200.ToString();
-            inquiryResponse.Message = _localizer["Success"].Value;
+            inquiryResponse.Code = 200;
+            inquiryResponse.Message = "Success";
 
             //Logging Client Response
             await _loggingService.Log(JsonConvert.SerializeObject(inquiryResponse), providerServiceRequestId, LoggingType.CustomerResponse);
@@ -660,7 +657,7 @@ namespace TMS.Services.ProviderLayer
             });
 
             //Get Max ProviderServiceRequestFees
-            var BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, 2);
+            var BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
 
             var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
             foreach (var item in bills)
@@ -671,11 +668,11 @@ namespace TMS.Services.ProviderLayer
                     PaymentAmounts PA = new PaymentAmounts();
 
                     //PA.amount = IBDList
-                    PA.CurrentCode = inquiryBillDetails.Where(t => t.ParameterID == 15).Select(x => x.Value).FirstOrDefault();
-                    PA.MinAmount = inquiryBillDetails.Where(t => t.ParameterID == 16).Select(x => x.Value).FirstOrDefault();
-                    PA.PaymentMode = inquiryBillDetails.Where(t => t.ParameterID == 17).Select(x => x.Value).FirstOrDefault();
-                    PA.ShortDescAR = inquiryBillDetails.Where(t => t.ParameterID == 18).Select(x => x.Value).FirstOrDefault();
-                    PA.ShortDescEN = inquiryBillDetails.Where(t => t.ParameterID == 19).Select(x => x.Value).FirstOrDefault();
+                    PA.CurrentCode = inquiryBillDetails.Where(t => t.ParameterId == 15).Select(x => x.Value).FirstOrDefault();
+                    PA.MinAmount = inquiryBillDetails.Where(t => t.ParameterId == 16).Select(x => x.Value).FirstOrDefault();
+                    PA.PaymentMode = inquiryBillDetails.Where(t => t.ParameterId == 17).Select(x => x.Value).FirstOrDefault();
+                    PA.ShortDescAR = inquiryBillDetails.Where(t => t.ParameterId == 18).Select(x => x.Value).FirstOrDefault();
+                    PA.ShortDescEN = inquiryBillDetails.Where(t => t.ParameterId == 19).Select(x => x.Value).FirstOrDefault();
                     PA.Sequence = item.Sequence.ToString();
                     PA.Amount = item.Amount.ToString();
 
@@ -701,7 +698,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-                throw new TMSException(_localizer["BalanceError"].Value, "-5");
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -850,13 +847,13 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
 
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {

@@ -29,7 +29,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public CashU(
            IDenominationService denominationService,
@@ -39,14 +38,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -162,8 +159,8 @@ namespace TMS.Services.ProviderLayer
             else
                 feeResponse.Brn = feesModel.Brn;
 
-            feeResponse.Code = 200.ToString();
-            feeResponse.Message = _localizer["Success"].Value;
+            feeResponse.Code = 200;
+            feeResponse.Message = "Success";
             return feeResponse;
         }
 
@@ -208,7 +205,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0)
-                throw new TMSException(_localizer["BalanceError"].Value, "-5");
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -304,17 +301,17 @@ namespace TMS.Services.ProviderLayer
                 {
                     new DataListDTO
                     {
-                        Key = _localizer["Pin"].Value,
+                        Key = "Pin",
                         Value = coupons[0].CardNumber
                     },
                     new DataListDTO
                     {
-                        Key = _localizer["Serial"].Value,
+                        Key = "Serial",
                         Value = coupons[0].Serial
                     },
                      new DataListDTO
                     {
-                        Key = _localizer["End Date"].Value,
+                        Key = "End Date",
                         Value = coupons[0].ExpirationDate
                     }
                 });
@@ -359,12 +356,12 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.InvoiceId = 0; //note related to CashU_send Stroed Procedure
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.Receipt = new List<Root> { printedReciept };

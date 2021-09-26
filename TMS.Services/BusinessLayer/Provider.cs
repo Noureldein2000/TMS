@@ -21,7 +21,6 @@ namespace TMS.Services.BusinessLayer
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
         private readonly ICancelService _cancelService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public Provider(
                IDenominationService denominationService,
                IProviderService providerService,
@@ -31,14 +30,12 @@ namespace TMS.Services.BusinessLayer
                IDbMessageService dbMessageService,
                IFeesService feesService,
                ITransactionService transactionService,
-               ICancelService cancelService,
-               IStringLocalizer<ServiceLanguageResource> localizer
+               ICancelService cancelService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -51,11 +48,11 @@ namespace TMS.Services.BusinessLayer
             switch (type)
             {
                 case ServiceClassType.Bill:
-                    return new BillProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new BillProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 case ServiceClassType.Topup:
-                    return new TopupProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new TopupProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 case ServiceClassType.Voucher:
-                    return new VoucherProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new VoucherProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 default:
                     return null;
             }
@@ -65,55 +62,55 @@ namespace TMS.Services.BusinessLayer
             switch (type)
             {
                 case DenominationClassType.BTech:
-                    return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Cancel:
-                    return new Cancel(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new Cancel(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.CashIn:
-                    return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.CashU:
-                    return new CashU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.CashUTopUp:
-                    return new CashUTopUp(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashUTopUp(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Donation:
-                    return new Donation(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new Donation(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.EducationService:
-                    return new EducationService(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new EducationService(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.ElectricityBill:
-                    return new ElectricityBill(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new ElectricityBill(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.ElectricityCard:
-                    return new ElectricityCard(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _cancelService, _localizer);
+                    return new ElectricityCard(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _cancelService);
                 case DenominationClassType.Etisalat:
-                    return new Etisalat(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new Etisalat(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Itunes:
-                    return new ITunes(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new ITunes(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.OneCard:
-                    return new OneCard(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new OneCard(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.OrangeInternet:
-                    return new OrangeInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new OrangeInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.OrangeMobile:
-                    return new OrangeMobile(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new OrangeMobile(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Petrotrade:
-                    return new Petrotrade(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new Petrotrade(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.TelecomeEgypt:
-                    return new TelecomeEgypt(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new TelecomeEgypt(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Topup:
-                    return new Topup(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new Topup(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.University:
-                    return new University(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new University(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.ValU:
-                    return new ValU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new ValU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.VodafoneInternet:
-                    return new VodafoneInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new VodafoneInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.VodafoneMobile:
-                    return new VodafoneMobile(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new VodafoneMobile(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.Voucher:
-                    return new Voucher(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
-                //case DenominationClassType.WaterBill:
-                //    break;
-                //case DenominationClassType.WEInternet:
-                //    break;
-                //case DenominationClassType.WEInternetExtra:
-                //    break;
+                    return new Voucher(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
+                case DenominationClassType.WaterBill:
+                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
+                case DenominationClassType.WEInternet:
+                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
+                case DenominationClassType.WEInternetExtra:
+                    return new WEInternetExtra(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 default:
                     return null;
             }

@@ -21,6 +21,7 @@ namespace TMS.Services.Services
             IBaseRepository<InquiryBillDetails, int> inquiryBillDetails,
             IBaseRepository<ReceiptBodyParam, int> receiptBodyParam,
              IBaseRepository<Parameter, int> parameters,
+             IBaseRepository<InquiryBillDetails, int> inquiryBillDetail,
             IUnitOfWork unitOfWork
             )
         {
@@ -29,6 +30,7 @@ namespace TMS.Services.Services
             _receiptBodyParam = receiptBodyParam;
             _parameters = parameters;
             _unitOfWork = unitOfWork;
+            _inquiryBillDetail = inquiryBillDetail;
         }
         public int AddInquiryBill(InquiryBillDTO model)
         {
@@ -41,15 +43,14 @@ namespace TMS.Services.Services
             _unitOfWork.SaveChanges();
             return obj.ID;
         }
-
         public void AddInquiryBillDetail(params InquiryBillDetailDTO[] model)
         {
-            var paramNames = model.Select(s => s.ParameterName).ToList();
+            var paramNames = model.Select(s => s.ProviderName).ToList();
             var parameters = _parameters.Getwhere(s => paramNames.Contains(s.ProviderName)).ToList();
             foreach (var param in parameters)
             {
-                var bodyParam = model.Where(s => s.ParameterName == param.ProviderName).FirstOrDefault();
-                _inquiryBillDetail.Add(new InquiryBillDetails
+                var bodyParam = model.Where(s => s.ProviderName == param.ProviderName).FirstOrDefault();
+                var obj = _inquiryBillDetail.Add(new InquiryBillDetails
                 {
                     InquiryBillID = bodyParam.InquiryBillID,
                     ParameterID = param.ID,
@@ -77,21 +78,27 @@ namespace TMS.Services.Services
             _unitOfWork.SaveChanges();
         }
 
-        public IEnumerable<InquiryBillDetailDTO> GetInquiryBillDetails(int providerServiceRequestId, int sequence)
+        public bool CheckBillAmountExist(int brn, decimal amount)
         {
-            return _inquiryBill.Getwhere(s => s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId && s.Sequence == sequence).Include(x => x.InquiryBillDetails)
-                .Select(s => new InquiryBillDetailDTO
-                {
-                    Amount = s.Amount,
-                    Id = s.ID,
-                    ProviderServiceResponseID = s.ProviderServiceResponseID,
-                    Sequence = s.Sequence,
-                    Value = s.InquiryBillDetails.Select(x => x.Value).FirstOrDefault(),
-                    ParameterID = s.InquiryBillDetails.Select(x => x.ParameterID).FirstOrDefault()
-                }).ToList();
+            return _inquiryBill.Any(r => r.ProviderServiceResponse.ProviderServiceRequestID == brn && r.Amount == amount);
         }
 
-        public IEnumerable<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId)
+        public List<InquiryBillDetailDTO> GetInquiryBillDetails(int providerServiceRequestId, int sequence, string language = "ar")
+        {
+            return _inquiryBillDetail.Getwhere(s => s.InquiryBill.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId && s.InquiryBill.Sequence == sequence)
+                .Select(s => new InquiryBillDetailDTO
+                {
+                    Id = s.ID,
+                    InquiryBillID = s.InquiryBillID,
+                    Value = s.Value,
+                    Amount = s.InquiryBill.Amount,
+                    ParameterId = s.ParameterID,
+                    ParameterName = language == "ar" ? s.Parameter.ArName : s.Parameter.Name
+                })
+                .ToList();
+        }
+
+        public List<InquiryBillDTO> GetInquiryBillSequence(int providerServiceRequestId)
         {
             return _inquiryBill.Getwhere(s => s.ProviderServiceResponse.ProviderServiceRequestID == providerServiceRequestId)
                 .Select(s => new InquiryBillDTO

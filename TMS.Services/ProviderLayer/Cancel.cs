@@ -29,7 +29,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public Cancel(
            IDenominationService denominationService,
@@ -39,14 +38,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -91,8 +88,8 @@ namespace TMS.Services.ProviderLayer
             });
 
             //Get Max ProviderServiceRequestFees
-            var brnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, 2);
-            var brnPayment = _providerService.GetMaxProviderServiceRequest(payModel.Brn, 3);
+            var brnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
+            var brnPayment = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Payment);
 
             var denomaotionServicerProvider = _denominationService.GetDenominationServiceProvider(id);
 
@@ -116,7 +113,7 @@ namespace TMS.Services.ProviderLayer
                         PaymentCardAmounts PA = new PaymentCardAmounts();
 
                         //PA.amount = IBDList
-                        PA.CurrentCode = IBDList.FirstOrDefault(t => t.ParameterID == 15).Value;
+                        PA.CurrentCode = IBDList.FirstOrDefault(t => t.ParameterId == 15).Value;
                         PA.Sequence = item.Sequence.ToString();
 
                         PA.Amount = item.Amount.ToString();
@@ -193,11 +190,11 @@ namespace TMS.Services.ProviderLayer
                 }
                 else if (response.Contains("timed out"))
                 {
-                    throw new TMSException(_localizer["PendingTrx"].Value, "3");
+                    throw new TMSException("PendingTrx", "3");
                 }
                 else
                 {
-                    var message = _dbMessageService.GetMainStatusCodeMessage(statusCode: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
@@ -251,13 +248,13 @@ namespace TMS.Services.ProviderLayer
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 }
                 else
-                    throw new TMSException(_localizer["DupplicatedRefund"].Value, "38");
+                    throw new TMSException("DupplicatedRefund", "38");
             }
             else
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
 
             paymentResponse.Code = 200;
-            paymentResponse.Message = _localizer["Success"].Value;
+            paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {

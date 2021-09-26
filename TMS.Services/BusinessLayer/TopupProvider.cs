@@ -22,19 +22,16 @@ namespace TMS.Services.BusinessLayer
         private readonly IProviderService _providerService;
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public TopupProvider(
             IDenominationService denominationService,
             Provider provider,
             IProviderService providerService,
             IInquiryBillService inquiryBillService,
-            ITransactionService transactionService,
-            IStringLocalizer<ServiceLanguageResource> localizer
+            ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _provider = provider;
-            _localizer = localizer;
             _providerService = providerService;
             _inquiryBillService = inquiryBillService;
             _transactionService = transactionService;
@@ -44,9 +41,9 @@ namespace TMS.Services.BusinessLayer
             var denomination = _denominationService.GetDenomination(id);
 
             if (feesModel.Amount < decimal.Parse(denomination.MinValue.ToString()) || feesModel.Amount > decimal.Parse(denomination.MaxValue.ToString()))
-                throw new TMSException(_localizer["InvalidAmount"].Value, "11");
+                throw new TMSException("InvalidAmount", "11");
             else if (feesModel.Brn != 0)
-                throw new TMSException(_localizer["InvalidData"].Value, "12");
+                throw new TMSException("InvalidData", "12");
 
             var denoProvider = _provider.CreateDenominationProvider(denomination.ClassType);
             return denoProvider.Fees(feesModel, userId, id);
@@ -67,23 +64,25 @@ namespace TMS.Services.BusinessLayer
                 if (denomination.Status == true)
                 {
                     if (payModel.Amount <= 0)
-                        throw new TMSException(_localizer["InvalidData"].Value, "12");
+                        throw new TMSException("InvalidData", "12");
                     else if (string.IsNullOrEmpty(payModel.BillingAccount))
-                        throw new TMSException(_localizer["MissingData"].Value, "15");
+                        throw new TMSException("MissingData", "15");
                     else if (payModel.Brn == 0 || !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Fees, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                        throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                        throw new TMSException("RequestNotFound", "14");
                     else if (_transactionService.IsIntervalTransationExist(userId, id, payModel.BillingAccount, payModel.Amount))
-                        throw new TMSException(_localizer["InvalidInterval"].Value, "10");
+                        throw new TMSException("InvalidInterval", "10");
                     else if (payModel.Brn != 0 && _providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Payment, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                        throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
+                        throw new TMSException("DupplicatedTrx", "7");
                 }
                 else
-                    throw new TMSException(_localizer["ServiceUnavailable"].Value, "8");
+                    throw new TMSException("ServiceUnavailable", "8");
             }
             else
-                throw new TMSException(_localizer["InvalidMobileNumber"].Value, "34");
+                throw new TMSException("InvalidMobileNumber", "34");
 
-            var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
+            int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, Infrastructure.RequestType.Fees);
+
+            var inquiryBillList = _inquiryBillService.GetInquiryBillSequence(BrnFees);
             decimal feesAmount = 0;
             foreach (var item in inquiryBillList)
             {
@@ -101,8 +100,8 @@ namespace TMS.Services.BusinessLayer
                 Version = payModel.Version,
             }, userId, id);
 
-            if (feesResponse.Code != "200")
-                throw new TMSException(_localizer["InvalidFees"].Value, "47");
+            if (feesResponse.Code != 200)
+                throw new TMSException("InvalidFees", "47");
 
             return await denoProvider.Pay(payModel, userId, id, feesResponse.TotalAmount, feesResponse.Fees, denomination.ServiceProviderId);
         }

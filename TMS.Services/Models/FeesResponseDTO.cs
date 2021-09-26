@@ -6,7 +6,7 @@ namespace TMS.Services.Models
 {
     public class FeesResponseDTO
     {
-        public string Code { get; set; }
+        public int Code { get; set; }
         public string Message { get; set; }
         public List<DataDTO> Data { get; set; } = new List<DataDTO>();
         public decimal Amount { get; set; }

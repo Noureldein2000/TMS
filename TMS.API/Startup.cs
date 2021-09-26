@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Globalization;
@@ -111,8 +112,8 @@ namespace TMS.API
 
             app.UseRouting();
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            //var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-            //app.UseRequestLocalization(locOptions.Value);
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(locOptions.Value);
             app.UseAuthorization();
 
             app.UseSwagger();
