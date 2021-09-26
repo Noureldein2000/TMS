@@ -278,7 +278,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
+            Root printedReciept = null;
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
@@ -346,9 +346,9 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            string url =  "requestID=" + providerServiceRequestId + "&mobile=" + payModel.BillingAccount + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword + "&amount=" + payModel.Amount;
+            string url = "requestID=" + providerServiceRequestId + "&mobile=" + payModel.BillingAccount + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword + "&amount=" + payModel.Amount;
 
-            var response = _switchService.Connect(new test(), switchEndPoint, url,"", UrlType.Fixed);
+            var response = _switchService.Connect(new test(), switchEndPoint, url, "", UrlType.Fixed);
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
@@ -449,7 +449,7 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
-                JsonConvert.DeserializeObject<Root>(printedReciept)
+               printedReciept
             };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
