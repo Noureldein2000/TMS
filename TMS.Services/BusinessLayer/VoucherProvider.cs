@@ -21,19 +21,16 @@ namespace TMS.Services.BusinessLayer
         private readonly IProviderService _providerService;
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public VoucherProvider(
            IDenominationService denominationService,
            Provider provider,
            IProviderService providerService,
            IInquiryBillService inquiryBillService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
            )
         {
             _denominationService = denominationService;
             _provider = provider;
-            _localizer = localizer;
             _providerService = providerService;
             _inquiryBillService = inquiryBillService;
             _transactionService = transactionService;
@@ -52,9 +49,9 @@ namespace TMS.Services.BusinessLayer
                         if (string.IsNullOrEmpty(item.Value))
                             count = 1;
                         else if (!int.TryParse(item.Value, out count))
-                            throw new TMSException(_localizer["InvalidData"].Value, "12");
+                            throw new TMSException("InvalidData", "12");
                         else if (item.Value == "0")
-                            throw new TMSException(_localizer["InvalidData"].Value, "12");
+                            throw new TMSException("InvalidData", "12");
                     }
 
 
@@ -62,9 +59,9 @@ namespace TMS.Services.BusinessLayer
             }
 
             if (feesModel.Brn != 0)
-                throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                throw new TMSException("RequestNotFound", "14");
             else if (count > 10)
-                throw new TMSException(_localizer["VoucherExceededLimit"].Value, "35");
+                throw new TMSException("VoucherExceededLimit", "35");
 
             feesModel.Amount = denomination.Value;
             var denoProvider = _provider.CreateDenominationProvider(denomination.ClassType);
@@ -84,16 +81,16 @@ namespace TMS.Services.BusinessLayer
             if (denomination.Status == true)
             {
                 if (payModel.Amount <= 0)
-                    throw new TMSException(_localizer["InvalidAmount"].Value, "11");
+                    throw new TMSException("InvalidAmount", "11");
                 else if (payModel.Brn == 0 || !_providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Fees, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                    throw new TMSException(_localizer["RequestNotFound"].Value, "14");
+                    throw new TMSException("RequestNotFound", "14");
                 else if (_transactionService.IsIntervalTransationExist(userId, id, payModel.BillingAccount, payModel.Amount))
-                    throw new TMSException(_localizer["InvalidInterval"].Value, "10");
+                    throw new TMSException("InvalidInterval", "10");
                 else if (payModel.Brn != 0 && _providerService.IsProviderServiceRequestExsist((int)Infrastructure.RequestType.Payment, payModel.Brn, (int)ProviderServiceRequestStatusType.Success, id, userId))
-                    throw new TMSException(_localizer["DupplicatedTrx"].Value, "7");
+                    throw new TMSException("DupplicatedTrx", "7");
             }
             else
-                throw new TMSException(_localizer["ServiceUnavailable"].Value, "8");
+                throw new TMSException("ServiceUnavailable", "8");
 
 
             //int BrnFees = _providerService.GetMaxProviderServiceRequest(payModel.Brn, (int)Infrastructure.RequestType.Fees);
@@ -117,7 +114,7 @@ namespace TMS.Services.BusinessLayer
             }, userId, id);
 
             if (feesResponse.Code != "200")
-                throw new TMSException(_localizer["InvalidFees"].Value, "47");
+                throw new TMSException("InvalidFees", "47");
 
             return await denoProvider.Pay(payModel, userId, id, feesResponse.TotalAmount, feesResponse.Fees, denomination.ServiceProviderId);
 

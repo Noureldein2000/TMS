@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,12 @@ namespace TMS.API.Controllers
     public class ServicesController : BaseController
     {
         private readonly IDynamicService _service;
-        public ServicesController(IDynamicService service)
+        private readonly IStringLocalizer<LanguageResource> _localizer;
+        public ServicesController(IDynamicService service,
+            IStringLocalizer<LanguageResource> localizer)
         {
             _service = service;
+            _localizer = localizer;
         }
         [HttpPost]
         [Route("{serviceId}/inquiry")]
@@ -38,15 +42,16 @@ namespace TMS.API.Controllers
                         Value = d.Value
                     }).ToList()
                 }, UserIdentityId, serviceId);
+                response.Message = _localizer["Success"].Value;
                 return Ok(response);
             }
             catch (TMSException ex)
             {
-                return BadRequest(ex.Message, ex.ErrorCode);
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
             catch (Exception ex)
             {
-                return BadRequest("General Error", "-1");
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
         [HttpPost]

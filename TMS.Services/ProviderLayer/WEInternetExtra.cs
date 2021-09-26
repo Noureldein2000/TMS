@@ -27,7 +27,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         private readonly IAccountsApi _accountsApi;
         public WEInternetExtra(
                 IDenominationService denominationService,
@@ -37,14 +36,12 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
-           IStringLocalizer<ServiceLanguageResource> localizer
+           ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -193,12 +190,12 @@ namespace TMS.Services.ProviderLayer
 
                 else
                 {
-                    throw new TMSException(_localizer["MissingData"].Value, "15");
+                    throw new TMSException("MissingData", "15");
                 }
             }
             feeResponse.Brn = feesModel.Brn;
             feeResponse.Code = 200.ToString();
-            feeResponse.Message = _localizer["Success"].Value;
+            feeResponse.Message = "Success";
             return feeResponse;
         }
 
@@ -312,8 +309,8 @@ namespace TMS.Services.ProviderLayer
                 var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
-            inquiryResponse.Code = 200.ToString();
-            inquiryResponse.Message = _localizer["Success"].Value;
+            inquiryResponse.Code = 200;
+            inquiryResponse.Message = "Success";
 
             //Logging Client Response
             await _loggingService.Log(JsonConvert.SerializeObject(inquiryResponse), providerServiceRequestId, LoggingType.CustomerResponse);
@@ -366,7 +363,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-                throw new TMSException(_localizer["BalanceError"].Value, "-5");
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -421,7 +418,7 @@ namespace TMS.Services.ProviderLayer
                         JObject oo = JObject.Parse("CallBackResponse");
                         if (oo["ResultCode"].ToString() == "0" || oo["ResultCode"].ToString() == "170001" || (oo["ResultCode"].ToString() == "179999" && oo["ResultDesc"].ToString().ToLower() != "primary party invalid."))
                         {
-                            message = _localizer["Sucess"].Value;
+                            message = "Sucess";
                             code = "1";
 
                             var receiptNumber = oo["Transaction"].ToString();
@@ -467,13 +464,13 @@ namespace TMS.Services.ProviderLayer
                             if (oo["ResultCode"].ToString() == "170001" || oo["ResultCode"].ToString() == "179999")
                             {
                                 RequestStatus = RequestStatusCodeType.Pending;
-                                message = _localizer["PendingTrx"].Value;
+                                message = "PendingTrx";
                                 code = "3";
                             }
                             else
                             {
                                 RequestStatus = RequestStatusCodeType.Success;
-                                message = _localizer["Sucess"].Value;
+                                message = "Sucess";
                                 code = "1";
                             }
 
@@ -514,7 +511,7 @@ namespace TMS.Services.ProviderLayer
                             JObject CheckTrxnO = JObject.Parse(checkResponse);
                             if (CheckTrxnO["transactionStatus"].ToString().ToLower() != "declined")
                             {
-                                message = _localizer["Sucess"].Value;
+                                message = "Sucess";
                                 code = "1";
                                 RequestStatus = RequestStatusCodeType.Success;
 
@@ -563,12 +560,12 @@ namespace TMS.Services.ProviderLayer
                             {
                                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
                                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                                throw new TMSException(_localizer["FailedTrx"].Value, "2");
+                                throw new TMSException("FailedTrx", "2");
                             }
                         }
                         else if (checkResponse.Contains("timed out"))
                         {
-                            message = _localizer["PendingTrx"].Value;
+                            message = "PendingTrx";
                             code = "3";
                             RequestStatus = RequestStatusCodeType.Pending;
 
@@ -583,11 +580,11 @@ namespace TMS.Services.ProviderLayer
 
                             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                             _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
-                            //throw new TMSException(_localizer["PendingTrx"].Value, "3");
+                            //throw new TMSException("PendingTrx", "3");
                         }
                         else if (checkResponse.Contains("720"))
                         {
-                            message = _localizer["PendingTrx"].Value;
+                            message = "PendingTrx";
                             code = "3";
                             RequestStatus = RequestStatusCodeType.Pending;
 
@@ -603,14 +600,14 @@ namespace TMS.Services.ProviderLayer
                             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                             _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
-                            //throw new TMSException(_localizer["PendingTrx"].Value, "3");
+                            //throw new TMSException("PendingTrx", "3");
                         }
                         else
                         {
                             await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
                             _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                             //_transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                            throw new TMSException(_localizer["GeneralError"].Value, "6");
+                            throw new TMSException("GeneralError", "6");
                         }
 
                     }
@@ -627,7 +624,7 @@ namespace TMS.Services.ProviderLayer
             }
             else if (response.Contains("timed out"))
             {
-                message = _localizer["PendingTrx"].Value;
+                message = "PendingTrx";
                 code = "3";
                 RequestStatus = RequestStatusCodeType.Pending;
 
@@ -642,14 +639,14 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
-                //throw new TMSException(_localizer["PendingTrx"].Value, "3");
+                //throw new TMSException("PendingTrx", "3");
             }
             else
             {
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 //_transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                throw new TMSException(_localizer["GeneralError"].Value, "6");
+                throw new TMSException("GeneralError", "6");
             }
             _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, paymentResponse.TransactionId);
 

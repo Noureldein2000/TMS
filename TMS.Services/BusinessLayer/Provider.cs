@@ -20,7 +20,6 @@ namespace TMS.Services.BusinessLayer
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
-        private readonly IStringLocalizer<ServiceLanguageResource> _localizer;
         public Provider(
                IDenominationService denominationService,
                IProviderService providerService,
@@ -29,14 +28,12 @@ namespace TMS.Services.BusinessLayer
                ILoggingService loggingService,
                IDbMessageService dbMessageService,
                IFeesService feesService,
-               ITransactionService transactionService,
-               IStringLocalizer<ServiceLanguageResource> localizer
+               ITransactionService transactionService
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
             _switchService = switchService;
-            _localizer = localizer;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
@@ -48,11 +45,11 @@ namespace TMS.Services.BusinessLayer
             switch (type)
             {
                 case ServiceClassType.Bill:
-                    return new BillProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new BillProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 case ServiceClassType.Topup:
-                    return new TopupProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new TopupProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 case ServiceClassType.Voucher:
-                    return new VoucherProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService, _localizer);
+                    return new VoucherProvider(_denominationService, this, _providerService, _inquiryBillService, _transactionService);
                 default:
                     return null;
             }
@@ -62,19 +59,19 @@ namespace TMS.Services.BusinessLayer
             switch (type)
             {
                 case DenominationClassType.BTech:
-                    return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 //case DenominationClassType.Cancel:
                 //    break;
                 case DenominationClassType.CashIn:
-                    return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.CashU:
-                    return new CashU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashU(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.CashUTopUp:
-                    return new CashUTopUp(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new CashUTopUp(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 //case DenominationClassType.Donation:
                 //    break;
                 case DenominationClassType.EducationService:
-                    return new EducationService(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new EducationService(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 //case DenominationClassType.ElectricityBill:
                 //    break;
                 //case DenominationClassType.ElectricityCard:
@@ -105,12 +102,12 @@ namespace TMS.Services.BusinessLayer
                 //    break;
                 //case DenominationClassType.Voucher:
                 //    break;
-                //case DenominationClassType.WaterBill:
-                //    break;
+                case DenominationClassType.WaterBill:
+                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.WEInternet:
-                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.WEInternetExtra:
-                    return new WEInternetExtra(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _localizer);
+                    return new WEInternetExtra(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 default:
                     return null;
             }

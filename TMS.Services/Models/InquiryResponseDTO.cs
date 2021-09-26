@@ -11,7 +11,7 @@ namespace TMS.Services.Models
             Data = new List<DataDTO>();
             Invoices = new List<InvoiceDTO>();
         }
-        public string Code { get; set; }
+        public int Code { get; set; }
         public string Message { get; set; }
         public decimal TotalAmount { get; set; }
         public int Brn { get; set; }
