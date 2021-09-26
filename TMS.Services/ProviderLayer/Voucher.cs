@@ -193,7 +193,7 @@ namespace TMS.Services.ProviderLayer
         {
             var paymentResponse = new PaymentResponseDTO();
             List<Root> RecieptList = new List<Root>();
-            string printedReciept = "";
+            Root printedReciept = null;
             int count;
             var denomination = _denominationService.GetDenomination(id);
             var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
@@ -362,7 +362,7 @@ namespace TMS.Services.ProviderLayer
                        });
 
                         printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
-                        RecieptList.Add(JsonConvert.DeserializeObject<Root>(printedReciept));
+                        RecieptList.Add(printedReciept);
                         // add commission
                         _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
@@ -432,7 +432,7 @@ namespace TMS.Services.ProviderLayer
                        });
 
                         printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
-                        RecieptList.Add(JsonConvert.DeserializeObject<Root>(printedReciept));
+                        RecieptList.Add(printedReciept);
                         // add commission
                         _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 

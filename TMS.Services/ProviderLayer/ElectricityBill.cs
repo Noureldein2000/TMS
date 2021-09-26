@@ -189,7 +189,7 @@ namespace TMS.Services.ProviderLayer
                                  LoggingType.ProviderRequest);
 
                                 var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.calculateFees.ToString(), "Basic ");
-                                
+
                                 _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 
                                 if (Validates.CheckJSON(response))
@@ -639,7 +639,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
+            Root printedReciept = null;
             decimal totaAmount;
             List<FeesAmounts> _FeeList = new List<FeesAmounts>();
             List<PaymentAmounts> _PayList = new List<PaymentAmounts>();
@@ -857,7 +857,7 @@ namespace TMS.Services.ProviderLayer
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
-                JsonConvert.DeserializeObject<Root>(printedReciept)
+              printedReciept
             };
             await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
 
