@@ -106,7 +106,7 @@ namespace TMS.Services.BusinessLayer
                 case DenominationClassType.Voucher:
                     return new Voucher(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.WaterBill:
-                    return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
+                    return new WaterBill(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.WEInternet:
                     return new WEInternet(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService);
                 case DenominationClassType.WEInternetExtra:

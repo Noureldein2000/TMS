@@ -459,10 +459,11 @@ namespace TMS.Services.ProviderLayer
                     ServiceRequestID = providerServiceResponeId,
                     Value = o["providerPaymentId"].ToString()
                 });
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "providerPaymentId");
 
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "providerPaymentId",
+                    Key = responseParams.Where(p => p.ProviderName == "providerPaymentId").Select(s => s.ParameterName).FirstOrDefault(),
                     Value = o["providerPaymentId"].ToString()
                 });
 

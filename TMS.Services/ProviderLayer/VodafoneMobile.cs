@@ -230,6 +230,7 @@ namespace TMS.Services.ProviderLayer
                         Value = o["billReferenceNumber"].ToString()
                     });
 
+                    var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billReferenceNumber");
                     inquiryResponse.Invoices = new List<InvoiceDTO>
                 {
                     new InvoiceDTO
@@ -245,7 +246,7 @@ namespace TMS.Services.ProviderLayer
                     inquiryResponse.TotalAmount = totalAmount;
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "billReferenceNumber",
+                        Key = responseParams.Where(p => p.ProviderName == "billReferenceNumber").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billReferenceNumber"].ToString()
                     });
 

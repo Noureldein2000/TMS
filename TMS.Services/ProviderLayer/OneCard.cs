@@ -348,17 +348,16 @@ namespace TMS.Services.ProviderLayer
                     Value = o["serial"].ToString()
                 });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Pin", "Serial");
                 //Add DataList To Client Response 
                 paymentResponse.DataList.AddRange(new List<DataListDTO>
                 {
                     new DataListDTO
-                    {
-                        Key = "Pin",
+                    {   Key = responseParams.Where(p => p.ProviderName == "Pin").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["secret"].ToString()
                     },
                     new DataListDTO
-                    {
-                        Key = "Serial",
+                    {   Key = responseParams.Where(p => p.ProviderName == "Serial").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["serial"].ToString()
                     }
                 });

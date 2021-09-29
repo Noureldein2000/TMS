@@ -303,29 +303,29 @@ namespace TMS.Services.ProviderLayer
                     Value = o["providerTransactionId"].ToString()
                 });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Pin", "Serial", "End Date", "ProviderTransactionId");
+
                 //Add DataList To Client Response 
-                var x = 0;
                 paymentResponse.DataList.AddRange(new List<DataListDTO>
                 {
                     new DataListDTO
                     {
-                        Key = "Pin",
+                         Key = responseParams.Where(p => p.ProviderName == "Pin").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["pin"].ToString()
                     },
                     new DataListDTO
                     {
-                        Key = "Serial",
+                         Key = responseParams.Where(p => p.ProviderName == "Serial").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["serial"].ToString()
                     },
                      new DataListDTO
                     {
-                        Key = "End Date",
+                         Key = responseParams.Where(p => p.ProviderName == "End Date").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["validTo"].ToString()
-                    }
-                     ,
+                    },
                      new DataListDTO
                     {
-                        Key = "ProviderTransactionId",
+                         Key = responseParams.Where(p => p.ProviderName == "ProviderTransactionId").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["providerTransactionId"].ToString()
                     }
                 });
@@ -352,8 +352,7 @@ namespace TMS.Services.ProviderLayer
                   ProviderServiceRequestID = providerServiceRequestId,
                   TransactionID = transactionId,
                   Value = o["validTo"].ToString()
-              }
-              ,
+              },
               new ReceiptBodyParamDTO
               {
                   ParameterName = "ProviderTransactionId",

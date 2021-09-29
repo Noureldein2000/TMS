@@ -309,24 +309,26 @@ namespace TMS.Services.ProviderLayer
                    Value = DueBills
                });
 
+                    var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Start Date", "arabicName", "End Date", "Due Bills");
+
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "arabicName",
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = Name
                     });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "Start Date",
+                        Key = responseParams.Where(p => p.ProviderName == "Start Date").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = StartDate
                     });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "End Date",
+                        Key = responseParams.Where(p => p.ProviderName == "End Date").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = EndDate
                     });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "Due Bills",
+                        Key = responseParams.Where(p => p.ProviderName == "Due Bills").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = DueBills
                     });
 

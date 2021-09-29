@@ -285,7 +285,7 @@ namespace TMS.Services.Services
                 {
                     data = new List<Datum>
                     {
-                        new Datum{Key = "رقم العميل", Value = query.BillingAccount.ToString()},
+                        new Datum{Key = "رقم العميل", Value = query.BillingAccount??""},
                         new Datum{Key = "المبلغ", Value = query.OriginalAmount.ToString()},
                     }
                 },
@@ -922,7 +922,7 @@ namespace TMS.Services.Services
             cmd.Parameters.AddWithValue("@status", status);
             cmd.Parameters.AddWithValue("@UserId", userId);
             cmd.Parameters.AddWithValue("@AccountName", accountName);
-            cmd.Parameters.AddWithValue("@msg",msg );
+            cmd.Parameters.AddWithValue("@msg", msg);
             cmd.Parameters.AddWithValue("@TransInv", transInv);
             cmd.Parameters.AddWithValue("@code", code);
             cmd.Parameters.AddWithValue("@message_title", messageTitle);

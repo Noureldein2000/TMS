@@ -77,6 +77,7 @@ namespace TMS.Services.BusinessLayer
         public override async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id)
         {
             var denomination = _denominationService.GetDenomination(id);
+            payModel.BillingAccount = _providerService.GetProviderServiceRequestBillingAccount(payModel.Brn, userId, id);
 
             if (denomination.Status == true)
             {

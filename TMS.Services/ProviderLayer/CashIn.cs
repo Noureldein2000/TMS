@@ -245,16 +245,18 @@ namespace TMS.Services.ProviderLayer
                    Value = customerName
                });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billReferenceNumber", "arabicName");
+
                 inquiryResponse.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = "arabicName",
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = customerName
                     },
                     new DataDTO
                     {
-                        Key = "billReferenceNumber",
+                        Key = responseParams.Where(p => p.ProviderName == "billReferenceNumber").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billReference"].ToString()
                     }
                 });
@@ -274,7 +276,7 @@ namespace TMS.Services.ProviderLayer
                {
                    ParameterName = "arabicName",
                    ProviderServiceRequestID = providerServiceRequestId,
-                   TransactionID = 0,
+                   TransactionID = null,
                    Value = customerName
                });
 
