@@ -221,10 +221,12 @@ namespace TMS.Services.ProviderLayer
                                         Value = o["billRecId"].ToString()
                                     });
 
+                                    var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billRecId", "currentCode", "amountFees");
+
                                     //Add DataList To Response
                                     feeResponse.Data.Add(new DataDTO
                                     {
-                                        Key = "billRecId",
+                                        Key = responseParams.Where(p => p.ProviderName == "billRecId").Select(s => s.ParameterName).FirstOrDefault(),
                                         Value = o["billRecId"].ToString()
                                     });
 
@@ -250,13 +252,13 @@ namespace TMS.Services.ProviderLayer
                                         //Add DataList To Client Response
                                         feeResponse.Data.Add(new DataDTO
                                         {
-                                            Key = "currentCode",
+                                            Key = responseParams.Where(p => p.ProviderName == "currentCode").Select(s => s.ParameterName).FirstOrDefault(),
                                             Value = item.CurrentCode
                                         });
 
                                         feeResponse.Data.Add(new DataDTO
                                         {
-                                            Key = "amountFees",
+                                            Key = responseParams.Where(p => p.ProviderName == "amountFees").Select(s => s.ParameterName).FirstOrDefault(),
                                             Value = item.Amount
                                         });
                                     }
@@ -477,21 +479,23 @@ namespace TMS.Services.ProviderLayer
                        Value = o["paymentRefInfo"].ToString()
                    });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billNumber", "billRecId", "paymentRefInfo");
+
                 inquiryModel.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = "billNumber",
+                         Key = responseParams.Where(p => p.ProviderName == "billNumber").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billNumber"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "billRecId",
+                         Key = responseParams.Where(p => p.ProviderName == "billRecId").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billRecId"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "paymentRefInfo",
+                         Key = responseParams.Where(p => p.ProviderName == "paymentRefInfo").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["paymentRefInfo"].ToString()
                     }
                 });
@@ -721,7 +725,7 @@ namespace TMS.Services.ProviderLayer
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
 
             var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billNumber",
-                "billRecId", "paymentRefInfo", "arabicName");
+                "billRecId", "paymentRefInfo", "arabicName", "providerPaymentId");
 
             //var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
             ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
@@ -730,6 +734,7 @@ namespace TMS.Services.ProviderLayer
             var billRecId = providerResponseParams.Where(s => s.ProviderName == "billRecId").Select(s => s.Value).FirstOrDefault().ToString();
             var paymentRefInfo = providerResponseParams.Where(s => s.ProviderName == "paymentRefInfo").Select(s => s.Value).FirstOrDefault().ToString();
             var accountName = providerResponseParams.Where(s => s.ProviderName == "arabicName").Select(s => s.Value).FirstOrDefault().ToString();
+
 
             var switchRequestDto = new PaymentElectricityBill
             {
@@ -789,10 +794,13 @@ namespace TMS.Services.ProviderLayer
                     Value = o["providerPaymentId"].ToString()
                 });
 
+                var providerPaymentId = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "providerPaymentId")
+                    .Where(s => s.ProviderName == "providerPaymentId").Select(s => s.ParameterName).FirstOrDefault();
+
                 //Add DataList To Client Response   
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "providerPaymentId",
+                    Key = providerPaymentId,
                     Value = o["providerPaymentId"].ToString()
                 });
 

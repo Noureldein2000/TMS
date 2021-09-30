@@ -6,6 +6,7 @@ namespace TMS.Services.Models
 {
     public  class SwitchEndPointDTO
     {
+        public int Id { get; set; }
         public string URL { get; set; }
         public int TimeOut { get; set; }
         public string UserName { get; set; }
