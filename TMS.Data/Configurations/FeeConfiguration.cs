@@ -17,6 +17,8 @@ namespace TMS.Data.Configurations
             builder.Property(s => s.Value).HasColumnType("decimal(18,3)");
             builder.HasOne(s => s.FeesType).WithMany(s => s.Fees).HasForeignKey(s => s.FeesTypeID)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(s => s.PaymentMode).WithMany(s => s.Fees).HasForeignKey(s => s.PaymentModeID)
+               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

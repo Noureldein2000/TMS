@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TMS.Services.Models
+namespace TMS.API.Models
 {
-    public class FeesDTO
+    public class FeesModel
     {
         public int ID { get; set; }
         public int FeesTypeID { get; set; }
         public string FeesTypeName { get; set; }
-        public string FeeRange { get; set; }
         public decimal Fees { get; set; }
+        public string FeeRange { get; set; }
         public decimal AmountFrom { get; set; }
         public decimal AmountTo { get; set; }
         public int PaymentModeID { get; set; }

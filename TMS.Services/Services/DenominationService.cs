@@ -14,24 +14,23 @@ namespace TMS.Services.Services
     public class DenominationService : IDenominationService
     {
         private readonly IBaseRepository<Denomination, int> _denominationRepository;
+        private readonly IBaseRepository<Service, int> _serviceRepository;
         private readonly IBaseRepository<DenominationProviderConfiguration, int> _denominationProviderConfigurationRepository;
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
 
-        //private readonly IBaseRepository<Parameter, int> _parameters;
         public DenominationService(
              IBaseRepository<DenominationServiceProvider, int> denominationServiceProviderRepository,
             IBaseRepository<ServiceConfigeration, int> serviceConfigurationRepository,
             IBaseRepository<Denomination, int> denominationRepository,
-            //IBaseRepository<Service, int> serviceRepository,
+            IBaseRepository<Service, int> serviceRepository,
             IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository
-            //IBaseRepository<Parameter, int> parameters
             )
         {
             _denominationServiceProviderRepository = denominationServiceProviderRepository;
             _serviceConfigurationRepository = serviceConfigurationRepository;
             _denominationRepository = denominationRepository;
-            //_serviceRepository = serviceRepository;
+            _serviceRepository = serviceRepository;
             _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
         }
 
@@ -75,8 +74,8 @@ namespace TMS.Services.Services
                  {
                      Id = s.ID,
                      ServiceProviderId = s.ServiceProviderID,
-                     ProviderCode=s.ProviderCode,
-                     ProviderHasFees=s.ProviderHasFees
+                     ProviderCode = s.ProviderCode,
+                     ProviderHasFees = s.ProviderHasFees
                  }).FirstOrDefault();
             return denominatiaon;
         }
@@ -127,6 +126,50 @@ namespace TMS.Services.Services
         public IEnumerable<DenominationProviderConfigurationDTO> GetServiceDenomination(int denominationId)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<DenominationDTO> GetDenominationsByServiceId(int serviceId)
+        {
+            var denomination = _denominationRepository.Getwhere(d => d.ServiceID == serviceId).Include(s => s.Service).ThenInclude(x => x.ServiceEntity)
+               .Select(denomination => new DenominationDTO
+               {
+                   Id = denomination.ID,
+                   Name = denomination.Name,
+                   APIValue = denomination.APIValue,
+                   CurrencyID = (int)denomination.CurrencyID,
+                   ServiceID = denomination.ServiceID,
+                   Status = denomination.Status,
+                   ClassType = denomination.ClassType,
+                   ServiceProviderId = denomination.DenominationServiceProviders.Select(s => s.ServiceProviderID).FirstOrDefault(),
+                   Interval = denomination.Interval,
+                   MaxValue = denomination.MaxValue,
+                   MinValue = denomination.MinValue,
+                   Inquirable = denomination.Inquirable,
+                   Value = denomination.Value,
+                   BillPaymentModeID = denomination.BillPaymentModeID,
+                   PaymentModeID = denomination.PaymentModeID,
+                   OldDenominationID = denomination.OldDenominationID,
+                   ServiceEntity = denomination.Service.ServiceEntity.ArName
+               }).ToList();
+
+            if (denomination == null)
+                throw new TMSException("", "");
+
+            return denomination;
+        }
+
+        public IEnumerable<ServiceDTO> GetServices()
+        {
+            return _serviceRepository.GetAll().Select(service => new ServiceDTO()
+            {
+                Id = service.ID,
+                Name = service.Name,
+                ArName = service.ArName,
+                Code = service.Code,
+                PathClass = service.PathClass,
+                ServiceEntityID = service.ServiceEntityID,
+                ServiceTypeID = service.ServiceTypeID
+            }).ToList();
         }
     }
 }
