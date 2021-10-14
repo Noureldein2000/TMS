@@ -15,21 +15,45 @@ namespace TMS.Services.Services
 {
     public class FeesService : IFeesService
     {
+        private readonly IBaseRepository<Fee, int> _fees;
         private readonly IBaseRepository<AccountFee, int> _accountFees;
         private readonly IBaseRepository<AccountProfileFee, int> _accountProfileFee;
         private readonly IBaseRepository<DenominationFee, int> _denominationFee;
+        private readonly IUnitOfWork _unitOfWork;
 
         //private readonly ApplicationDbContext _context;
         public FeesService(
+            IBaseRepository<Fee, int> fees,
             IBaseRepository<AccountFee, int> accountFees,
             IBaseRepository<AccountProfileFee, int> accountProfileFee,
-            IBaseRepository<DenominationFee, int> denominationFee
-            )
+            IBaseRepository<DenominationFee, int> denominationFee,
+            IUnitOfWork unitOfWork)
         {
+            _fees = fees;
             _accountFees = accountFees;
             _accountProfileFee = accountProfileFee;
             _denominationFee = denominationFee;
+            _unitOfWork = unitOfWork;
         }
+
+        public void AddAccountFees(AccountFeesDTO model)
+        {
+            _accountFees.Add(new AccountFee
+            {
+                AccountID = model.AccountId,
+                DenominationID = model.DenomiinationId,
+                FeesID = model.FeesId
+            });
+
+            _unitOfWork.SaveChanges();
+        }
+
+        public void DeleteAccountFees(int id)
+        {
+            _accountFees.Delete(id);
+            _unitOfWork.SaveChanges();
+        }
+
         public IEnumerable<FeesDTO> GetAccountFees(int denominationId, decimal originalAmount, int accountId, out decimal sum, string language = "ar")
         {
             //var denominationIdParam = new SqlParameter("@DenominationID", denominationId);
@@ -83,6 +107,48 @@ namespace TMS.Services.Services
             sum = accountFees.Sum(s => s.Fees);
             return accountFees;
 
+        }
+
+        public PagedResult<AccountFeesDTO> GetAccountFeesByAccountId(int accountId, int pageNumber, int pageSize, string language = "ar")
+        {
+            var accountFeesLst = _accountFees.Getwhere(x => x.AccountID == accountId).Select(x => new
+            {
+                Id = x.ID,
+                FeesId = x.FeesID,
+                FeesTypeId = x.Fee.FeesTypeID,
+                FeesTypeName = language == "en" ? x.Fee.FeesType.Name : x.Fee.FeesType.ArName,
+                FeesValue = x.Fee.Value,
+                PaymentModeId = x.Fee.PaymentModeID,
+                PaymentModeName = language == "en" ? x.Fee.PaymentMode.Name : x.Fee.PaymentMode.ArName,
+                DenominationId = x.DenominationID,
+                DenominationFullName = x.Denomination.Service.Name + " - " + x.Denomination.Name,
+                CreationDate = x.CreationDate
+            });
+
+            var count = accountFeesLst.Count();
+
+            var resultList = accountFeesLst.OrderByDescending(ar => ar.CreationDate)
+          .Skip(pageNumber - 1).Take(pageSize)
+          .ToList();
+
+            //return accountLst;
+            return new PagedResult<AccountFeesDTO>
+            {
+                Results = resultList.Select(x => new AccountFeesDTO
+                {
+                    Id = x.Id,
+                    FeesId = x.FeesId,
+                    FeesTypeId = x.FeesTypeId,
+                    FeesTypeName = x.FeesTypeName,
+                    FeesValue = x.FeesValue,
+                    PaymentModeId = x.PaymentModeId,
+                    PaymentMode = x.PaymentModeName,
+                    DenomiinationId = x.DenominationId,
+                    DenominationFullName = x.DenominationFullName,
+                    CreationDate = x.CreationDate
+                }).ToList(),
+                PageCount = count
+            };
         }
 
         public IEnumerable<FeesDTO> GetAccountProfileFees(int denominationId, decimal originalAmount, int accountProfileId, out decimal sum, string language = "ar")
@@ -152,6 +218,22 @@ namespace TMS.Services.Services
                 return accountProfileFees;
             }
             return accountFees;
+        }
+
+        public IEnumerable<FeesDTO> GetFees()
+        {
+            return _fees.Getwhere(x => true).Include(x => x.FeesType).Select(fee => new FeesDTO()
+            {
+                ID = fee.ID,
+                FeesTypeID = fee.FeesTypeID,
+                FeesTypeName = fee.FeesType.ArName,
+                Value = fee.Value,
+                FeeRange = fee.Value + " [" + fee.AmountFrom.ToString() + " - " + fee.AmountTo + "] " + fee.PaymentMode.Name,
+                PaymentModeID = fee.PaymentModeID,
+                Status = fee.Status,
+                AmountFrom = fee.AmountFrom,
+                AmountTo = fee.AmountTo
+            }).ToList();
         }
     }
 }

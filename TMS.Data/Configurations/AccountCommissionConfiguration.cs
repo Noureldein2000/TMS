@@ -13,7 +13,7 @@ namespace TMS.Data.Configurations
         {
             builder.HasKey(s => s.ID);
             builder.HasOne(s => s.Commission).WithMany(s => s.AccountCommissions)
-                .HasForeignKey(s => s.CommessionID).OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(s => s.CommissionID).OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(s => s.Denomination).WithMany(s => s.AccountCommissions)
                 .HasForeignKey(s => s.DenominationID).OnDelete(DeleteBehavior.NoAction);

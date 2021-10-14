@@ -250,10 +250,11 @@ namespace TMS.Services.ProviderLayer
 
                     inquiryResponse.Brn = providerServiceResponseId;
                     inquiryResponse.TotalAmount = inquiryResponse.Invoices.Select(x => x.Amount).FirstOrDefault();
+                    var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "arabicName");
 
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "arabicName",
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["customerName"].ToString()
                     });
 

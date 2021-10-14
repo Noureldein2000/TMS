@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211014125438_makeUpdateByNullable")]
+    partial class makeUpdateByNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +33,7 @@ namespace TMS.Data.Migrations
                     b.Property<int>("AccountID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CommissionID")
+                    b.Property<int>("CommessionID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -45,7 +47,7 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CommissionID");
+                    b.HasIndex("CommessionID");
 
                     b.HasIndex("DenominationID");
 
@@ -1134,28 +1136,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 10, 14, 15, 14, 53, 526, DateTimeKind.Local).AddTicks(6702),
+                            CreationDate = new DateTime(2021, 10, 14, 14, 54, 37, 684, DateTimeKind.Local).AddTicks(6352),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 10, 14, 15, 14, 53, 527, DateTimeKind.Local).AddTicks(7399),
+                            CreationDate = new DateTime(2021, 10, 14, 14, 54, 37, 685, DateTimeKind.Local).AddTicks(7694),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 10, 14, 15, 14, 53, 527, DateTimeKind.Local).AddTicks(7425),
+                            CreationDate = new DateTime(2021, 10, 14, 14, 54, 37, 685, DateTimeKind.Local).AddTicks(7723),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 10, 14, 15, 14, 53, 527, DateTimeKind.Local).AddTicks(7427),
+                            CreationDate = new DateTime(2021, 10, 14, 14, 54, 37, 685, DateTimeKind.Local).AddTicks(7725),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -1943,7 +1945,7 @@ namespace TMS.Data.Migrations
                 {
                     b.HasOne("TMS.Data.Entities.Commission", "Commission")
                         .WithMany("AccountCommissions")
-                        .HasForeignKey("CommissionID")
+                        .HasForeignKey("CommessionID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

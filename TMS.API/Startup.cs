@@ -49,6 +49,7 @@ namespace TMS.API
             services.AddScoped<ISwitchService, SwitchService>();
             services.AddScoped<IDbMessageService, DbMessageService>();
             services.AddScoped<IFeesService, FeesService>();
+            services.AddScoped<ICommissionService, CommissionService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ICancelService, CancelService>();
 

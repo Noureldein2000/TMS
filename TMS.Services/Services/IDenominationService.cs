@@ -16,5 +16,7 @@ namespace TMS.Services.Services
         int GetServiceBalanceType(int denominationId);
         IEnumerable<DenominationProviderConfigurationDTO> GetDenominationProviderConfigurationDetails(int denominationId);
         decimal GetCurrencyValue(int denominationId);
+        IEnumerable<DenominationDTO> GetDenominationsByServiceId(int serviceId);
+        IEnumerable<ServiceDTO> GetServices();
     }
 }

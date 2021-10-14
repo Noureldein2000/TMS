@@ -4,13 +4,13 @@ using System.Text;
 
 namespace TMS.Services.Models
 {
-    public class FeesDTO
+    public class CommissionDTO
     {
         public int ID { get; set; }
-        public int FeesTypeID { get; set; }
-        public string FeesTypeName { get; set; }
-        public string FeeRange { get; set; }
-        public decimal Fees { get; set; }
+        public int CommissionTypeID { get; set; }
+        public string CommissionTypeName { get; set; }
+        public string CommissionRange { get; set; }
+        public decimal Commission { get; set; }
         public decimal AmountFrom { get; set; }
         public decimal AmountTo { get; set; }
         public int PaymentModeID { get; set; }

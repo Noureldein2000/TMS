@@ -473,21 +473,23 @@ namespace TMS.Services.ProviderLayer
                        Value = o["paymentRefInfo"].ToString()
                    });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billNumber", "billRecId", "paymentRefInfo");
+
                 inquiryModel.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = "billNumber",
+                        Key = responseParams.Where(p => p.ProviderName == "billNumber").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billNumber"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "billRecId",
+                        Key = responseParams.Where(p => p.ProviderName == "billRecId").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billRecId"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "paymentRefInfo",
+                        Key = responseParams.Where(p => p.ProviderName == "paymentRefInfo").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["paymentRefInfo"].ToString()
                     }
                 });

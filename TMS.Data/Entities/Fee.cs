@@ -17,6 +17,7 @@ namespace TMS.Data.Entities
         public DateTime EndDate { get; set; }
         public int FeesTypeID { get; set; }
         public virtual FeesType FeesType { get; set; }
+        public virtual PaymentMode PaymentMode { get; set; }
         public virtual ICollection<DenominationFee> DenominationFees { get; set; }
         public virtual ICollection<AccountFee> AccountFees { get; set; }
         public virtual ICollection<AccountProfileFee> AccountProfileFees { get; set; }
