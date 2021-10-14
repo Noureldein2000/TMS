@@ -237,10 +237,11 @@ namespace TMS.Services.ProviderLayer
 
                     inquiryResponse.Brn = providerServiceResponseId;
                     inquiryResponse.TotalAmount = totalAmount;
+                    var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billReferenceNumber", "arabicName");
 
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "arabicName",
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["customerName"].ToString()
                     });
 

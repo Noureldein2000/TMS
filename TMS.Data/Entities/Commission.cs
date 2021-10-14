@@ -13,7 +13,7 @@ namespace TMS.Data.Entities
         public decimal Value { get; set; }
         public bool Status { get; set; }
         public int CreatedBy { get; set; }
-        public int UpdatedBy { get; set; }
+        public int? UpdatedBy { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int CommissionTypeID { get; set; }
