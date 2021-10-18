@@ -18,6 +18,9 @@ namespace TMS.Data.Configurations
 
             builder.HasOne(s => s.ServiceType).WithMany(s => s.Services)
                .HasForeignKey(s => s.ServiceTypeID).OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(s => s.ServiceCategory).WithMany(s => s.Services)
+             .HasForeignKey(s => s.ServiceCategoryID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

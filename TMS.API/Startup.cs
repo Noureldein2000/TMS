@@ -40,7 +40,7 @@ namespace TMS.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(ApplicationDbContext));
             services.AddScoped(typeof(Provider));
-            
+
             services.AddScoped<IDynamicService, DynamicService>();
             services.AddScoped<ILoggingService, LoggingService>();
             services.AddScoped<IDenominationService, DenominationService>();
@@ -50,6 +50,7 @@ namespace TMS.API
             services.AddScoped<IDbMessageService, DbMessageService>();
             services.AddScoped<IFeesService, FeesService>();
             services.AddScoped<ICommissionService, CommissionService>();
+            services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ICancelService, CancelService>();
 

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211017094858_AddStatusService")]
+    partial class AddStatusService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1134,28 +1136,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 135, DateTimeKind.Local).AddTicks(4885),
+                            CreationDate = new DateTime(2021, 10, 17, 11, 48, 58, 235, DateTimeKind.Local).AddTicks(4207),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7110),
+                            CreationDate = new DateTime(2021, 10, 17, 11, 48, 58, 237, DateTimeKind.Local).AddTicks(109),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7136),
+                            CreationDate = new DateTime(2021, 10, 17, 11, 48, 58, 237, DateTimeKind.Local).AddTicks(191),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7138),
+                            CreationDate = new DateTime(2021, 10, 17, 11, 48, 58, 237, DateTimeKind.Local).AddTicks(198),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -2360,10 +2362,9 @@ namespace TMS.Data.Migrations
 
             modelBuilder.Entity("TMS.Data.Entities.Service", b =>
                 {
-                    b.HasOne("TMS.Data.Entities.ServiceCategory", "ServiceCategory")
+                    b.HasOne("TMS.Data.Entities.ServiceCategory", null)
                         .WithMany("Services")
-                        .HasForeignKey("ServiceCategoryID")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("ServiceCategoryID");
 
                     b.HasOne("TMS.Data.Entities.ServiceEntity", "ServiceEntity")
                         .WithMany("Services")

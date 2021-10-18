@@ -65,8 +65,6 @@ namespace TMS.API.Controllers
             }
         }
 
-
-
         private ServiceModel Map(ServiceDTO service)
         {
             return new ServiceModel
