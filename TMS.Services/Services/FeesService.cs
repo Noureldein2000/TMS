@@ -36,24 +36,6 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void AddAccountFees(AccountFeesDTO model)
-        {
-            _accountFees.Add(new AccountFee
-            {
-                AccountID = model.AccountId,
-                DenominationID = model.DenomiinationId,
-                FeesID = model.FeesId
-            });
-
-            _unitOfWork.SaveChanges();
-        }
-
-        public void DeleteAccountFees(int id)
-        {
-            _accountFees.Delete(id);
-            _unitOfWork.SaveChanges();
-        }
-
         public IEnumerable<FeesDTO> GetAccountFees(int denominationId, decimal originalAmount, int accountId, out decimal sum, string language = "ar")
         {
             //var denominationIdParam = new SqlParameter("@DenominationID", denominationId);
@@ -108,49 +90,6 @@ namespace TMS.Services.Services
             return accountFees;
 
         }
-
-        public PagedResult<AccountFeesDTO> GetAccountFeesByAccountId(int accountId, int pageNumber, int pageSize, string language = "ar")
-        {
-            var accountFeesLst = _accountFees.Getwhere(x => x.AccountID == accountId).Select(x => new
-            {
-                Id = x.ID,
-                FeesId = x.FeesID,
-                FeesTypeId = x.Fee.FeesTypeID,
-                FeesTypeName = language == "en" ? x.Fee.FeesType.Name : x.Fee.FeesType.ArName,
-                FeesValue = x.Fee.Value,
-                PaymentModeId = x.Fee.PaymentModeID,
-                PaymentModeName = language == "en" ? x.Fee.PaymentMode.Name : x.Fee.PaymentMode.ArName,
-                DenominationId = x.DenominationID,
-                DenominationFullName = x.Denomination.Service.Name + " - " + x.Denomination.Name,
-                CreationDate = x.CreationDate
-            });
-
-            var count = accountFeesLst.Count();
-
-            var resultList = accountFeesLst.OrderByDescending(ar => ar.CreationDate)
-          .Skip(pageNumber - 1).Take(pageSize)
-          .ToList();
-
-            //return accountLst;
-            return new PagedResult<AccountFeesDTO>
-            {
-                Results = resultList.Select(x => new AccountFeesDTO
-                {
-                    Id = x.Id,
-                    FeesId = x.FeesId,
-                    FeesTypeId = x.FeesTypeId,
-                    FeesTypeName = x.FeesTypeName,
-                    FeesValue = x.FeesValue,
-                    PaymentModeId = x.PaymentModeId,
-                    PaymentMode = x.PaymentModeName,
-                    DenomiinationId = x.DenominationId,
-                    DenominationFullName = x.DenominationFullName,
-                    CreationDate = x.CreationDate
-                }).ToList(),
-                PageCount = count
-            };
-        }
-
         public IEnumerable<FeesDTO> GetAccountProfileFees(int denominationId, decimal originalAmount, int accountProfileId, out decimal sum, string language = "ar")
         {
             var accountFees = _accountProfileFee.Getwhere(s => s.AccountProfileDenomination.DenominationID == denominationId &&
@@ -177,7 +116,6 @@ namespace TMS.Services.Services
             sum = accountFees.Sum(s => s.Fees);
             return accountFees;
         }
-
         public IEnumerable<FeesDTO> GetDenominationFees(int denominationId, decimal originalAmount, out decimal sum, string language = "ar")
         {
             var denominationFees = _denominationFee.Getwhere(s => s.DenominationID == denominationId &&
@@ -204,7 +142,6 @@ namespace TMS.Services.Services
             sum = denominationFees.Sum(s => s.Fees);
             return denominationFees;
         }
-
         public IEnumerable<FeesDTO> GetFees(int denominationId, decimal originalAmount, int accountId, int accountProfileId, out decimal sum, string language = "ar")
         {
             var accountFees = GetAccountFees(denominationId, originalAmount, accountId, out sum, "ar").ToList();
@@ -219,7 +156,6 @@ namespace TMS.Services.Services
             }
             return accountFees;
         }
-
         public IEnumerable<FeesDTO> GetFees()
         {
             return _fees.Getwhere(x => true).Include(x => x.FeesType).Select(fee => new FeesDTO()

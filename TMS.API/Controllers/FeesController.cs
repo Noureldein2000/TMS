@@ -26,29 +26,6 @@ namespace TMS.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAccountFeesByAccountId/{accountId}")]
-        [ProducesResponseType(typeof(PagedResult<AccountFeesModel>), StatusCodes.Status200OK)]
-        public IActionResult GetAccountFeesByAccountId(int accountId, int pageNumber = 1, int pageSize = 10, string language = "ar")
-        {
-            try
-            {
-                var result = _feeService.GetAccountFeesByAccountId(accountId, pageNumber, pageSize, language);
-                return Ok(new PagedResult<AccountFeesModel>
-                {
-                    Results = result.Results.Select(ard => Map(ard)).ToList(),
-                    PageCount = result.PageCount
-                });
-            }
-            catch (TMSException ex)
-            {
-                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
-            }
-        }
-        [HttpGet]
         [Route("GetFees")]
         [ProducesResponseType(typeof(List<FeesModel>), StatusCodes.Status200OK)]
         public IActionResult GetFees()
@@ -68,67 +45,7 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
-        [HttpPost]
-        [Route("AddAccountFee")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult AddAccountFees([FromBody] AddAccountFeeModel model)
-        {
-            try
-            {
-                _feeService.AddAccountFees(new AccountFeesDTO
-                {
-                    FeesId = model.FeeId,
-                    AccountId = model.AccountId,
-                    DenomiinationId = model.DenominationId
-                });
-
-                return Ok();
-            }
-            catch (TMSException ex)
-            {
-                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
-            }
-        }
-        [HttpDelete]
-        [Route("DeleteAccountFee/{id}")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult DeleteAccountFee(int id)
-        {
-            try
-            {
-                _feeService.DeleteAccountFees(id);
-                return Ok();
-            }
-            catch (TMSException ex)
-            {
-                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
-            }
-        }
-
-        private AccountFeesModel Map(AccountFeesDTO model)
-        {
-            return new AccountFeesModel
-            {
-                Id = model.Id,
-                FeesId = model.FeesId,
-                FeesTypeId = model.FeesTypeId,
-                FeesTypeName = model.FeesTypeName,
-                FeesValue = model.FeesValue,
-                PaymentModeId = model.PaymentModeId,
-                PaymentMode = model.PaymentMode,
-                DenomiinationId = model.DenomiinationId,
-                DenominationFullName = model.DenominationFullName
-            };
-        }
-
+       
         private FeesModel Map(FeesDTO fee)
         {
             return new FeesModel

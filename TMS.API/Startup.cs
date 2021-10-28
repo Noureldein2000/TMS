@@ -55,6 +55,10 @@ namespace TMS.API
             services.AddScoped<ICancelService, CancelService>();
             services.AddScoped<IServiceProviderService, ServiceProviderService>();
             services.AddScoped<IServiceConfiguarationService, ServiceConfiguarationService>();
+            services.AddScoped<IDenominationFeesService, DenominationFeesService>();
+            services.AddScoped<IDenominationCommissionService, DenominationCommissionService>();
+            services.AddScoped<IAccountFeesService, AccountFeesService>();
+            services.AddScoped<IAccountCommissionService, AccountCommissionService>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
