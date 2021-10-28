@@ -7,7 +7,7 @@ namespace TMS.Services.Models
 {
     public class DenominationDTO
     {
-        public int Id{ get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public decimal Value { get; set; }
         public int ServiceID { get; set; }
@@ -22,8 +22,11 @@ namespace TMS.Services.Models
         public DenominationClassType ClassType { get; set; }
         public int ServiceProviderId { get; set; }
         public string ServiceEntity { get; set; }
+        public string PathClass { get; set; }
         public bool Inquirable { get; set; }
         public int? BillPaymentModeID { get; set; }
+        public string BillPaymentModeName { get; set; }
         public int? PaymentModeID { get; set; }
+        public string PaymentModeName { get; set; }
     }
 }

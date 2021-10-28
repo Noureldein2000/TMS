@@ -16,7 +16,13 @@ namespace TMS.Services.Services
         int GetServiceBalanceType(int denominationId);
         IEnumerable<DenominationProviderConfigurationDTO> GetDenominationProviderConfigurationDetails(int denominationId);
         decimal GetCurrencyValue(int denominationId);
-        IEnumerable<DenominationDTO> GetDenominationsByServiceId(int serviceId);
-        IEnumerable<ServiceDTO> GetServices();
+        PagedResult<DenominationDTO> GetDenominationsByServiceId(int serviceId, int page, int pageSize, string language);
+        void AddDenomination(AddDenominationDTO denomination);
+        void EditDenomination(DenominationDTO denomination);
+        void ChangeStatus(int id);
+        void EditDenominationServiceProvdier(DenominationServiceProviderDTO model);
+        EditDenominationDTO GetDenominationById(int id);
+        DenominationServiceProviderDTO GetDenominationServiceProviderById(int id);
+        void ChangeDenominationServiceProviderStatus(int id);
     }
 }

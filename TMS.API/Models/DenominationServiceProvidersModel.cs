@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TMS.Services.Models
+namespace TMS.API.Models
 {
-    public class DenominationServiceProviderDTO
+    public class DenominationServiceProvidersModel
     {
         public int Id { get; set; }
         public int DenominationId { get; set; }
@@ -16,6 +17,6 @@ namespace TMS.Services.Models
         public decimal ProviderAmount { get; set; }
         public int OldServiceId { get; set; }
         public bool ProviderHasFees { get; set; }
-        public List<DenominationProviderConfigurationDTO> DenominationProviderConfigurationDto { get; set; }
+        public List<DenominationProviderConfigerationModel> DenominationProviderConfigurationModel { get; set; }
     }
 }
