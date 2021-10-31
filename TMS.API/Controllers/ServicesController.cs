@@ -42,7 +42,7 @@ namespace TMS.API.Controllers
                         Value = d.Value
                     }).ToList()
                 }, UserIdentityId, serviceId);
-                response.Message = _localizer["Success"].Value;
+                response.Message = _localizer[response.Message].Value;
                 return Ok(response);
             }
             catch (TMSException ex)
@@ -75,6 +75,7 @@ namespace TMS.API.Controllers
                         Value = d.Value
                     }).ToList()
                 }, UserIdentityId, serviceId);
+                response.Message = _localizer[response.Message].Value;
                 return Ok(response);
             }
             catch (TMSException ex)
@@ -103,6 +104,7 @@ namespace TMS.API.Controllers
                     AccountProfileId = 7,
                     BillingAccount = model.BillingAccount
                 }, UserIdentityId, serviceId);
+                response.Message = _localizer[response.Message].Value;
                 return Ok(response);
             }
             catch (TMSException ex)

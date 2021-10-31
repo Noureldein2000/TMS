@@ -474,12 +474,6 @@ namespace TMS.Services.ProviderLayer
 
                 if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
                 {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "CountInstalmentPenalty",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = countInstalmentPenalty
-                    });
                     inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = responseParams.Where(p => p.ProviderName == "CountInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
@@ -489,12 +483,6 @@ namespace TMS.Services.ProviderLayer
                 
                 if (!string.IsNullOrEmpty(valueInstalmentPenalty))
                 {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "ValueInstalmentPenalty",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = valueInstalmentPenalty
-                    });
                     inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = responseParams.Where(p => p.ProviderName == "ValueInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
@@ -504,12 +492,6 @@ namespace TMS.Services.ProviderLayer
 
                 if (string.IsNullOrEmpty(countRemainInstalment))
                 {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "CountRemainInstalment",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = countRemainInstalment
-                    });
                     inquiryResponse.Data.Add(new DataDTO
                     {
                         Key = responseParams.Where(p => p.ProviderName == "CountRemainInstalment").Select(s => s.ParameterName).FirstOrDefault(),
