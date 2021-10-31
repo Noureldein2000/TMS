@@ -31,7 +31,7 @@ namespace TMS.Data.Migrations
                     b.Property<int>("AccountID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CommessionID")
+                    b.Property<int>("CommissionID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -45,7 +45,7 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CommessionID");
+                    b.HasIndex("CommissionID");
 
                     b.HasIndex("DenominationID");
 
@@ -282,7 +282,7 @@ namespace TMS.Data.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UpdatedBy")
+                    b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Value")
@@ -838,6 +838,8 @@ namespace TMS.Data.Migrations
 
                     b.HasIndex("FeesTypeID");
 
+                    b.HasIndex("PaymentModeID");
+
                     b.ToTable("Fees");
                 });
 
@@ -1132,28 +1134,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 706, DateTimeKind.Local).AddTicks(3278),
+                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 135, DateTimeKind.Local).AddTicks(4885),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6296),
+                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7110),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6326),
+                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7136),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 9, 23, 15, 6, 31, 707, DateTimeKind.Local).AddTicks(6329),
+                            CreationDate = new DateTime(2021, 10, 17, 13, 18, 58, 136, DateTimeKind.Local).AddTicks(7138),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -1560,6 +1562,9 @@ namespace TMS.Data.Migrations
                     b.Property<int>("ServiceTypeID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
@@ -1941,7 +1946,7 @@ namespace TMS.Data.Migrations
                 {
                     b.HasOne("TMS.Data.Entities.Commission", "Commission")
                         .WithMany("AccountCommissions")
-                        .HasForeignKey("CommessionID")
+                        .HasForeignKey("CommissionID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -2183,6 +2188,12 @@ namespace TMS.Data.Migrations
                         .HasForeignKey("FeesTypeID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.PaymentMode", "PaymentMode")
+                        .WithMany("Fees")
+                        .HasForeignKey("PaymentModeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.InquiryBill", b =>
@@ -2349,9 +2360,10 @@ namespace TMS.Data.Migrations
 
             modelBuilder.Entity("TMS.Data.Entities.Service", b =>
                 {
-                    b.HasOne("TMS.Data.Entities.ServiceCategory", null)
+                    b.HasOne("TMS.Data.Entities.ServiceCategory", "ServiceCategory")
                         .WithMany("Services")
-                        .HasForeignKey("ServiceCategoryID");
+                        .HasForeignKey("ServiceCategoryID")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TMS.Data.Entities.ServiceEntity", "ServiceEntity")
                         .WithMany("Services")

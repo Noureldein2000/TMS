@@ -9,11 +9,13 @@ namespace TMS.Services.Models
         public int Id { get; set; }
         public int DenominationId { get; set; }
         public int ServiceProviderId { get; set; }
+        public string ServiceProviderName { get; set; }
         public decimal Balance { get; set; }
-        public int Status { get; set; }
+        public bool Status { get; set; }
         public string ProviderCode { get; set; }
         public decimal ProviderAmount { get; set; }
         public int OldServiceId { get; set; }
         public bool ProviderHasFees { get; set; }
+        public List<DenominationProviderConfigurationDTO> DenominationProviderConfigurationDto { get; set; }
     }
 }

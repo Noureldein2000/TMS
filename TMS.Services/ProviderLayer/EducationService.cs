@@ -225,6 +225,8 @@ namespace TMS.Services.ProviderLayer
                     ProviderServiceRequestID = providerServiceRequestId,
                     TotalAmount = totalAmount
                 });
+
+
                 _providerService.AddProviderServiceResponseParam(
                     new ProviderServiceResponseParamDTO
                     {
@@ -257,6 +259,9 @@ namespace TMS.Services.ProviderLayer
                         Value = name
                     }
                     );
+
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Stage", "School", "arabicName", "educationYear");
+
                 if (!string.IsNullOrEmpty(name))
                 {
                     _providerService.AddProviderServiceResponseParam(
@@ -268,7 +273,7 @@ namespace TMS.Services.ProviderLayer
                         });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "arabicName",
+                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = name
                     });
                 }
@@ -284,7 +289,7 @@ namespace TMS.Services.ProviderLayer
                        });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "School",
+                        Key = responseParams.Where(p => p.ProviderName == "School").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = school
                     });
                 }
@@ -300,7 +305,7 @@ namespace TMS.Services.ProviderLayer
                         });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "Stage",
+                        Key = responseParams.Where(p => p.ProviderName == "Stage").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = stage
                     });
                 }
@@ -316,7 +321,7 @@ namespace TMS.Services.ProviderLayer
                       });
                     inquiryResponse.Data.Add(new DataDTO
                     {
-                        Key = "educationYear",
+                        Key = responseParams.Where(p => p.ProviderName == "educationYear").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = educationYear
                     });
                 }
@@ -460,7 +465,7 @@ namespace TMS.Services.ProviderLayer
             var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
             var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
             var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
-            //var providerPaymentId = providerResponseParams.Where(s => s.ProviderName == "providerPaymentId").Select(s => s.Value).FirstOrDefault();
+            var providerPaymentId = providerResponseParams.Where(s => s.ProviderName == "providerPaymentId").Select(s => s.ParameterName).FirstOrDefault();
 
             //var billReferenceNumber = _denominationService.GetProviderServiceResponseParam(payModel.Brn, "billReferenceNumber");
             ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
@@ -529,7 +534,7 @@ namespace TMS.Services.ProviderLayer
 
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "providerPaymentId",
+                    Key = providerPaymentId,
                     Value = o["providerTransactionId"].ToString()
                 });
 

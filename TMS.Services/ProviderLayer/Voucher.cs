@@ -324,21 +324,23 @@ namespace TMS.Services.ProviderLayer
                         await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
                             new List<int?> { transactionId });
 
+                        var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Pin", "Serial", "TransactionId");
+
                         paymentResponse.DataList.AddRange(new List<DataListDTO>
                 {
                     new DataListDTO
                     {
-                        Key = "Pin",
+                         Key = responseParams.Where(p => p.ProviderName == "Pin").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = item.pin
                     },
                     new DataListDTO
                     {
-                        Key = "Serial",
+                        Key = responseParams.Where(p => p.ProviderName == "Serial").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = item.serial
                     },
                      new DataListDTO
                     {
-                        Key = "TransactionId",
+                         Key = responseParams.Where(p => p.ProviderName == "TransactionId").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = transactionId.ToString()
                     }
                 });

@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TMS.Data.Entities;
+using TMS.Services.Models;
+using TMS.Services.Repositories;
+
+namespace TMS.Services.Services
+{
+    public class DenominationCommissionService : IDenominationCommissionService
+    {
+        private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
+        private readonly IUnitOfWork _unitOfWork;
+        public DenominationCommissionService(
+            IBaseRepository<DenominationCommission, int> denominationCommission,
+            IUnitOfWork unitOfWork)
+        {
+            _denominationCommission = denominationCommission;
+            _unitOfWork = unitOfWork;
+        }
+
+        public void AddDenominationCommission(AddDenominationCommissionDTO model)
+        {
+            _denominationCommission.Add(new DenominationCommission
+            {
+                DenominationID = model.DenominationId,
+                CommissionID = model.CommissionId
+            });
+            _unitOfWork.SaveChanges();
+        }
+
+        public void DeleteDenominationCommission(int id)
+        {
+            _denominationCommission.Delete(id);
+            _unitOfWork.SaveChanges();
+        }
+
+        public IEnumerable<DenominationCommissionDTO> GetDeniminationCommissionsByDenominationId(int denominationId, string language)
+        {
+            return _denominationCommission.Getwhere(x => x.DenominationID == denominationId).Select(x => new DenominationCommissionDTO
+            {
+                Id = x.ID,
+                CommissionId = x.CommissionID,
+                CommissionTypeId = x.Commission.CommissionTypeID,
+                CommissionTypeName = language == "en" ? x.Commission.CommissionType.Name : x.Commission.CommissionType.ArName,
+                CommissionValue = x.Commission.Value,
+                PaymentModeId = x.Commission.PaymentModeID,
+                PaymentMode = language == "en" ? x.Commission.PaymentMode.Name : x.Commission.PaymentMode.ArName,
+                DenominationId = x.DenominationID,
+                DenominationFullName = x.Denomination.Service.Name + " - " + x.Denomination.Name,
+                CreationDate = x.CreationDate
+            }).ToList();
+        }
+    }
+}

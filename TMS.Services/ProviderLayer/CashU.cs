@@ -297,21 +297,23 @@ namespace TMS.Services.ProviderLayer
                    Value = coupons[0].ExpirationDate
                });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "Pin", "Serial", "End Date");
+
                 paymentResponse.DataList.AddRange(new List<DataListDTO>
                 {
                     new DataListDTO
                     {
-                        Key = "Pin",
+                          Key = responseParams.Where(p => p.ProviderName == "Pin").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = coupons[0].CardNumber
                     },
                     new DataListDTO
                     {
-                        Key = "Serial",
+                        Key = responseParams.Where(p => p.ProviderName == "Serial").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = coupons[0].Serial
                     },
                      new DataListDTO
                     {
-                        Key = "End Date",
+                        Key = responseParams.Where(p => p.ProviderName == "End Date").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = coupons[0].ExpirationDate
                     }
                 });

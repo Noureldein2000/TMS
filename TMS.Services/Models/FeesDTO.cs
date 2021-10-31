@@ -6,8 +6,15 @@ namespace TMS.Services.Models
 {
     public class FeesDTO
     {
+        public int ID { get; set; }
         public int FeesTypeID { get; set; }
         public string FeesTypeName { get; set; }
+        public string FeeRange { get; set; }
         public decimal Fees { get; set; }
+        public decimal AmountFrom { get; set; }
+        public decimal AmountTo { get; set; }
+        public int PaymentModeID { get; set; }
+        public decimal Value { get; set; }
+        public bool Status { get; set; }
     }
 }

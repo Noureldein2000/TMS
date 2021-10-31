@@ -154,10 +154,12 @@ namespace TMS.Services.ProviderLayer
                             Value = o["billRecId"].ToString()
                         });
 
+                        var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billRecId", "currentCode", "amountFees");
+
                         //Add DataList To Response
                         feeResponse.Data.Add(new DataDTO
                         {
-                            Key = "billRecId",
+                            Key = responseParams.Where(p => p.ProviderName == "billRecId").Select(s => s.ParameterName).FirstOrDefault(),
                             Value = o["billRecId"].ToString()
                         });
 
@@ -183,13 +185,13 @@ namespace TMS.Services.ProviderLayer
                             //Add DataList To Client Response
                             feeResponse.Data.Add(new DataDTO
                             {
-                                Key = "currentCode",
+                                Key = responseParams.Where(p => p.ProviderName == "currentCode").Select(s => s.ParameterName).FirstOrDefault(),
                                 Value = item.CurrentCode
                             });
 
                             feeResponse.Data.Add(new DataDTO
                             {
-                                Key = "amountFees",
+                                Key = responseParams.Where(p => p.ProviderName == "amountFees").Select(s => s.ParameterName).FirstOrDefault(),
                                 Value = item.Amount
                             });
                         }
@@ -435,44 +437,46 @@ namespace TMS.Services.ProviderLayer
                           Value = CustList.TotalDeducts
                       });
 
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billNumber", "arabicName", "billRecId", "paymentRefInfo", "minAmount", "prepaidAmount", "totalDeducts");
+
                 inquiryModel.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = "billNumber",
+                         Key = responseParams.Where(p => p.ProviderName == "billNumber").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billNumber"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "billRecId",
+                         Key = responseParams.Where(p => p.ProviderName == "billRecId").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["billRecId"].ToString()
                     },
                     new DataDTO
                     {
-                        Key = "paymentRefInfo",
+                         Key = responseParams.Where(p => p.ProviderName == "paymentRefInfo").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["paymentRefInfo"].ToString()
                     }
                     ,
                     new DataDTO
                     {
-                        Key = "arabicName",
+                         Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value =CustList.CustomerName
                     }
                     ,
                     new DataDTO
                     {
-                        Key = "minAmount",
+                         Key = responseParams.Where(p => p.ProviderName == "minAmount").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = CustList.MinAmount
                     }
                     ,
                     new DataDTO
                     {
-                        Key = "prepaidAmount",
+                         Key = responseParams.Where(p => p.ProviderName == "prepaidAmount").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = CustList.PrepaidAmount
                     },
                     new DataDTO
                     {
-                        Key = "totalDeducts",
+                         Key = responseParams.Where(p => p.ProviderName == "totalDeducts").Select(s => s.ParameterName).FirstOrDefault(),
                         Value =CustList.TotalDeducts
                     }
                 });
@@ -607,9 +611,6 @@ namespace TMS.Services.ProviderLayer
             var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billNumber",
                 "billRecId", "paymentRefInfo", "arabicName");
 
-            //var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
-            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
-
             var billNumber = providerResponseParams.Where(s => s.ProviderName == "billNumber").Select(s => s.Value).FirstOrDefault().ToString();
             var billRecId = providerResponseParams.Where(s => s.ProviderName == "billRecId").Select(s => s.Value).FirstOrDefault().ToString();
             var paymentRefInfo = providerResponseParams.Where(s => s.ProviderName == "paymentRefInfo").Select(s => s.Value).FirstOrDefault().ToString();
@@ -691,20 +692,22 @@ namespace TMS.Services.ProviderLayer
                     Value = o["momknPaymentId"].ToString()
                 });
 
-                //Add DataList To Client Response   
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "providerPaymentId", "CardData", "momknPaymentId");
+
+                //Add DataList To Client Response
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "providerPaymentId",
+                    Key = responseParams.Where(p => p.ProviderName == "providerPaymentId").Select(s => s.ParameterName).FirstOrDefault(),
                     Value = o["providerPaymentId"].ToString()
                 });
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "CardData",
+                    Key = providerResponseParams.Where(p => p.ProviderName == "CardData").Select(s => s.ParameterName).FirstOrDefault(),
                     Value = o["cardData"].ToString()
                 });
                 paymentResponse.DataList.Add(new DataListDTO
                 {
-                    Key = "momknPaymentId",
+                    Key = providerResponseParams.Where(p => p.ProviderName == "momknPaymentId").Select(s => s.ParameterName).FirstOrDefault(),
                     Value = o["momknPaymentId"].ToString()
                 });
 

@@ -250,11 +250,14 @@ namespace TMS.Services.ProviderLayer
                         Value = o["holderName"].ToString()
                     });
 
+
+                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "billReferenceNumber", "arabicName");
+
                 inquiryModel.Data.AddRange(new List<DataDTO>
                 {
                     new DataDTO
                     {
-                        Key = "arabicName",
+                       Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
                         Value = o["holderName"].ToString()
                     }
                 });

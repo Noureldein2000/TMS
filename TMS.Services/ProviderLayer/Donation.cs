@@ -248,6 +248,15 @@ namespace TMS.Services.ProviderLayer
                     Value = customerName
                 });
 
+            var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "arabicName");
+
+            if (!string.IsNullOrEmpty(customerName))
+                paymentResponse.DataList.Add(new DataListDTO
+                {
+                    Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
+                    Value = customerName
+                });
+
             if (!string.IsNullOrEmpty(customerName))
                 _inquiryBillService.AddReceiptBodyParam(
                    new ReceiptBodyParamDTO
