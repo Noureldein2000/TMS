@@ -35,7 +35,49 @@ namespace TMS.Services.Services
             _denominationFee = denominationFee;
             _unitOfWork = unitOfWork;
         }
+        public void AddFee(FeesDTO fee)
+        {
+            _fees.Add(new Fee
+            {
+                FeesTypeID = fee.FeesTypeID,
+                Value = fee.Value,
+                PaymentModeID = fee.PaymentModeID,
+                Status = fee.Status,
+                AmountFrom = fee.AmountFrom,
+                AmountTo = fee.AmountTo,
+                CreatedBy = fee.CreatedBy,
+                StartDate = fee.StartDate,
+                EndDate = fee.EndDate
+            });
 
+            _unitOfWork.SaveChanges();
+        }
+        public void ChangeStatus(int id)
+        {
+            var current = _fees.GetById(id);
+            current.Status = !current.Status;
+            _unitOfWork.SaveChanges();
+        }
+        public void DeleteFee(int id)
+        {
+            _fees.Delete(id);
+            _unitOfWork.SaveChanges();
+        }
+        public void EditFee(FeesDTO fee)
+        {
+            var current = _fees.GetById(fee.ID);
+
+            current.FeesTypeID = fee.FeesTypeID;
+            current.Value = fee.Value;
+            current.PaymentModeID = fee.PaymentModeID;
+            current.AmountFrom = fee.AmountFrom;
+            current.AmountTo = fee.AmountTo;
+            current.StartDate = fee.StartDate;
+            current.EndDate = fee.EndDate;
+            current.UpdatedBy = fee.CreatedBy;
+
+            _unitOfWork.SaveChanges();
+        }
         public IEnumerable<FeesDTO> GetAccountFees(int denominationId, decimal originalAmount, int accountId, out decimal sum, string language = "ar")
         {
             //var denominationIdParam = new SqlParameter("@DenominationID", denominationId);
@@ -142,6 +184,22 @@ namespace TMS.Services.Services
             sum = denominationFees.Sum(s => s.Fees);
             return denominationFees;
         }
+        public FeesDTO GetFeeById(int id)
+        {
+            var current = _fees.Getwhere(fee => fee.ID == id).Select(fee => new FeesDTO
+            {
+                ID = fee.ID,
+                FeesTypeID = fee.FeesTypeID,
+                Value = fee.Value,
+                PaymentModeID = fee.PaymentModeID,
+                Status = fee.Status,
+                AmountFrom = fee.AmountFrom,
+                AmountTo = fee.AmountTo,
+                StartDate = fee.StartDate,
+                EndDate = fee.EndDate
+            }).FirstOrDefault();
+            return current;
+        }
         public IEnumerable<FeesDTO> GetFees(int denominationId, decimal originalAmount, int accountId, int accountProfileId, out decimal sum, string language = "ar")
         {
             var accountFees = GetAccountFees(denominationId, originalAmount, accountId, out sum, "ar").ToList();
@@ -156,20 +214,52 @@ namespace TMS.Services.Services
             }
             return accountFees;
         }
-        public IEnumerable<FeesDTO> GetFees()
+        public PagedResult<FeesDTO> GetFees(int page, int pageSize, string language)
         {
-            return _fees.Getwhere(x => true).Include(x => x.FeesType).Select(fee => new FeesDTO()
+            var fees = _fees.Getwhere(x => true).Include(x => x.FeesType).Select(fee => new
             {
                 ID = fee.ID,
                 FeesTypeID = fee.FeesTypeID,
-                FeesTypeName = fee.FeesType.ArName,
+                FeesTypeName = language == "en" ? fee.FeesType.Name : fee.FeesType.ArName,
                 Value = fee.Value,
                 FeeRange = fee.Value + " [" + fee.AmountFrom.ToString() + " - " + fee.AmountTo + "] " + fee.PaymentMode.Name,
                 PaymentModeID = fee.PaymentModeID,
+                PaymentModeName = language == "en" ? fee.PaymentMode.Name : fee.PaymentMode.ArName,
                 Status = fee.Status,
+                CreatedBy = fee.CreatedBy,
                 AmountFrom = fee.AmountFrom,
-                AmountTo = fee.AmountTo
+                AmountTo = fee.AmountTo,
+                StartDate = fee.StartDate,
+                EndDate = fee.EndDate,
+                CreationDate = fee.CreationDate
             }).ToList();
+
+            var count = fees.Count();
+
+            var resultList = fees.OrderByDescending(ar => ar.CreationDate)
+          .Skip(page - 1).Take(pageSize)
+          .ToList();
+
+            return new PagedResult<FeesDTO>
+            {
+                Results = resultList.Select(fee => new FeesDTO
+                {
+                    ID = fee.ID,
+                    FeesTypeID = fee.FeesTypeID,
+                    FeesTypeName = fee.FeesTypeName,
+                    Value = fee.Value,
+                    FeeRange = fee.FeeRange,
+                    PaymentModeID = fee.PaymentModeID,
+                    PaymentModeName = fee.PaymentModeName,
+                    Status = fee.Status,
+                    CreatedBy = fee.CreatedBy,
+                    AmountFrom = fee.AmountFrom,
+                    AmountTo = fee.AmountTo,
+                    StartDate = fee.StartDate,
+                    EndDate = fee.EndDate
+                }).ToList(),
+                PageCount = count
+            };
         }
     }
 }
