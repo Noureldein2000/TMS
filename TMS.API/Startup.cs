@@ -59,6 +59,7 @@ namespace TMS.API
             services.AddScoped<IDenominationCommissionService, DenominationCommissionService>();
             services.AddScoped<IAccountFeesService, AccountFeesService>();
             services.AddScoped<IAccountCommissionService, AccountCommissionService>();
+            services.AddScoped<IParameterService, ParameterService>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

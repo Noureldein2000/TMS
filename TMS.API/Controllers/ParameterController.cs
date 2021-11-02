@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
@@ -14,29 +15,28 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServiceProviderController : BaseController
+    public class ParameterController : BaseController
     {
-        private readonly IServiceProviderService _serviceProvider;
+        private readonly IParameterService _parameterService;
         private readonly IStringLocalizer<LanguageResource> _localizer;
-        public ServiceProviderController(IServiceProviderService serviceProvider,
+        public ParameterController(IParameterService parameterService,
             IStringLocalizer<LanguageResource> localizer)
         {
-            _serviceProvider = serviceProvider;
+            _parameterService = parameterService;
             _localizer = localizer;
         }
 
-
         [HttpGet]
-        [Route("GetServiceProvider")]
-        [ProducesResponseType(typeof(PagedResult<ServiceProviderModel>), StatusCodes.Status200OK)]
-        public IActionResult GetServiceProvider(int pageNumber = 1, int pageSize = 10)
+        [Route("GetParamters")]
+        [ProducesResponseType(typeof(PagedResult<ParametersModel>), StatusCodes.Status200OK)]
+        public IActionResult GetParamters(int pageNumber = 1, int pageSize = 10, string language = "ar")
         {
             try
             {
-                var result = _serviceProvider.GetServiceProviders(pageNumber, pageSize);
-                return Ok(new PagedResult<ServiceProviderModel>
+                var result = _parameterService.GetParamters(pageNumber, pageSize, language);
+                return Ok(new PagedResult<ParametersModel>
                 {
-                    Results = result.Results.Select(ard => Map(ard)).ToList(),
+                    Results = result.Results.Select(ard => MapToModel(ard)).ToList(),
                     PageCount = result.PageCount
                 });
             }
@@ -51,14 +51,14 @@ namespace TMS.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetServiceProviderById/{id}")]
-        [ProducesResponseType(typeof(ServiceProviderModel), StatusCodes.Status200OK)]
-        public IActionResult GetServiceProviderById(int id)
+        [Route("GetParamterById/{id}")]
+        [ProducesResponseType(typeof(ParametersModel), StatusCodes.Status200OK)]
+        public IActionResult GetParamterById(int id)
         {
             try
             {
-                var result = _serviceProvider.GetServiceProviderById(id);
-                return Ok(Map(result));
+                var result = _parameterService.GetParamterById(id);
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {
@@ -71,13 +71,18 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost]
-        [Route("AddServiceProvider")]
+        [Route("AddParameter")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult AddServiceProvider(ServiceProviderModel model)
+        public IActionResult AddParameter(ParametersModel model)
         {
             try
             {
-                _serviceProvider.AddServiceProviders(new ServiceProviderDTO { Name = model.Name });
+                _parameterService.AddParameter(new ParameterDTO
+                {
+                    Name = model.Name,
+                    NameAr = model.NameAr,
+                    ProviderName = model.ProviderName
+                });
                 return Ok();
             }
             catch (TMSException ex)
@@ -90,13 +95,19 @@ namespace TMS.API.Controllers
             }
         }
         [HttpPut]
-        [Route("EditServiceProvider")]
+        [Route("EditParameter")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult EditServiceProvider(ServiceProviderModel model)
+        public IActionResult EditParameter(ParametersModel model)
         {
             try
             {
-                _serviceProvider.EditServiceProviders(new ServiceProviderDTO { Id = model.Id, Name = model.Name });
+                _parameterService.EditParameter(new ParameterDTO
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    NameAr = model.NameAr,
+                    ProviderName = model.ProviderName
+                });
                 return Ok();
             }
             catch (TMSException ex)
@@ -108,15 +119,14 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
-
         [HttpDelete]
-        [Route("DeleteServiceProvider/{id}")]
+        [Route("DeleteParameter/{id}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult DeleteServiceProvider(int id)
+        public IActionResult DeleteParameter(int id)
         {
             try
             {
-                _serviceProvider.DeleteServiceProviders(id);
+                _parameterService.DeleteParameter(id);
                 return Ok();
             }
             catch (TMSException ex)
@@ -129,13 +139,16 @@ namespace TMS.API.Controllers
             }
         }
 
-        private ServiceProviderModel Map(ServiceProviderDTO model)
+        private ParametersModel MapToModel(ParameterDTO model)
         {
-            return new ServiceProviderModel
+            return new ParametersModel
             {
                 Id = model.Id,
                 Name = model.Name,
+                NameAr = model.NameAr,
+                ProviderName = model.ProviderName
             };
         }
+
     }
 }
