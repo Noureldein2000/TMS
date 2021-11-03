@@ -12,8 +12,7 @@ namespace TMS.Data.Configurations
         public void Configure(EntityTypeBuilder<DenominationReceiptData> builder)
         {
             builder.HasKey(s => s.ID);
-            builder.HasOne(s => s.Denomination).WithMany(s => s.DenominationReceiptData)
-                .HasForeignKey(s => s.DenominationID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(s => s.Denomination).WithOne(s => s.DenominationReceiptData).OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(s => s.Title).HasMaxLength(2000);
             builder.Property(s => s.Disclaimer).HasMaxLength(2000);

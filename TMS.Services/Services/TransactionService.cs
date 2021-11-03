@@ -249,7 +249,7 @@ namespace TMS.Services.Services
             var query = _transactions.Getwhere(s => s.ID == transactionId).Select(t => new
             {
                 t.ID,
-                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Title,
+                t.Request.Denomination.DenominationReceiptData.Title,
                 t.CreationDate,
                 t.Request.ServiceDenominationID,
                 t.InvoiceID,
@@ -257,8 +257,8 @@ namespace TMS.Services.Services
                 t.TotalAmount,
                 t.Request.BillingAccount,
                 t.OriginalAmount,
-                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Disclaimer,
-                t.Request.Denomination.DenominationReceiptData.FirstOrDefault().Footer,
+                t.Request.Denomination.DenominationReceiptData.Disclaimer,
+                t.Request.Denomination.DenominationReceiptData.Footer,
                 parameterNames = t.Request.Denomination.DenominationReceiptParams.Select(s => new { s.Parameter.ArName, t.ReceiptBodyParams.Where(sd => sd.ParameterID == s.ParameterID).FirstOrDefault().Value }).ToList(),
                 t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Bold,
                 t.Request.Denomination.DenominationReceiptParams.FirstOrDefault().Alignment,
