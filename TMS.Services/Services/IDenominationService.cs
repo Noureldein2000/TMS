@@ -24,5 +24,8 @@ namespace TMS.Services.Services
         EditDenominationDTO GetDenominationById(int id);
         DenominationServiceProviderDTO GetDenominationServiceProviderById(int id);
         void ChangeDenominationServiceProviderStatus(int id);
+        DenominationParameterDTO GetDenominationParameterById(int id);
+        void EditDenominationParameter(DenominationParameterDTO model);
+        void DeleteDenominationParameter(int id);
     }
 }

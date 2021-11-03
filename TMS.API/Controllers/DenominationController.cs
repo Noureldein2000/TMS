@@ -80,7 +80,8 @@ namespace TMS.API.Controllers
                 return Ok(new EditDenominationModel
                 {
                     Denomination = MapToModel(model.Denomination),
-                    DenominationServiceProviders = model.DenominationServiceProvidersDto.Select(x => MapToModel(x)).ToList()
+                    DenominationServiceProviders = model.DenominationServiceProvidersDto.Select(x => MapToModel(x)).ToList(),
+                    DenominationParameters = model.DenominationParameterDTOs.Select(x => MapToModel(x)).ToList()
                 });
             }
             catch (TMSException ex)
@@ -191,6 +192,63 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpGet]
+        [Route("GetDenominationParameterById/{id}")]
+        [ProducesResponseType(typeof(DenominationParameterModel), StatusCodes.Status200OK)]
+        public IActionResult GetDenominationParameterById(int id)
+        {
+            try
+            {
+                var result = _denominationService.GetDenominationParameterById(id);
+                return Ok(MapToModel(result));
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPut]
+        [Route("EditDenominationParameter")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditDenominationParameter(DenominationParameterModel model)
+        {
+            try
+            {
+                _denominationService.EditDenominationParameter(MapToDTO(model));
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpDelete]
+        [Route("DeleteDenominationParameter/{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult DeleteDenominationParameter(int id)
+        {
+            try
+            {
+                _denominationService.DeleteDenominationParameter(id);
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         //Helper Methods
         private DenominationModel MapToModel(DenominationDTO denomination)
@@ -255,6 +313,7 @@ namespace TMS.API.Controllers
                 Denomination = MapToDTO(model.Denomination),
                 DenominationServiceProvidersDto = MapToDTO(model.DenominationServiceProviders),
                 ServiceConfigerationDto = MapToDTO(model.ServiceConfigeration),
+                DenominationParameter = MapToDTO(model.DenominationParameter)
             };
         }
         private DenominationDTO MapToDTO(DenominationModel model)
@@ -335,6 +394,36 @@ namespace TMS.API.Controllers
                 Name = model.Name,
                 Value = model.Value,
                 DenominationProviderID = model.DenominationProviderID
+            };
+        }
+        private DenominationParameterDTO MapToDTO(DenominationParameterModel model)
+        {
+            return new DenominationParameterDTO
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                Optional = model.Optional,
+                Sequence = model.Sequence,
+                ValidationExpression = model.ValidationExpression,
+                ValidationMessage = model.ValidationMessage,
+                DenominationParamID = model.DenominationParamID,
+                Value = model.Value,
+                ValueList = model.ValueList
+            };
+        }
+        private DenominationParameterModel MapToModel(DenominationParameterDTO model)
+        {
+            return new DenominationParameterModel
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                Optional = model.Optional,
+                Sequence = model.Sequence,
+                ValidationExpression = model.ValidationExpression,
+                ValidationMessage = model.ValidationMessage,
+                DenominationParamID = model.DenominationParamID,
+                Value = model.Value,
+                ValueList = model.ValueList
             };
         }
     }

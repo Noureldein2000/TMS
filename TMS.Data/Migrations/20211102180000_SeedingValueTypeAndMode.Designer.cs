@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211102180000_SeedingValueTypeAndMode")]
+    partial class SeedingValueTypeAndMode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -746,8 +748,7 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DenominationID")
-                        .IsUnique();
+                    b.HasIndex("DenominationID");
 
                     b.ToTable("DenominationReceiptData");
                 });
@@ -1175,28 +1176,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 361, DateTimeKind.Local).AddTicks(2877),
+                            CreationDate = new DateTime(2021, 11, 2, 20, 0, 0, 67, DateTimeKind.Local).AddTicks(7369),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1843),
+                            CreationDate = new DateTime(2021, 11, 2, 20, 0, 0, 67, DateTimeKind.Local).AddTicks(7427),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1890),
+                            CreationDate = new DateTime(2021, 11, 2, 20, 0, 0, 67, DateTimeKind.Local).AddTicks(7429),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1893),
+                            CreationDate = new DateTime(2021, 11, 2, 20, 0, 0, 67, DateTimeKind.Local).AddTicks(7430),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -2186,8 +2187,8 @@ namespace TMS.Data.Migrations
             modelBuilder.Entity("TMS.Data.Entities.DenominationReceiptData", b =>
                 {
                     b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
-                        .WithOne("DenominationReceiptData")
-                        .HasForeignKey("TMS.Data.Entities.DenominationReceiptData", "DenominationID")
+                        .WithMany("DenominationReceiptData")
+                        .HasForeignKey("DenominationID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

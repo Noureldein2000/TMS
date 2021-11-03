@@ -8,5 +8,6 @@ namespace TMS.Services.Models
     {
         public DenominationDTO Denomination { get; set; }
         public List<DenominationServiceProviderDTO> DenominationServiceProvidersDto { get; set; }
+        public List<DenominationParameterDTO> DenominationParameterDTOs{ get; set; }
     }
 }

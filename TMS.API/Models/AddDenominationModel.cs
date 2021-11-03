@@ -12,6 +12,6 @@ namespace TMS.API.Models
         public DenominationServiceProvidersModel DenominationServiceProviders { get; set; }
         public DenominationProviderConfigerationModel DenominationProviderConfigeration { get; set; }
         public ServiceConfigerationModel ServiceConfigeration { get; set; }
-        public ServiceConfigParmsModel ServiceConfigParms { get; set; }
+        public DenominationParameterModel DenominationParameter { get; set; }
     }
 }
