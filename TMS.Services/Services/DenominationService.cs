@@ -18,6 +18,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<DenominationProviderConfiguration, int> _denominationProviderConfigurationRepository;
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
+        private readonly IBaseRepository<DenominationParameter, int> _denominationParamter;
         private readonly IUnitOfWork _unitOfWork;
 
         public DenominationService(
@@ -26,6 +27,7 @@ namespace TMS.Services.Services
             IBaseRepository<Denomination, int> denominationRepository,
             IBaseRepository<Service, int> serviceRepository,
             IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository,
+            IBaseRepository<DenominationParameter, int> denominationParamter,
             IUnitOfWork unitOfWork
             )
         {
@@ -34,6 +36,7 @@ namespace TMS.Services.Services
             _denominationRepository = denominationRepository;
             _serviceRepository = serviceRepository;
             _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
+            _denominationParamter = denominationParamter;
             _unitOfWork = unitOfWork;
         }
 
@@ -237,6 +240,20 @@ namespace TMS.Services.Services
                             }
                         }
                     }
+                },
+                DenominationParameters = new List<DenominationParameter>()
+                {
+                    new DenominationParameter
+                    {
+                       Optional=model.DenominationParameter.Optional,
+                       Sequence=model.DenominationParameter.Sequence,
+                       ValidationExpression=model.DenominationParameter.ValidationExpression,
+                       ValidationMessage=model.DenominationParameter.ValidationMessage,
+                       DenominationParamID=model.DenominationParameter.DenominationParamID,
+                       Value=model.DenominationParameter.Value,
+                       ValueList=model.DenominationParameter.ValueList,
+                    }
+
                 }
 
             });
@@ -349,6 +366,18 @@ namespace TMS.Services.Services
                             Value = psc.Value,
                             DenominationProviderID = psc.DenominationProviderID
                         }).ToList()
+                    }).ToList(),
+                    DenominationParameterDTOs = x.DenominationParameters.Select(dp => new DenominationParameterDTO
+                    {
+                        Id = dp.ID,
+                        DenominationID = dp.DenominationID,
+                        Optional = dp.Optional,
+                        Sequence = dp.Sequence,
+                        ValidationExpression = dp.ValidationExpression,
+                        ValidationMessage = dp.ValidationMessage,
+                        DenominationParamID = dp.DenominationParamID,
+                        Value = dp.Value,
+                        ValueList = dp.ValueList
                     }).ToList()
                 }).FirstOrDefault();
 
@@ -389,6 +418,46 @@ namespace TMS.Services.Services
         {
             var current = _denominationServiceProviderRepository.GetById(id);
             current.Status = !current.Status;
+            _unitOfWork.SaveChanges();
+        }
+
+        public DenominationParameterDTO GetDenominationParameterById(int id)
+        {
+            var denominatiaon = _denominationParamter.Getwhere(s => s.ID == id)
+               .Select(dp => new DenominationParameterDTO
+               {
+                   Id = dp.ID,
+                   DenominationID = dp.DenominationID,
+                   Optional = dp.Optional,
+                   Sequence = dp.Sequence,
+                   ValidationExpression = dp.ValidationExpression,
+                   ValidationMessage = dp.ValidationMessage,
+                   DenominationParamID = dp.DenominationParamID,
+                   Value = dp.Value,
+                   ValueList = dp.ValueList
+               }).FirstOrDefault();
+
+            return denominatiaon;
+        }
+
+        public void EditDenominationParameter(DenominationParameterDTO dp)
+        {
+            var current = _denominationParamter.GetById(dp.Id);
+
+            current.Optional = dp.Optional;
+            current.Sequence = dp.Sequence;
+            current.ValidationExpression = dp.ValidationExpression;
+            current.ValidationMessage = dp.ValidationMessage;
+            current.DenominationParamID = dp.DenominationParamID;
+            current.Value = dp.Value;
+            current.ValueList = dp.ValueList;
+
+            _unitOfWork.SaveChanges();
+        }
+
+        public void DeleteDenominationParameter(int id)
+        {
+            _denominationParamter.Delete(id);
             _unitOfWork.SaveChanges();
         }
     }
