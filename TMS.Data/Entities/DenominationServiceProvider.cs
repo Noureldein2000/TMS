@@ -16,7 +16,7 @@ namespace TMS.Data.Entities
         public int? OldServiceID { get; set; }
         public bool ProviderHasFees { get; set; }
         public virtual ServiceProvider ServiceProvider { get; set; }
-        public virtual ICollection<ProviderServiceConfigeration> ProviderServiceConfigerations { get; set; }
+        public virtual ProviderServiceConfigeration ProviderServiceConfigerations { get; set; }
         public virtual ICollection<DenominationProviderConfiguration> DenominationProviderConfigerations { get; set; }
     }
 }

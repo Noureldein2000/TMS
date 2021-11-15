@@ -16,8 +16,7 @@ namespace TMS.Data.Configurations
                 .HasForeignKey(s => s.ServiceConfigerationID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(s => s.DenominationServiceProvider).WithMany(s => s.ProviderServiceConfigerations)
-               .HasForeignKey(s => s.DenominationServiceProviderID)
+            builder.HasOne(s => s.DenominationServiceProvider).WithOne(s => s.ProviderServiceConfigerations)
                .OnDelete(DeleteBehavior.NoAction);
         }
     }

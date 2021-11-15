@@ -10,5 +10,6 @@ namespace TMS.API.Models
         public DenominationModel Denomination { get; set; }
         public List<DenominationServiceProvidersModel> DenominationServiceProviders { get; set; }
         public List<DenominationParameterModel> DenominationParameters { get; set; }
+        public DenominationReceiptModel DenominationReceipt { get; set; }
     }
 }

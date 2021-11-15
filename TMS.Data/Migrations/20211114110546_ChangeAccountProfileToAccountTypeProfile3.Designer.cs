@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211114110546_ChangeAccountProfileToAccountTypeProfile3")]
+    partial class ChangeAccountProfileToAccountTypeProfile3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,8 +163,7 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DenominationID", "AccountTypeProfileID")
-                        .IsUnique();
+                    b.HasIndex("DenominationID");
 
                     b.ToTable("AccountTypeProfileDenominations");
                 });
@@ -577,13 +578,13 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 163, DateTimeKind.Local).AddTicks(5603),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 684, DateTimeKind.Local).AddTicks(6280),
                             Name = "FIXED"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 164, DateTimeKind.Local).AddTicks(8007),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 685, DateTimeKind.Local).AddTicks(9033),
                             Name = "DYNAMIC"
                         });
                 });
@@ -613,25 +614,25 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4328),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 687, DateTimeKind.Local).AddTicks(7847),
                             Name = "Number"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4341),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 687, DateTimeKind.Local).AddTicks(7870),
                             Name = "String"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4343),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 687, DateTimeKind.Local).AddTicks(7872),
                             Name = "List"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4345),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 687, DateTimeKind.Local).AddTicks(7873),
                             Name = "Date"
                         });
                 });
@@ -1179,28 +1180,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1578),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 707, DateTimeKind.Local).AddTicks(5898),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1650),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 707, DateTimeKind.Local).AddTicks(5972),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1653),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 707, DateTimeKind.Local).AddTicks(5974),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1654),
+                            CreationDate = new DateTime(2021, 11, 14, 13, 5, 45, 707, DateTimeKind.Local).AddTicks(5976),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });

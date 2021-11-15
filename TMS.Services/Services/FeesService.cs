@@ -17,7 +17,7 @@ namespace TMS.Services.Services
     {
         private readonly IBaseRepository<Fee, int> _fees;
         private readonly IBaseRepository<AccountFee, int> _accountFees;
-        private readonly IBaseRepository<AccountProfileFee, int> _accountProfileFee;
+        private readonly IBaseRepository<AccountTypeProfileFee, int> _accountTypeProfileFee;
         private readonly IBaseRepository<DenominationFee, int> _denominationFee;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -25,13 +25,13 @@ namespace TMS.Services.Services
         public FeesService(
             IBaseRepository<Fee, int> fees,
             IBaseRepository<AccountFee, int> accountFees,
-            IBaseRepository<AccountProfileFee, int> accountProfileFee,
+            IBaseRepository<AccountTypeProfileFee, int> accountTypeProfileFee,
             IBaseRepository<DenominationFee, int> denominationFee,
             IUnitOfWork unitOfWork)
         {
             _fees = fees;
             _accountFees = accountFees;
-            _accountProfileFee = accountProfileFee;
+            _accountTypeProfileFee = accountTypeProfileFee;
             _denominationFee = denominationFee;
             _unitOfWork = unitOfWork;
         }
@@ -134,8 +134,8 @@ namespace TMS.Services.Services
         }
         public IEnumerable<FeesDTO> GetAccountProfileFees(int denominationId, decimal originalAmount, int accountProfileId, out decimal sum, string language = "ar")
         {
-            var accountFees = _accountProfileFee.Getwhere(s => s.AccountProfileDenomination.DenominationID == denominationId &&
-                           s.AccountProfileDenomination.AccountProfileID == accountProfileId && s.Fee.Status == true
+            var accountFees = _accountTypeProfileFee.Getwhere(s => s.AccountTypeProfileDenomination.DenominationID == denominationId &&
+                           s.AccountTypeProfileDenomination.AccountTypeProfileID == accountProfileId && s.Fee.Status == true
                            && s.Fee.AmountFrom <= originalAmount
                           && s.Fee.AmountTo >= originalAmount
                           && s.Fee.StartDate <= DateTime.Today
@@ -145,7 +145,7 @@ namespace TMS.Services.Services
                               FeesTypeName = language == "en" ? s.Fee.FeesType.Name : s.Fee.FeesType.ArName,
                               Fees = s.Fee.PaymentModeID == 1 ? s.Fee.Value
                               : s.Fee.PaymentModeID == 2 ? (s.Fee.Value *
-                              (s.AccountProfileDenomination.Denomination.Value > 0 ? (s.AccountProfileDenomination.Denomination.Value * s.AccountProfileDenomination.Denomination.Currency.Value) : originalAmount)) / 100
+                              (s.AccountTypeProfileDenomination.Denomination.Value > 0 ? (s.AccountTypeProfileDenomination.Denomination.Value * s.AccountTypeProfileDenomination.Denomination.Currency.Value) : originalAmount)) / 100
                               : 0
                           }).ToList()
                           .GroupBy(s => s.FeesTypeID)

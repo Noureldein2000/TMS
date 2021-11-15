@@ -20,12 +20,20 @@ namespace TMS.Services.Services
         void AddDenomination(AddDenominationDTO denomination);
         void EditDenomination(DenominationDTO denomination);
         void ChangeStatus(int id);
-        void EditDenominationServiceProvdier(DenominationServiceProviderDTO model);
+        DenominationServiceProviderDTO EditDenominationServiceProvdier(DenominationServiceProviderDTO model);
+        DenominationServiceProviderDTO AddDenominationServiceProvdier(DenominationServiceProviderDTO model);
         EditDenominationDTO GetDenominationById(int id);
         DenominationServiceProviderDTO GetDenominationServiceProviderById(int id);
         void ChangeDenominationServiceProviderStatus(int id);
         DenominationParameterDTO GetDenominationParameterById(int id);
-        void EditDenominationParameter(DenominationParameterDTO model);
+        DenominationParameterDTO EditDenominationParameter(DenominationParameterDTO model);
+        DenominationParameterDTO AddDenominationParameter(DenominationParameterDTO model);
         void DeleteDenominationParameter(int id);
+        void EditDenominationReceiptData(DenominationReceiptDataDTO model);
+        DenominationReceiptParamDTO GetDenominationReceiptParamById(int id);
+        void EditDenominationReceiptParam(DenominationReceiptParamDTO model);
+        void ChangeDenominationReceiptParamStatus(int id);
+        void DeleteDenominationReceiptParam(int id);
+        void EditDenominationReceipt(DenominationReceiptDTO model);
     }
 }

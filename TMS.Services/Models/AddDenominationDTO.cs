@@ -10,5 +10,7 @@ namespace TMS.Services.Models
         public DenominationServiceProviderDTO DenominationServiceProvidersDto { get; set; }
         public ServiceConfigerationDTO ServiceConfigerationDto { get; set; }
         public DenominationParameterDTO DenominationParameter  { get; set; }
+        public DenominationReceiptDataDTO DenominationReceiptData { get; set; }
+        public List<DenominationReceiptParamDTO> DenominationReceiptParams { get; set; }
     }
 }

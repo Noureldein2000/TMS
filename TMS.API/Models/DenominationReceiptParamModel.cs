@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TMS.Data.Entities
+namespace TMS.API.Models
 {
-    public class DenominationReceiptParam : BaseEntity<int>
+    public class DenominationReceiptParamModel
     {
+        public int Id { get; set; }
         public int DenominationID { get; set; }
-        public virtual Denomination Denomination { get; set; }
         public int ParameterID { get; set; }
-        public virtual Parameter Parameter { get; set; }
+        public string ParameterName { get; set; }
         public bool Bold { get; set; }
         public int Alignment { get; set; }
         public bool Status { get; set; }

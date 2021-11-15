@@ -23,11 +23,10 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void AddParam(DenominationParamDTO model)
+        public DenominationParamDTO AddParam(DenominationParamDTO model)
         {
-            _serviceDenominationParam.Add(new DenominationParam
+            var addedentity = _serviceDenominationParam.Add(new DenominationParam
             {
-                ID = model.Id,
                 Label = model.Label,
                 Title = model.Title,
                 ParamKey = model.ParamKey,
@@ -36,6 +35,20 @@ namespace TMS.Services.Services
             });
 
             _unitOfWork.SaveChanges();
+
+            model.Id = addedentity.ID;
+
+            return _serviceDenominationParam.Getwhere(x => x.ID == model.Id).Select(x => new DenominationParamDTO
+            {
+                Id = x.ID,
+                Label = x.Label,
+                Title = x.Title,
+                ParamKey = x.ParamKey,
+                ValueModeID = x.ValueModeID,
+                ValueModeName = x.DenominationParamValueMode.Name,
+                ValueTypeID = x.ValueTypeID,
+                ValueTypeName = x.DenominationParamValueType.Name,
+            }).FirstOrDefault();
         }
 
         public void DeleteParam(int id)

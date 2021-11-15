@@ -19,6 +19,8 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
         private readonly IBaseRepository<DenominationParameter, int> _denominationParamter;
+        private readonly IBaseRepository<DenominationReceiptData, int> _denominationRecepitData;
+        private readonly IBaseRepository<DenominationReceiptParam, int> _denominationRecepitParam;
         private readonly IUnitOfWork _unitOfWork;
 
         public DenominationService(
@@ -28,6 +30,8 @@ namespace TMS.Services.Services
             IBaseRepository<Service, int> serviceRepository,
             IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository,
             IBaseRepository<DenominationParameter, int> denominationParamter,
+            IBaseRepository<DenominationReceiptData, int> denominationRecepitData,
+            IBaseRepository<DenominationReceiptParam, int> denominationRecepitParam,
             IUnitOfWork unitOfWork
             )
         {
@@ -37,6 +41,8 @@ namespace TMS.Services.Services
             _serviceRepository = serviceRepository;
             _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
             _denominationParamter = denominationParamter;
+            _denominationRecepitData = denominationRecepitData;
+            _denominationRecepitParam = denominationRecepitParam;
             _unitOfWork = unitOfWork;
         }
 
@@ -232,12 +238,9 @@ namespace TMS.Services.Services
                         OldServiceID=model.DenominationServiceProvidersDto.OldServiceId,
                         ServiceProviderID=model.DenominationServiceProvidersDto.ServiceProviderId,
                         Status=model.DenominationServiceProvidersDto.Status,
-                        ProviderServiceConfigerations=new List<ProviderServiceConfigeration>()
+                        ProviderServiceConfigerations=new ProviderServiceConfigeration
                         {
-                            new ProviderServiceConfigeration
-                            {
-                                 ServiceConfigerationID = model.ServiceConfigerationDto.Id
-                            }
+                          ServiceConfigerationID = model.ServiceConfigerationDto.Id
                         }
                     }
                 },
@@ -254,8 +257,20 @@ namespace TMS.Services.Services
                        ValueList=model.DenominationParameter.ValueList,
                     }
 
-                }
-
+                },
+                DenominationReceiptData = new DenominationReceiptData
+                {
+                    Title = model.DenominationReceiptData.Title,
+                    Disclaimer = model.DenominationReceiptData.Disclaimer,
+                    Footer = model.DenominationReceiptData.Footer
+                },
+                DenominationReceiptParams = model.DenominationReceiptParams.Select(x => new DenominationReceiptParam
+                {
+                    ParameterID = x.ParameterID,
+                    Bold = x.Bold,
+                    Alignment = x.Alignment,
+                    Status = x.Status
+                }).ToList()
             });
 
             _unitOfWork.SaveChanges();
@@ -305,9 +320,9 @@ namespace TMS.Services.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void EditDenominationServiceProvdier(DenominationServiceProviderDTO model)
+        public DenominationServiceProviderDTO EditDenominationServiceProvdier(DenominationServiceProviderDTO model)
         {
-            var current = _denominationServiceProviderRepository.GetById(model.Id);
+            var current = _denominationServiceProviderRepository.Getwhere(x=>x.ID==model.Id).FirstOrDefault();
 
             current.Balance = model.Balance;
             current.ProviderAmount = model.ProviderAmount;
@@ -315,10 +330,24 @@ namespace TMS.Services.Services
             current.ProviderHasFees = model.ProviderHasFees;
             current.OldServiceID = (int)model.OldServiceId;
             current.ServiceProviderID = model.ServiceProviderId;
-            current.Status = model.Status;
+            current.ProviderServiceConfigerations.ServiceConfigerationID = model.ServiceConfigerationId;
+            //current.Status = model.Status;
 
             _unitOfWork.SaveChanges();
 
+            return _denominationServiceProviderRepository.Getwhere(x => x.ID == current.ID).Select(d => new DenominationServiceProviderDTO
+            {
+                Id = d.ID,
+                DenominationId = d.DenominationID,
+                Balance = d.Balance,
+                ProviderAmount = d.ProviderAmount,
+                ProviderCode = d.ProviderCode,
+                ProviderHasFees = d.ProviderHasFees,
+                OldServiceId = (int)d.OldServiceID,
+                ServiceProviderId = d.ServiceProviderID,
+                ServiceProviderName = d.ServiceProvider.Name,
+                Status = d.Status,
+            }).FirstOrDefault();
         }
 
         public EditDenominationDTO GetDenominationById(int id)
@@ -378,7 +407,27 @@ namespace TMS.Services.Services
                         DenominationParamID = dp.DenominationParamID,
                         Value = dp.Value,
                         ValueList = dp.ValueList
-                    }).ToList()
+                    }).ToList(),
+                    DenominationRecepitDTO = new DenominationReceiptDTO
+                    {
+                        DenominationReceiptDataDTO = new DenominationReceiptDataDTO
+                        {
+                            Id = x.DenominationReceiptData.ID,
+                            Title = x.DenominationReceiptData.Title,
+                            Footer = x.DenominationReceiptData.Footer,
+                            Disclaimer = x.DenominationReceiptData.Disclaimer
+                        },
+                        DenominationReceiptParamDTOs = x.DenominationReceiptParams.Select(x => new DenominationReceiptParamDTO
+                        {
+                            ParameterID = x.ParameterID,
+                            ParameterName = x.Parameter.ProviderName,
+                            Bold = x.Bold,
+                            Alignment = x.Alignment,
+                            Status = x.Status,
+                            Id = x.ID,
+                            DenominationID = x.DenominationID
+                        }).ToList()
+                    }
                 }).FirstOrDefault();
 
             if (editDenominationModel == null)
@@ -402,6 +451,7 @@ namespace TMS.Services.Services
                     Status = dsp.Status,
                     ServiceProviderId = dsp.ServiceProviderID,
                     ServiceProviderName = dsp.ServiceProvider.Name,
+                    ServiceConfigerationId = dsp.ProviderServiceConfigerations.ServiceConfigerationID,
                     DenominationProviderConfigurationDto = dsp.DenominationProviderConfigerations.Select(psc => new DenominationProviderConfigurationDTO
                     {
                         ID = psc.ID,
@@ -440,7 +490,7 @@ namespace TMS.Services.Services
             return denominatiaon;
         }
 
-        public void EditDenominationParameter(DenominationParameterDTO dp)
+        public DenominationParameterDTO EditDenominationParameter(DenominationParameterDTO dp)
         {
             var current = _denominationParamter.GetById(dp.Id);
 
@@ -453,11 +503,150 @@ namespace TMS.Services.Services
             current.ValueList = dp.ValueList;
 
             _unitOfWork.SaveChanges();
+
+            return new DenominationParameterDTO
+            {
+                Id = current.ID,
+                DenominationID = current.DenominationID,
+                Optional = current.Optional,
+                Sequence = current.Sequence,
+                ValidationExpression = current.ValidationExpression,
+                ValidationMessage = current.ValidationMessage,
+                DenominationParamID = current.DenominationParamID,
+                Value = current.Value,
+                ValueList = current.ValueList
+            };
         }
 
         public void DeleteDenominationParameter(int id)
         {
             _denominationParamter.Delete(id);
+            _unitOfWork.SaveChanges();
+        }
+
+        public void EditDenominationReceiptData(DenominationReceiptDataDTO model)
+        {
+            var current = _denominationRecepitData.GetById(model.Id);
+            current.Title = model.Title;
+            current.Disclaimer = model.Disclaimer;
+            current.Footer = model.Footer;
+            _unitOfWork.SaveChanges();
+        }
+
+        public DenominationReceiptParamDTO GetDenominationReceiptParamById(int id)
+        {
+            return _denominationRecepitParam.Getwhere(x => x.ID == id).Select(x => new DenominationReceiptParamDTO()
+            {
+                Id = x.ID,
+                DenominationID = x.DenominationID,
+                Alignment = x.Alignment,
+                Bold = x.Bold,
+                ParameterID = x.ParameterID,
+                Status = x.Status
+            }).FirstOrDefault();
+        }
+
+        public void EditDenominationReceiptParam(DenominationReceiptParamDTO model)
+        {
+            var current = _denominationRecepitParam.GetById(model.Id);
+            current.Alignment = model.Alignment;
+            current.Bold = model.Bold;
+            current.ParameterID = model.ParameterID;
+
+            _unitOfWork.SaveChanges();
+        }
+
+        public void ChangeDenominationReceiptParamStatus(int id)
+        {
+            var current = _denominationRecepitParam.GetById(id);
+            current.Status = !current.Status;
+            _unitOfWork.SaveChanges();
+        }
+
+        public DenominationServiceProviderDTO AddDenominationServiceProvdier(DenominationServiceProviderDTO model)
+        {
+            var addedEntity = _denominationServiceProviderRepository.Add(new DenominationServiceProvider
+            {
+                DenominationID = model.DenominationId,
+                Balance = model.Balance,
+                ProviderAmount = model.ProviderAmount,
+                ProviderCode = model.ProviderCode,
+                ProviderHasFees = model.ProviderHasFees,
+                OldServiceID = (int)model.OldServiceId,
+                ServiceProviderID = model.ServiceProviderId,
+                Status = model.Status,
+                ProviderServiceConfigerations = new ProviderServiceConfigeration
+                {
+                    ServiceConfigerationID = model.ServiceConfigerationId
+                }
+            });
+
+            _unitOfWork.SaveChanges();
+
+            var id = addedEntity.ID;
+
+            return _denominationServiceProviderRepository.Getwhere(x => x.ID == id).Select(d => new DenominationServiceProviderDTO
+            {
+                Id = d.ID,
+                DenominationId = d.DenominationID,
+                Balance = d.Balance,
+                ProviderAmount = d.ProviderAmount,
+                ProviderCode = d.ProviderCode,
+                ProviderHasFees = d.ProviderHasFees,
+                OldServiceId = (int)d.OldServiceID,
+                ServiceProviderId = d.ServiceProviderID,
+                ServiceProviderName = d.ServiceProvider.Name,
+                Status = d.Status,
+                ServiceConfigerationId = d.ProviderServiceConfigerations.ServiceConfigerationID
+            }).FirstOrDefault();
+        }
+
+        public DenominationParameterDTO AddDenominationParameter(DenominationParameterDTO dp)
+        {
+            var addedEntity = _denominationParamter.Add(new DenominationParameter
+            {
+                Optional = dp.Optional,
+                DenominationID = dp.DenominationID,
+                Sequence = dp.Sequence,
+                ValidationExpression = dp.ValidationExpression,
+                ValidationMessage = dp.ValidationMessage,
+                DenominationParamID = dp.DenominationParamID,
+                Value = dp.Value,
+                ValueList = dp.ValueList
+            });
+
+            _unitOfWork.SaveChanges();
+
+            return new DenominationParameterDTO
+            {
+                Id = addedEntity.ID,
+                DenominationID = addedEntity.DenominationID,
+                Optional = addedEntity.Optional,
+                Sequence = addedEntity.Sequence,
+                ValidationExpression = addedEntity.ValidationExpression,
+                ValidationMessage = addedEntity.ValidationMessage,
+                DenominationParamID = addedEntity.DenominationParamID,
+                Value = addedEntity.Value,
+                ValueList = addedEntity.ValueList
+            };
+        }
+
+        public void EditDenominationReceipt(DenominationReceiptDTO model)
+        {
+            var current = _denominationRecepitData.GetById(model.DenominationReceiptDataDTO.Id);
+            current.Title = model.DenominationReceiptDataDTO.Title;
+            current.Disclaimer = model.DenominationReceiptDataDTO.Disclaimer;
+            current.Footer = model.DenominationReceiptDataDTO.Footer;
+
+            _unitOfWork.SaveChanges();
+            //DenomotionRevcpit param>>>>TODO Ebram
+
+
+        }
+
+        public void DeleteDenominationReceiptParam(int id)
+        {
+            _denominationRecepitParam.Delete(id);
             _unitOfWork.SaveChanges();
         }
     }

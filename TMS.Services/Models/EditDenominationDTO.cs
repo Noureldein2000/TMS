@@ -4,10 +4,11 @@ using System.Text;
 
 namespace TMS.Services.Models
 {
-   public class EditDenominationDTO
+    public class EditDenominationDTO
     {
         public DenominationDTO Denomination { get; set; }
         public List<DenominationServiceProviderDTO> DenominationServiceProvidersDto { get; set; }
-        public List<DenominationParameterDTO> DenominationParameterDTOs{ get; set; }
+        public List<DenominationParameterDTO> DenominationParameterDTOs { get; set; }
+        public DenominationReceiptDTO DenominationRecepitDTO { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace TMS.Services.Services
     {
         PagedResult<DenominationParamDTO> GetParams(int page, int pageSize, string language);
         DenominationParamDTO GetParamById(int id);
-        void AddParam(DenominationParamDTO model);
+        DenominationParamDTO AddParam(DenominationParamDTO model);
         void EditParam(DenominationParamDTO model);
         void DeleteParam(int id);
     }

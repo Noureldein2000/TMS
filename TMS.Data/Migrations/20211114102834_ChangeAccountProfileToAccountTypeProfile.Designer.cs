@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211114102834_ChangeAccountProfileToAccountTypeProfile")]
+    partial class ChangeAccountProfileToAccountTypeProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,7 +118,7 @@ namespace TMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountTypeProfileDenominationID")
+                    b.Property<int>("AccountProfileDenominationID")
                         .HasColumnType("int");
 
                     b.Property<int>("CommissionID")
@@ -130,11 +132,11 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AccountTypeProfileDenominationID");
+                    b.HasIndex("AccountProfileDenominationID");
 
                     b.HasIndex("CommissionID");
 
-                    b.ToTable("AccountTypeProfileCommissions");
+                    b.ToTable("AccountProfileCommissions");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileDenomination", b =>
@@ -144,7 +146,7 @@ namespace TMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountTypeProfileID")
+                    b.Property<int>("AccountProfileID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -161,10 +163,9 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DenominationID", "AccountTypeProfileID")
-                        .IsUnique();
+                    b.HasIndex("DenominationID");
 
-                    b.ToTable("AccountTypeProfileDenominations");
+                    b.ToTable("AccountProfileDenominations");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileFee", b =>
@@ -174,7 +175,7 @@ namespace TMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountTypeProfileDenominationID")
+                    b.Property<int>("AccountProfileDenominationID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -188,11 +189,11 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AccountTypeProfileDenominationID");
+                    b.HasIndex("AccountProfileDenominationID");
 
                     b.HasIndex("FeesID");
 
-                    b.ToTable("AccountTypeProfileFees");
+                    b.ToTable("AccountProfileFees");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.BillPaymentMode", b =>
@@ -577,13 +578,13 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 163, DateTimeKind.Local).AddTicks(5603),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 342, DateTimeKind.Local).AddTicks(1860),
                             Name = "FIXED"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 164, DateTimeKind.Local).AddTicks(8007),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 343, DateTimeKind.Local).AddTicks(6922),
                             Name = "DYNAMIC"
                         });
                 });
@@ -613,25 +614,25 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4328),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 345, DateTimeKind.Local).AddTicks(6189),
                             Name = "Number"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4341),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 345, DateTimeKind.Local).AddTicks(6205),
                             Name = "String"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4343),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 345, DateTimeKind.Local).AddTicks(6207),
                             Name = "List"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 166, DateTimeKind.Local).AddTicks(4345),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 345, DateTimeKind.Local).AddTicks(6209),
                             Name = "Date"
                         });
                 });
@@ -1179,28 +1180,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1578),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 366, DateTimeKind.Local).AddTicks(3663),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1650),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 366, DateTimeKind.Local).AddTicks(3745),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1653),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 366, DateTimeKind.Local).AddTicks(3747),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 15, 18, 58, 16, 184, DateTimeKind.Local).AddTicks(1654),
+                            CreationDate = new DateTime(2021, 11, 14, 12, 28, 33, 366, DateTimeKind.Local).AddTicks(3749),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -2029,16 +2030,16 @@ namespace TMS.Data.Migrations
 
             modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileCommission", b =>
                 {
-                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountTypeProfileDenomination")
-                        .WithMany("AccountTypeProfileCommissions")
-                        .HasForeignKey("AccountTypeProfileDenominationID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountProfileDenomination")
+                        .WithMany("AccountProfileCommissions")
+                        .HasForeignKey("AccountProfileDenominationID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TMS.Data.Entities.Commission", "Commission")
                         .WithMany("AccountTypeProfileCommissions")
                         .HasForeignKey("CommissionID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2053,9 +2054,9 @@ namespace TMS.Data.Migrations
 
             modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileFee", b =>
                 {
-                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountTypeProfileDenomination")
-                        .WithMany("AccountTypeProfileFees")
-                        .HasForeignKey("AccountTypeProfileDenominationID")
+                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountProfileDenomination")
+                        .WithMany("AccountProfileFees")
+                        .HasForeignKey("AccountProfileDenominationID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

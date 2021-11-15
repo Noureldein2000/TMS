@@ -13,5 +13,7 @@ namespace TMS.API.Models
         public DenominationProviderConfigerationModel DenominationProviderConfigeration { get; set; }
         public ServiceConfigerationModel ServiceConfigeration { get; set; }
         public DenominationParameterModel DenominationParameter { get; set; }
+        public DenominationReceiptDataModel DenominationReceiptData { get; set; }
+        public List<DenominationReceiptParamModel> DenominationReceiptParams { get; set; }
     }
 }

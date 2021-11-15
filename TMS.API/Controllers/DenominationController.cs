@@ -81,7 +81,12 @@ namespace TMS.API.Controllers
                 {
                     Denomination = MapToModel(model.Denomination),
                     DenominationServiceProviders = model.DenominationServiceProvidersDto.Select(x => MapToModel(x)).ToList(),
-                    DenominationParameters = model.DenominationParameterDTOs.Select(x => MapToModel(x)).ToList()
+                    DenominationParameters = model.DenominationParameterDTOs.Select(x => MapToModel(x)).ToList(),
+                    DenominationReceipt = new DenominationReceiptModel
+                    {
+                        DenominationReceiptData = MapToModel(model.DenominationRecepitDTO.DenominationReceiptDataDTO),
+                        DenominationReceiptParams = model.DenominationRecepitDTO.DenominationReceiptParamDTOs.Select(x => MapToModel(x)).ToList()
+                    }
                 });
             }
             catch (TMSException ex)
@@ -93,7 +98,6 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
-
         [HttpPut]
         [Route("EditDenomination")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -114,7 +118,6 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
-
         [HttpPut]
         [Route("ChangeStatus")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -153,7 +156,6 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
-
         [HttpGet]
         [Route("GetDenominationServiceProviderByDenominationId/{id}")]
         [ProducesResponseType(typeof(DenominationServiceProvidersModel), StatusCodes.Status200OK)]
@@ -175,13 +177,32 @@ namespace TMS.API.Controllers
         }
         [HttpPut]
         [Route("EditDenominationServiceProvider")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DenominationServiceProvidersModel), StatusCodes.Status200OK)]
         public IActionResult EditDenominationServiceProvider(DenominationServiceProvidersModel model)
         {
             try
             {
-                _denominationService.EditDenominationServiceProvdier(MapToDTO(model));
-                return Ok();
+                var result = _denominationService.EditDenominationServiceProvdier(MapToDTO(model));
+                return Ok(MapToModel(result));
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPost]
+        [Route("AddDenominationServiceProvdier")]
+        [ProducesResponseType(typeof(DenominationServiceProvidersModel), StatusCodes.Status200OK)]
+        public IActionResult AddDenominationServiceProvdier(DenominationServiceProvidersModel model)
+        {
+            try
+            {
+                var result = _denominationService.AddDenominationServiceProvdier(MapToDTO(model));
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {
@@ -213,13 +234,32 @@ namespace TMS.API.Controllers
         }
         [HttpPut]
         [Route("EditDenominationParameter")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DenominationParameterModel), StatusCodes.Status200OK)]
         public IActionResult EditDenominationParameter(DenominationParameterModel model)
         {
             try
             {
-                _denominationService.EditDenominationParameter(MapToDTO(model));
-                return Ok();
+                var result = _denominationService.EditDenominationParameter(MapToDTO(model));
+                return Ok(MapToModel(result));
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPost]
+        [Route("AddDenominationParameter")]
+        [ProducesResponseType(typeof(DenominationParameterModel), StatusCodes.Status200OK)]
+        public IActionResult AddDenominationParameter(DenominationParameterModel model)
+        {
+            try
+            {
+                var result = _denominationService.AddDenominationParameter(MapToDTO(model));
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {
@@ -249,8 +289,138 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpPut]
+        [Route("EditDenominationRecepitData")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditDenominationRecepitData(DenominationReceiptDataModel model)
+        {
+            try
+            {
+                _denominationService.EditDenominationReceiptData(MapToDTO(model));
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPut]
+        [Route("EditDenominationReceiptParam")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditDenominationReceiptParam(DenominationReceiptParamModel model)
+        {
+            try
+            {
+                _denominationService.EditDenominationReceiptParam(MapToDTO(model));
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPut]
+        [Route("ChangeDenominationReceiptParamStatus")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult ChangeDenominationReceiptParamStatus(int id)
+        {
+            try
+            {
+                _denominationService.ChangeDenominationReceiptParamStatus(id);
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpGet]
+        [Route("GetDenominationReceiptParamById/{id}")]
+        [ProducesResponseType(typeof(DenominationReceiptParamModel), StatusCodes.Status200OK)]
+        public IActionResult GetDenominationReceiptParamById(int id)
+        {
+            try
+            {
+                var model = _denominationService.GetDenominationReceiptParamById(id);
+                return Ok(MapToModel(model));
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpDelete]
+        [Route("DeleteDenominationReceiptParam/{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult DeleteDenominationReceiptParam(int id)
+        {
+            try
+            {
+                _denominationService.DeleteDenominationReceiptParam(id);
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpPut]
+        [Route("EditDenominationReceipt")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditDenominationReceipt(DenominationReceiptModel model)
+        {
+            try
+            {
+                _denominationService.EditDenominationReceipt(new DenominationReceiptDTO
+                {
+                    DenominationReceiptDataDTO = MapToDTO(model.DenominationReceiptData),
+                    DenominationReceiptParamDTOs = model.DenominationReceiptParams.Select(x => MapToDTO(x)).ToList(),
+                });
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         //Helper Methods
+        private AddDenominationDTO MapToDTO(AddDenominationModel model)
+        {
+            return new AddDenominationDTO
+            {
+                Denomination = MapToDTO(model.Denomination),
+                DenominationServiceProvidersDto = MapToDTO(model.DenominationServiceProviders),
+                ServiceConfigerationDto = MapToDTO(model.ServiceConfigeration),
+                DenominationParameter = MapToDTO(model.DenominationParameter),
+                DenominationReceiptData = MapToDTO(model.DenominationReceiptData),
+                DenominationReceiptParams = model.DenominationReceiptParams.Select(x => MapToDTO(x)).ToList()
+            };
+        }
         private DenominationModel MapToModel(DenominationDTO denomination)
         {
             return new DenominationModel
@@ -301,19 +471,10 @@ namespace TMS.API.Controllers
                 OldServiceId = (int)model.OldServiceId,
                 ServiceProviderId = model.ServiceProviderId,
                 ServiceProviderName = model.ServiceProviderName,
+                ServiceConfigerationId = model.ServiceConfigerationId,
                 Status = model.Status,
                 DenominationId = model.DenominationId,
                 DenominationProviderConfigurationModel = model.DenominationProviderConfigurationDto?.Select(x => MapToModel(x)).ToList()
-            };
-        }
-        private AddDenominationDTO MapToDTO(AddDenominationModel model)
-        {
-            return new AddDenominationDTO
-            {
-                Denomination = MapToDTO(model.Denomination),
-                DenominationServiceProvidersDto = MapToDTO(model.DenominationServiceProviders),
-                ServiceConfigerationDto = MapToDTO(model.ServiceConfigeration),
-                DenominationParameter = MapToDTO(model.DenominationParameter)
             };
         }
         private DenominationDTO MapToDTO(DenominationModel model)
@@ -351,7 +512,9 @@ namespace TMS.API.Controllers
                 ProviderHasFees = model.ProviderHasFees,
                 OldServiceId = (int)model.OldServiceId,
                 ServiceProviderId = model.ServiceProviderId,
+                ServiceProviderName = model.ServiceProviderName,
                 Status = model.Status,
+                ServiceConfigerationId = model.ServiceConfigerationId,
                 DenominationProviderConfigurationDto = model.DenominationProviderConfigurationModel?.Select(x => MapToDTO(x)).ToList()
             };
         }
@@ -424,6 +587,53 @@ namespace TMS.API.Controllers
                 DenominationParamID = model.DenominationParamID,
                 Value = model.Value,
                 ValueList = model.ValueList
+            };
+        }
+        private DenominationReceiptDataDTO MapToDTO(DenominationReceiptDataModel model)
+        {
+            return new DenominationReceiptDataDTO
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                Title = model.Title,
+                Disclaimer = model.Disclaimer,
+                Footer = model.Footer
+            };
+        }
+        private DenominationReceiptDataModel MapToModel(DenominationReceiptDataDTO model)
+        {
+            return new DenominationReceiptDataModel
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                Title = model.Title,
+                Disclaimer = model.Disclaimer,
+                Footer = model.Footer
+            };
+        }
+        private DenominationReceiptParamDTO MapToDTO(DenominationReceiptParamModel model)
+        {
+            return new DenominationReceiptParamDTO
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                ParameterID = model.ParameterID,
+                Bold = model.Bold,
+                Alignment = model.Alignment,
+                Status = model.Status
+            };
+        }
+        private DenominationReceiptParamModel MapToModel(DenominationReceiptParamDTO model)
+        {
+            return new DenominationReceiptParamModel
+            {
+                Id = model.Id,
+                DenominationID = model.DenominationID,
+                ParameterID = model.ParameterID,
+                ParameterName = model.ParameterName,
+                Bold = model.Bold,
+                Alignment = model.Alignment,
+                Status = model.Status
             };
         }
     }

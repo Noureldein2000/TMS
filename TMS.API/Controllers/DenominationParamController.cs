@@ -69,12 +69,12 @@ namespace TMS.API.Controllers
         }
         [HttpPost]
         [Route("AddParam")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DenominationParamModel), StatusCodes.Status200OK)]
         public IActionResult AddParam(DenominationParamModel model)
         {
             try
             {
-                _denominationParamsService.AddParam(new DenominationParamDTO()
+                var result = _denominationParamsService.AddParam(new DenominationParamDTO()
                 {
                     Label = model.Label,
                     Title = model.Title,
@@ -85,7 +85,7 @@ namespace TMS.API.Controllers
                     ValueTypeName = model.ValueTypeName
                 });
 
-                return Ok();
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {

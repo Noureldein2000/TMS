@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TMS.Data.Entities
+namespace TMS.Services.Models
 {
-    public class DenominationReceiptParam : BaseEntity<int>
+    public class DenominationReceiptParamDTO
     {
+        public int Id { get; set; }
         public int DenominationID { get; set; }
-        public virtual Denomination Denomination { get; set; }
         public int ParameterID { get; set; }
-        public virtual Parameter Parameter { get; set; }
+        public string ParameterName { get; set; }
         public bool Bold { get; set; }
         public int Alignment { get; set; }
         public bool Status { get; set; }

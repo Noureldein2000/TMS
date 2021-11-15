@@ -20,6 +20,6 @@ namespace TMS.Data.Entities
         public virtual PaymentMode PaymentMode { get; set; }
         public virtual ICollection<DenominationFee> DenominationFees { get; set; }
         public virtual ICollection<AccountFee> AccountFees { get; set; }
-        public virtual ICollection<AccountProfileFee> AccountProfileFees { get; set; }
+        public virtual ICollection<AccountTypeProfileFee> AccountTypeProfileFees { get; set; }
     }
 }

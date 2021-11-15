@@ -10,6 +10,7 @@ namespace TMS.API.Models
         public int Id { get; set; }
         public int DenominationId { get; set; }
         public int ServiceProviderId { get; set; }
+        public int ServiceConfigerationId { get; set; }
         public string ServiceProviderName { get; set; }
         public decimal Balance { get; set; }
         public bool Status { get; set; }
