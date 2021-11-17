@@ -17,6 +17,5 @@ namespace TMS.Data.Entities
         public virtual ServiceCategory Parent { get; set; }
         public virtual ICollection<ServiceCategory> Children { get; set; }
         public virtual ICollection<Denomination> Denominations { get; set; }
-        public virtual ICollection<Service> Services { get; set; }
     }
 }

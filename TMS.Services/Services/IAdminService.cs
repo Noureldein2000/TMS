@@ -9,6 +9,7 @@ namespace TMS.Services.Services
     public interface IAdminService
     {
         PagedResult<AdminServiceDTO> GetServices(int pageNumber, int pageSize, string language = "ar");
+        PagedResult<AdminServiceDTO> SearchServices(int? dropDownFilter, string searchKey, int pageNumber, int pageSize, string language = "ar");
         void AddService(AdminServiceDTO service);
         AdminServiceDTO GetServiceById(int id);
         void EditService(AdminServiceDTO service);

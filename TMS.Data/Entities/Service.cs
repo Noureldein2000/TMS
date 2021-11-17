@@ -15,8 +15,6 @@ namespace TMS.Data.Entities
         public string Code { get; set; }
         public int ServiceEntityID { get; set; }
         public virtual ServiceEntity ServiceEntity { get; set; }
-        public int? ServiceCategoryID { get; set; }
-        public virtual ServiceCategory ServiceCategory { get; set; }
         public string PathClass { get; set; }
         public ServiceClassType ClassType { get; set; }
         public virtual ICollection<Denomination> Denominations { get; set; }
