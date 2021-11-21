@@ -35,5 +35,6 @@ namespace TMS.Services.Services
         void ChangeDenominationReceiptParamStatus(int id);
         void DeleteDenominationReceiptParam(int id);
         void EditDenominationReceipt(DenominationReceiptDTO model);
+        PagedResult<DenominationDTO> SearchDenominations(string serviceName, string serviceCode, string denomninationName, string denomniationCode,int page,int pageSize, string language);
     }
 }

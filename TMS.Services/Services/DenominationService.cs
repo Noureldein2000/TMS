@@ -322,7 +322,7 @@ namespace TMS.Services.Services
 
         public DenominationServiceProviderDTO EditDenominationServiceProvdier(DenominationServiceProviderDTO model)
         {
-            var current = _denominationServiceProviderRepository.Getwhere(x=>x.ID==model.Id).FirstOrDefault();
+            var current = _denominationServiceProviderRepository.Getwhere(x => x.ID == model.Id).FirstOrDefault();
 
             current.Balance = model.Balance;
             current.ProviderAmount = model.ProviderAmount;
@@ -648,6 +648,74 @@ namespace TMS.Services.Services
         {
             _denominationRecepitParam.Delete(id);
             _unitOfWork.SaveChanges();
+        }
+
+        public PagedResult<DenominationDTO> SearchDenominations(string serviceName, string serviceCode, string denomninationName, string denomniationCode, int page, int pageSize, string language)
+        {
+            var denomination = _denominationRepository.Getwhere(d =>
+               (string.IsNullOrEmpty(serviceName) || (d.Service.Name.Contains(serviceName) || d.Service.ArName.Contains(serviceName)))
+            && (string.IsNullOrEmpty(serviceCode) || d.Service.ID == int.Parse(serviceCode))
+            && (string.IsNullOrEmpty(denomninationName) || d.Name.Contains(denomninationName))
+            && (string.IsNullOrEmpty(denomniationCode) || d.ID == int.Parse(denomniationCode))
+            ).Include(s => s.Service).ThenInclude(x => x.ServiceEntity)
+               .Select(denomination => new
+               {
+                   Id = denomination.ID,
+                   Name = denomination.Name,
+                   APIValue = denomination.APIValue,
+                   CurrencyID = (int)denomination.CurrencyID,
+                   ServiceID = denomination.ServiceID,
+                   ServiceName = language == "en" ? denomination.Service.Name : denomination.Service.ArName,
+                   Status = denomination.Status,
+                   ClassType = denomination.ClassType,
+                   ServiceProviderId = denomination.DenominationServiceProviders.Select(s => s.ServiceProviderID).FirstOrDefault(),
+                   Interval = denomination.Interval,
+                   MaxValue = denomination.MaxValue,
+                   MinValue = denomination.MinValue,
+                   Inquirable = denomination.Inquirable,
+                   Value = denomination.Value,
+                   BillPaymentModeID = denomination.BillPaymentModeID,
+                   BillPaymentModeName = language == "en" ? denomination.BillPaymentMode.Name : denomination.BillPaymentMode.ArName,
+                   PaymentModeID = denomination.PaymentModeID,
+                   PaymentModeName = language == "en" ? denomination.PaymentMode.Name : denomination.PaymentMode.ArName,
+                   OldDenominationID = denomination.OldDenominationID,
+                   ServiceEntity = denomination.Service.ServiceEntity.ArName,
+                   CreationDate = denomination.CreationDate
+               });
+
+            var count = denomination.Count();
+
+            var resultList = denomination.OrderByDescending(ar => ar.CreationDate)
+          .Skip(page - 1).Take(pageSize)
+          .ToList();
+
+            return new PagedResult<DenominationDTO>
+            {
+                Results = resultList.Select(denomination => new DenominationDTO
+                {
+                    Id = denomination.Id,
+                    Name = denomination.Name,
+                    APIValue = denomination.APIValue,
+                    CurrencyID = (int)denomination.CurrencyID,
+                    ServiceID = denomination.ServiceID,
+                    ServiceName = denomination.ServiceName,
+                    Status = denomination.Status,
+                    ClassType = denomination.ClassType,
+                    ServiceProviderId = denomination.ServiceProviderId,
+                    Interval = denomination.Interval,
+                    MaxValue = denomination.MaxValue,
+                    MinValue = denomination.MinValue,
+                    Inquirable = denomination.Inquirable,
+                    Value = denomination.Value,
+                    BillPaymentModeID = denomination.BillPaymentModeID,
+                    BillPaymentModeName = denomination.BillPaymentModeName,
+                    PaymentModeID = denomination.PaymentModeID,
+                    PaymentModeName = denomination.PaymentModeName,
+                    OldDenominationID = denomination.OldDenominationID,
+                    ServiceEntity = denomination.ServiceEntity
+                }).ToList(),
+                PageCount = count
+            };
         }
     }
 }

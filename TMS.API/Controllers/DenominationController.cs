@@ -407,6 +407,29 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpGet]
+        [Route("SearchDenominations")]
+        [ProducesResponseType(typeof(PagedResult<DenominationModel>), StatusCodes.Status200OK)]
+        public IActionResult SearchDenominations(string serviceName, string serviceCode, string denomninationName, string denomniationCode, int pageNumber = 1, int pageSize = 10, string language = "ar")
+        {
+            try
+            {
+                var result = _denominationService.SearchDenominations(serviceName, serviceCode, denomninationName, denomniationCode, pageNumber, pageSize, language);
+                return Ok(new PagedResult<DenominationModel>
+                {
+                    Results = result.Results.Select(ard => MapToModel(ard)).ToList(),
+                    PageCount = result.PageCount
+                });
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         //Helper Methods
         private AddDenominationDTO MapToDTO(AddDenominationModel model)
@@ -428,6 +451,7 @@ namespace TMS.API.Controllers
                 Id = denomination.Id,
                 Name = denomination.Name,
                 ServiceID = denomination.ServiceID,
+                ServiceName = denomination.ServiceName,
                 Status = denomination.Status,
                 ServiceProviderId = denomination.ServiceProviderId,
                 PaymentModeID = denomination.PaymentModeID,
