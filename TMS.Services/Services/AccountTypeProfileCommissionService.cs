@@ -69,7 +69,7 @@ namespace TMS.Services.Services
             var count = accountTypeProfileCommission.Count();
 
             var resultList = accountTypeProfileCommission.OrderByDescending(ar => ar.CreationDate)
-          .Skip(page - 1).Take(pageSize)
+          .Skip((page * pageSize) - pageSize).Take(pageSize)
           .ToList();
 
             return new PagedResult<AccountTypeProfileCommissionDTO>
