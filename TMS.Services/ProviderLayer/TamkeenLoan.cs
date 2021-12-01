@@ -18,7 +18,7 @@ using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
 {
-    public class BTech : IBaseProvider
+    public class TamkeenLoan : IBaseProvider
     {
         private readonly IDenominationService _denominationService;
         private readonly IProviderService _providerService;
@@ -29,7 +29,7 @@ namespace TMS.Services.ProviderLayer
         private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
-        public BTech(
+        public TamkeenLoan(
            IDenominationService denominationService,
            IProviderService providerService,
            ISwitchService switchService,
@@ -50,6 +50,7 @@ namespace TMS.Services.ProviderLayer
             _transactionService = transactionService;
             _accountsApi = new AccountsApi("http://localhost:5000");
         }
+
         public FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id)
         {
             var feeResponse = new FeesResponseDTO();
@@ -62,17 +63,17 @@ namespace TMS.Services.ProviderLayer
                 CreatedBy = userId,
                 DenominationID = id
             });
-            var providerResponseParams = _providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees");
-            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+            //var providerResponseParams = _providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees");
+            //var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
 
-            var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
-            foreach (var item in bills)
-            {
-                feesModel.Amount = item.Amount;
-            }
+            //var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
+            //foreach (var item in bills)
+            //{
+            //    feesModel.Amount = item.Amount;
+            //}
             var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
             feeResponse.Amount = Math.Round(feesModel.Amount, 3);
-            feeResponse.Fees = Math.Round(feesAmount + decimal.Parse(amountFees), 3);
+            feeResponse.Fees = Math.Round(feesAmount +0, 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
             var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
             {
@@ -166,6 +167,7 @@ namespace TMS.Services.ProviderLayer
             }
 
             var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            var denomination = _denominationService.GetDenomination(id);
 
             var newRequestId = _transactionService.AddRequest(new RequestDTO
             {
@@ -197,25 +199,22 @@ namespace TMS.Services.ProviderLayer
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
 
-            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber",
-                "AsyncRqUID", "ExtraBillInfo", "amountFees");
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "BranchNumber",
+                "DueDate", "AccountNumber", "Balance");
 
-            var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
-            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
-            var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
-            var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
-            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+            var branchNumber = providerResponseParams.Where(s => s.ProviderName == "BranchNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            var dueDate = providerResponseParams.Where(s => s.ProviderName == "DueDate").Select(s => s.Value).FirstOrDefault().ToString();
+            var accountNumber = providerResponseParams.Where(s => s.ProviderName == "AccountNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            var balanceParam = providerResponseParams.Where(s => s.ProviderName == "Balance").Select(s => s.Value).FirstOrDefault().ToString();
 
-            var switchRequestDto = new SwitchPaymentRequestBodyDTO
+            var switchRequestDto = new PaymentLoan
             {
-                BillsCount = 1,
-                PaymentCode = payModel.BillingAccount,
-                TransactionId = newRequestId,
-                AsyncRqUID = asyncRqUID,
+                AccountNumber = accountNumber,
                 Amount = payModel.Amount,
-                BillRefNumber = billReferenceNumber,
-                ExtraBillInfo = extraBillInfo,
-                Fees = amountFees,
+                BillingAccount = payModel.BillingAccount,
+                UserName = serviceConfiguration.UserName,
+                Password = serviceConfiguration.UserPassword,
+                RequestID = newRequestId.ToString()
             };
             var switchEndPoint = new SwitchEndPointDTO
             {
@@ -230,7 +229,8 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ");
+            //Note: third paramter maybe puted in url
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "", "Basic ");
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 
@@ -238,38 +238,51 @@ namespace TMS.Services.ProviderLayer
             {
                 JObject o = JObject.Parse(response);
 
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
+                if (o["code"].ToString() == "200")
+                {
+                    paymentResponse.InvoiceId = _transactionService.AddInvoiceTamkeenLoan(payModel.AccountId, payModel.Amount, userId, payModel.BillingAccount, int.Parse(denomination.OldDenominationID),
+                    211, totalAmount, fees, accountNumber, o["providerTransactionID"].ToString(), response, branchNumber, dueDate);
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
-                paymentResponse.TransactionId = transactionId;
-                // confirm sof
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                    new List<int?> { transactionId });
+                    var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                    paymentResponse.TransactionId = transactionId;
+                    // confirm sof
+                    await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                        new List<int?> { transactionId });
 
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+                    _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+                    _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                    printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
-                // add commission
-                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
+                    // add commission
+                    _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
+                }
+                else
+                {
+                    await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
+                    _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
+                    _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
+                    // GET MESSAGE PROVIDER ID
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    throw new TMSException(message.Message, message.Code);
+                }
             }
             else if (response.Contains("timed out"))
             {
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceTamkeenLoan(payModel.AccountId, payModel.Amount, userId, payModel.BillingAccount, int.Parse(denomination.OldDenominationID),
+                   211, totalAmount, fees, accountNumber, "", response, branchNumber, dueDate);
+
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                paymentResponse.TransactionId = transactionId;
 
                 paymentResponse.TransactionId = transactionId;
                 // confirm sof
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                    new List<int?> { transactionId });
+                //await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                //    new List<int?> { transactionId });
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
                 _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
-
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
 
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
             }
@@ -282,6 +295,7 @@ namespace TMS.Services.ProviderLayer
                 var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
+
             paymentResponse.Code = 200;
             paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();
@@ -296,12 +310,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId)
         {
             var inquiryResponse = new InquiryResponseDTO();
-            string countRemainInstalment = "",
-                requestCode,
-                countInstalmentPenalty = "",
-                valueInstalmentPenalty = "";
             decimal totalAmount;
-            string[] countRemainInstalmentList, requestCodeList;
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
@@ -351,242 +360,164 @@ namespace TMS.Services.ProviderLayer
                providerServiceRequestId,
                LoggingType.ProviderRequest);
 
-
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
-
+            var url = switchEndPoint.URL + "?requestID=" + providerServiceRequestId + "&billingAccount=" + inquiryModel.BillingAccount + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword;
+            var response = _switchService.Connect(switchEndPoint, url);
+            response = "{\"code\":200,\"message\":\"Successful Inquiry.\",\"requestID\":\"70779\",\"AccountNumber\":\"002-00000461\",\"BranchNumber\":\"\u00d8\u00a7\u00d9\u201e\u00d8\u00a3\u00d9\u201a\u00d8\u00b5\u00d8\u00b1\",\"Balance\":\"EGP15,081.00\",\"DueDate\":\"01-08-2022\",\"totalAmount\":2117.0,\"totalPaidAmount\":\"EGP0.00\",\"penaltyDue\":\"EGP0.00\",\"penaltyPaid\":\"EGP0.00\",\"openAmount\":0.0,\"providerTransactionID\":\"59730\",\"loanNumber\":0}";
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 
             if (Validates.CheckJSON(response))
             {
                 JObject o = JObject.Parse(response);
-
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-
-                totalAmount = decimal.Parse(o["amount"].ToString()) + decimal.Parse(o["fees"].ToString());
-
-                string[] customerDetail = o["extraBillInfo"].ToString().Split(';');
-                string SEQ1 = customerDetail[0];
-                string SEQ2 = customerDetail[1];
-                string SEQ3 = customerDetail[2];
-                string SEQ4 = customerDetail[3];
-
-                string[] customerName = SEQ1.Split(':');
-                string[] instalmentDate = SEQ2.Split(':');
-
-                if (o["serviceId"].ToString() == "309")
+                if (o["code"].ToString() == "200")
                 {
-                    string[] SEQ3_1 = SEQ3.Split(':');
-                    string[] CountInstalmentPenaltyList = SEQ3_1[1].Split(' ');
-                    countInstalmentPenalty = CountInstalmentPenaltyList[1];
-                    string[] ValueInstalmentPenaltyList = SEQ3_1[2].Split('ج');
-                    valueInstalmentPenalty = ValueInstalmentPenaltyList[0].Replace(" ", "");
-                    string[] SEQ4_1 = SEQ4.Split(' ');
-                    countRemainInstalmentList = SEQ4_1[2].Split(':');
-                    requestCodeList = SEQ4_1[4].Split(':');
-                    countRemainInstalment = countRemainInstalmentList[1].ToString();
-                    requestCode = requestCodeList[1].ToString();
+                    _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+
+                    //totalAmount = decimal.Parse(o["openAmount"].ToString());
+                    totalAmount = decimal.Parse(o["totalAmount"].ToString());
+
+                    var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
+                    {
+                        ProviderServiceRequestID = providerServiceRequestId,
+                        TotalAmount = totalAmount
+                    });
+
+                    _providerService.AddProviderServiceResponseParam(
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "AccountNumber",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["AccountNumber"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "BranchNumber",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["BranchNumber"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "Balance",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["Balance"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "DueDate",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["DueDate"].ToString()
+                        },
+                         new ProviderServiceResponseParamDTO
+                         {
+                             ParameterName = "totalAmount",
+                             ServiceRequestID = providerServiceResponseId,
+                             Value = o["totalAmount"].ToString()
+                         },
+                        //new ProviderServiceResponseParamDTO
+                        //{
+                        //    ParameterName = "openAmount",
+                        //    ServiceRequestID = providerServiceResponseId,
+                        //    Value = o["openAmount"].ToString()
+                        //},
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "totalPaidAmount",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["totalPaidAmount"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "penaltyDue",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["penaltyDue"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "penaltyPaid",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["penaltyPaid"].ToString()
+                        }
+                        //new ProviderServiceResponseParamDTO
+                        //{
+                        //    ParameterName = "loanNumber",
+                        //    ServiceRequestID = providerServiceResponseId,
+                        //    Value = o["loanNumber"].ToString()
+                        //}
+                        );
+
+                    inquiryResponse.Data.AddRange(new List<DataDTO>
+                {
+                    new DataDTO
+                    {
+                        Key = "AccountNumber",
+                        Value = o["AccountNumber"].ToString()
+                    },
+                        new DataDTO
+                    {
+                        Key = "BranchNumber",
+                        Value = o["BranchNumber"].ToString()
+                    },
+                        new DataDTO
+                    {
+                        Key = "Balance",
+                        Value = o["Balance"].ToString()
+                    },
+                        new DataDTO
+                    {
+                        Key = "DueDate",
+                        Value = o["DueDate"].ToString()
+                    }, new DataDTO
+                    {
+                        Key = "totalAmount",
+                        Value = o["totalAmount"].ToString()
+                    }
+                    //,    new DataDTO
+                    //{
+                    //    Key = "openAmount",
+                    //    Value = o["openAmount"].ToString()
+                    //}
+                    , new DataDTO
+                    {
+                        Key = "totalPaidAmount",
+                        Value = o["totalPaidAmount"].ToString()
+                    }, new DataDTO
+                    {
+                        Key = "penaltyDue",
+                        Value = o["penaltyDue"].ToString()
+                    }, new DataDTO
+                    {
+                        Key = "totalPaidAmount",
+                        Value = o["totalPaidAmount"].ToString()
+                    }, new DataDTO
+                    {
+                        Key = "penaltyPaid",
+                        Value = o["penaltyPaid"].ToString()
+                    },
+                    //    new DataDTO
+                    //{
+                    //    Key = "loanNumber",
+                    //    Value = o["loanNumber"].ToString()
+                    //}
+                  });
+
+                    inquiryResponse.Brn = providerServiceRequestId;
+                    inquiryResponse.TotalAmount = totalAmount;
+                    inquiryResponse.Invoices = new List<InvoiceDTO>
+                    {
+                    new InvoiceDTO
+                        {
+                          Amount = decimal.Parse(o["totalAmount"].ToString()),
+                          Sequence = 1
+                        }
+                    };
                 }
                 else
                 {
-                    requestCodeList = SEQ4.Split(':');
-                    requestCode = requestCodeList[1].ToString();
+                    _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    throw new TMSException(message.Message, message.Code);
+
                 }
-                var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
-                {
-                    ProviderServiceRequestID = providerServiceRequestId,
-                    TotalAmount = totalAmount
-                });
-
-                _providerService.AddProviderServiceResponseParam(
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "amountFees",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = o["fees"].ToString()
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "billReferenceNumber",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = o["billRefNumber"].ToString()
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "AsyncRqUID",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = o["asyncRqUID"].ToString()
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "ExtraBillInfo",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = o["extraBillInfo"].ToString()
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "arabicName",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = customerName[1]
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "PaymentDueDate",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = instalmentDate[2]
-                    },
-                    new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "RequestCode",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = requestCode
-                    });
-
-                if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
-                {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "CountInstalmentPenalty",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = countInstalmentPenalty
-                    });
-                }
-
-                if (!string.IsNullOrEmpty(valueInstalmentPenalty))
-                {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "ValueInstalmentPenalty",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = valueInstalmentPenalty
-                    });
-                }
-
-                if (string.IsNullOrEmpty(countRemainInstalment))
-                {
-                    _providerService.AddProviderServiceResponseParam(new ProviderServiceResponseParamDTO
-                    {
-                        ParameterName = "CountRemainInstalment",
-                        ServiceRequestID = providerServiceResponseId,
-                        Value = countRemainInstalment
-                    });
-                }
-
-                var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "ValueInstalmentPenalty", "CountRemainInstalment", "arabicName", "PaymentDueDate", "RequestCode", "CountInstalmentPenalty");
-
-                if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
-                {
-                    inquiryResponse.Data.Add(new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "CountInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = countInstalmentPenalty
-                    });
-                }
-                
-                if (!string.IsNullOrEmpty(valueInstalmentPenalty))
-                {
-                    inquiryResponse.Data.Add(new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "ValueInstalmentPenalty").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = valueInstalmentPenalty
-                    });
-                }
-
-                if (string.IsNullOrEmpty(countRemainInstalment))
-                {
-                    inquiryResponse.Data.Add(new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "CountRemainInstalment").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = countRemainInstalment
-                    });
-                }
-
-                inquiryResponse.Data.AddRange(new List<DataDTO>
-                {
-                    new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "arabicName").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = customerName[1]
-                    },
-                    new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "PaymentDueDate").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = instalmentDate[2]
-                    },
-
-                    new DataDTO
-                    {
-                        Key = responseParams.Where(p => p.ProviderName == "RequestCode").Select(s => s.ParameterName).FirstOrDefault(),
-                        Value = requestCode
-                    },
-                });
-
-                var inquiryId = _inquiryBillService.AddInquiryBill(new InquiryBillDTO
-                {
-                    Amount = totalAmount,
-                    ProviderServiceResponseID = providerServiceResponseId,
-                    Sequence = 1
-                });
-
-                _inquiryBillService.AddReceiptBodyParam(
-                    new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "Provider Service Fees",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = o["fees"].ToString()
-                    },
-                    new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "arabicName",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = customerName[1]
-                    },
-                    new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "PaymentDueDate",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = instalmentDate[2]
-                    },
-                    new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "RequestCode",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = requestCode
-                    });
-
-                if (!string.IsNullOrEmpty(countInstalmentPenalty) && countInstalmentPenalty != "0")
-                    _inquiryBillService.AddReceiptBodyParam(new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "CountInstalmentPenalty",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        TransactionID = 0,
-                        Value = countInstalmentPenalty
-                    });
-                if (!string.IsNullOrEmpty(valueInstalmentPenalty))
-                    _inquiryBillService.AddReceiptBodyParam(new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "ValueInstalmentPenalty",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = valueInstalmentPenalty
-                    });
-                if (!string.IsNullOrEmpty(countRemainInstalment))
-                    _inquiryBillService.AddReceiptBodyParam(new ReceiptBodyParamDTO
-                    {
-                        ParameterName = "CountRemainInstalment",
-                        ProviderServiceRequestID = providerServiceRequestId,
-                        Value = countRemainInstalment
-                    });
-
-                inquiryResponse.Brn = providerServiceRequestId;
-                inquiryResponse.TotalAmount = totalAmount;
-                inquiryResponse.Invoices = new List<InvoiceDTO>
-                {
-                    new InvoiceDTO
-                    {
-                        Amount = decimal.Parse(o["amount"].ToString()),
-                        Sequence = 1
-                    }
-                };
             }
             else
             {

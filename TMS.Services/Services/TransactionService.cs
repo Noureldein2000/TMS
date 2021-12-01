@@ -945,5 +945,52 @@ namespace TMS.Services.Services
             cmd.Parameters.AddWithValue("@TransId", transId);
             return InitiateSqlCommand(cmd);
         }
+        public int AddInvoiceSocialInsurance(int accountId, decimal basicValue, int userId, string BillingAccount, int serviceId, int servId, decimal value, decimal addedMoney)
+        {
+            using var cmd = new SqlCommand("[SocialInsurance_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@CenterId", accountId);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@UserId", value);
+            cmd.Parameters.AddWithValue("@BillingAccount", BillingAccount);
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            cmd.Parameters.AddWithValue("@value", value);
+            cmd.Parameters.AddWithValue("@AddedMoney", addedMoney);
+            return InitiateSqlCommand(cmd);
+        }
+        public int AddInvoiceTamkeenLoan(int accountId, decimal basicValue, int userId, string BillingAccount, int serviceId, int servId, decimal value, decimal addedMoney, string accountNumber, string providerTransactionID, string providerResponse, string branchNumber, string dueDate)
+        {
+            using var cmd = new SqlCommand("[TamkeenLoan_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@CenterId", accountId);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@UserId", value);
+            cmd.Parameters.AddWithValue("@BillingAccount", BillingAccount);
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            cmd.Parameters.AddWithValue("@value", value);
+            cmd.Parameters.AddWithValue("@AddedMoney", addedMoney);
+            cmd.Parameters.AddWithValue("@AccountNumber", accountNumber);
+            cmd.Parameters.AddWithValue("@ProviderTransactionID", providerTransactionID);
+            cmd.Parameters.AddWithValue("@Provider_Response", providerResponse);
+            cmd.Parameters.AddWithValue("@BranchNumber", branchNumber);
+            cmd.Parameters.AddWithValue("@DueDate", dueDate);
+            return InitiateSqlCommand(cmd);
+        }
+
+        public int AddInvoiceTalabat(string requestId, decimal basicValue, int userId, int accountId, int serviceId, decimal addedMoney, string restaurantCode)
+        {
+            using var cmd = new SqlCommand("[Talabat_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RequestId", requestId);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@CenterId", accountId);
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@AddedMoney", addedMoney);
+            cmd.Parameters.AddWithValue("@RestaurantCode", restaurantCode);
+            return InitiateSqlCommand(cmd);
+        }
     }
 }

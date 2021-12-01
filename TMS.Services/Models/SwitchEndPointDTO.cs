@@ -14,4 +14,6 @@ namespace TMS.Services.Models
         public IEnumerable<ServiceConfigParmsDTO> ServiceConfigParms { get; set; }
     }
 
+    public class EmptyObject { }
+
 }

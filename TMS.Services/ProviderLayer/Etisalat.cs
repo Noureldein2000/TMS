@@ -339,7 +339,7 @@ namespace TMS.Services.ProviderLayer
 
             string url = switchEndPoint.URL + "requestID=" + providerServiceRequestId + "&phone=" + payModel.BillingAccount + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword + "&amount=" + payModel.Amount;
             switchEndPoint.URL = url;
-            var response = _switchService.Connect(new test(), switchEndPoint, "", "Basic ", UrlType.Fixed);
+            var response = _switchService.Connect(new EmptyObject(), switchEndPoint, "", "Basic ", UrlType.Fixed);
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);

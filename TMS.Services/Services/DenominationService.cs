@@ -21,6 +21,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<DenominationParameter, int> _denominationParamter;
         private readonly IBaseRepository<DenominationReceiptData, int> _denominationRecepitData;
         private readonly IBaseRepository<DenominationReceiptParam, int> _denominationRecepitParam;
+        private readonly IBaseRepository<Restaurant, int> _resturant;
         private readonly IUnitOfWork _unitOfWork;
 
         public DenominationService(
@@ -32,6 +33,7 @@ namespace TMS.Services.Services
             IBaseRepository<DenominationParameter, int> denominationParamter,
             IBaseRepository<DenominationReceiptData, int> denominationRecepitData,
             IBaseRepository<DenominationReceiptParam, int> denominationRecepitParam,
+            IBaseRepository<Restaurant, int> resturant,
             IUnitOfWork unitOfWork
             )
         {
@@ -43,6 +45,7 @@ namespace TMS.Services.Services
             _denominationParamter = denominationParamter;
             _denominationRecepitData = denominationRecepitData;
             _denominationRecepitParam = denominationRecepitParam;
+            _resturant = resturant;
             _unitOfWork = unitOfWork;
         }
 
@@ -716,6 +719,17 @@ namespace TMS.Services.Services
                 }).ToList(),
                 PageCount = count
             };
+        }
+
+        public RestaurantDTO GetResturants(string code,string language)
+        {
+            return _resturant.Getwhere(x=>x.RestaurantCode==code).Select(x => new RestaurantDTO
+            {
+                ID = x.ID,
+                RestaurantCode = x.RestaurantCode,
+                RestaurantName = language == "en" ? x.RestaurantName : x.RestaurantNameAr,
+                CreationDate = x.CreationDate
+            }).FirstOrDefault();
         }
     }
 }
