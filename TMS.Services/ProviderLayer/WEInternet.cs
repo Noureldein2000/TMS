@@ -98,7 +98,7 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ", UrlType.Custom);
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
@@ -338,7 +338,7 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.submitPayment.ToString(), "Basic ");
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.submitPayment.ToString(), "Basic ", UrlType.Custom);
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 
@@ -441,7 +441,7 @@ namespace TMS.Services.ProviderLayer
                           LoggingType.ProviderRequest);
 
                         switchEndPoint.URL = "http://10.90.3.158:7001/WEService/rest/services/";
-                        var checkResponse = _switchService.Connect(checkTransactionDTO, switchEndPoint, SwitchEndPointAction.queryTransaction.ToString(), "Basic ");
+                        var checkResponse = _switchService.Connect(checkTransactionDTO, switchEndPoint, SwitchEndPointAction.queryTransaction.ToString(), "Basic ", UrlType.Custom);
 
                         await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
 

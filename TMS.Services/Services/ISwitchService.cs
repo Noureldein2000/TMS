@@ -9,6 +9,8 @@ namespace TMS.Services.Services
     public interface ISwitchService
     {
         string Connect<T>(T obj, SwitchEndPointDTO PSC, string BaseAddress, string TokenType, UrlType urlType = UrlType.Custom);
-        string Connect( SwitchEndPointDTO PSC, string BaseAddress);
+        ProviderResponseDTO Connect<T>(T obj, SwitchEndPointDTO PSC, string BaseAddress, string TokenType);
+        string Connect(SwitchEndPointDTO PSC, string BaseAddress);
+        string GetToken(SwitchEndPointDTO PSC);
     }
 }

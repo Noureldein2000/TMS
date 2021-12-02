@@ -241,7 +241,7 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.generateCoupon.ToString(), "Basic ");
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.generateCoupon.ToString(), "Basic ", UrlType.Custom);
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);

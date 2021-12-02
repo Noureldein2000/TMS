@@ -992,5 +992,43 @@ namespace TMS.Services.Services
             cmd.Parameters.AddWithValue("@RestaurantCode", restaurantCode);
             return InitiateSqlCommand(cmd);
         }
+
+        public int AddInvoiceUniversityBeniSuef(int accountId, decimal basicValue, int userId, string billingAccount, int servId, decimal value, decimal addedMoney, string educationYear, string facultyName, string studentName, string SSN, string studentCode, string section, string studyNature, string newRequestId)
+        {
+            using var cmd = new SqlCommand("[University_send_v1]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@CenterId", accountId);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@BillingAccount", billingAccount);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            cmd.Parameters.AddWithValue("@value", value);
+            cmd.Parameters.AddWithValue("@AddedMoney", addedMoney);
+            cmd.Parameters.AddWithValue("@EducationYear", educationYear);
+            cmd.Parameters.AddWithValue("@FacultyName", facultyName);
+            cmd.Parameters.AddWithValue("@StudentName", studentName);
+            cmd.Parameters.AddWithValue("@SSN ", SSN);
+            cmd.Parameters.AddWithValue("@StudentCode ", studentCode);
+            cmd.Parameters.AddWithValue("@Section", section);
+            cmd.Parameters.AddWithValue("@StudyNature", studyNature);
+            cmd.Parameters.AddWithValue("@NewRequestId", newRequestId);
+            return InitiateSqlCommand(cmd);
+        }
+
+        public int AddInvoiceZaha(int accountId, decimal basicValue, int userId, string billingAccount, string serviceProviderName, int servId, decimal value, decimal addedMoney, string providerTransactionID, string providerResponse)
+        {
+            using var cmd = new SqlCommand("[Zaha_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@CenterId", accountId);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@BillingAccount", billingAccount);
+            cmd.Parameters.AddWithValue("@ServId", servId);
+            cmd.Parameters.AddWithValue("@value", value);
+            cmd.Parameters.AddWithValue("@AddedMoney", addedMoney);
+            cmd.Parameters.AddWithValue("@ProviderTransactionID", providerTransactionID);
+            cmd.Parameters.AddWithValue("@Provider_Response", providerResponse);
+            return InitiateSqlCommand(cmd);
+        }
     }
 }

@@ -46,8 +46,8 @@ namespace TMS.Infrastructure
         SocialInsurance = 26,
         TamkeenLoan = 27,
         Talabat = 28,
-        Zaha = 29,
-        //BeniSwefUniversity = 30
+        BeniSwefUniversity = 29,
+        Zaha = 30
     }
 
     public enum ParameterProviderNames

@@ -382,7 +382,7 @@ namespace TMS.Services.ProviderLayer
               LoggingType.ProviderRequest);
 
 
-            var response = _switchService.Connect(switchBodyRequest, switchEndPoint, "", "Basic ");
+            var response = _switchService.Connect(switchBodyRequest, switchEndPoint, "", "Basic ", UrlType.Custom);
 
             //Logging Provider Response
             await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);

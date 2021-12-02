@@ -201,6 +201,7 @@ namespace TMS.Services.ProviderLayer
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 //_inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Success);
                 printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
 
                 // add commission

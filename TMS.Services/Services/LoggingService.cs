@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMS.Data;
@@ -40,6 +41,12 @@ namespace TMS.Services.Services
             //    LogText = obj
             //});
             //await _unitOfWork.SaveChangesAsync();
+        }
+
+        public string GetLog(int providerServiceRequestId, LoggingType loggingType)
+        {
+            return _logRepository.Getwhere(x => x.ProviderServiceRequestID == providerServiceRequestId && x.LogTypeID == loggingType)
+                .Select(x => x.LogText).FirstOrDefault();
         }
     }
 }

@@ -278,7 +278,7 @@ namespace TMS.Services.Services
                 model.ProviderServiceRequestId,
                 LoggingType.ProviderRequest);
 
-                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancelPayment.ToString(), "Basic ");
+                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancelPayment.ToString(), "Basic ", UrlType.Custom);
                 isCancelled = Validates.CheckJSON(response);
             }
             else if (model.ServiceID == 36)
@@ -305,7 +305,7 @@ namespace TMS.Services.Services
                 model.ProviderServiceRequestId,
                 LoggingType.ProviderRequest);
 
-                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ");
+                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ", UrlType.Custom);
                 isCancelled = Validates.CheckJSON(response);
             }
             else
