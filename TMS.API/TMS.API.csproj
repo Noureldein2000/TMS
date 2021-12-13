@@ -2,8 +2,24 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;Production</Configurations>
+    <Deterministic>false</Deterministic>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+    <EnvironmentName>Development</EnvironmentName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Production'">
+    <EnvironmentName>Production</EnvironmentName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <EnvironmentName>Release</EnvironmentName>
+  </PropertyGroup>
+
+  
   <ItemGroup>
     <Compile Remove="Client\**" />
     <Compile Remove="SourceOfFundClientAPIs\**" />
@@ -27,8 +43,10 @@
     </PackageReference>
     <PackageReference Include="RestSharp" Version="105.2.3" />
     <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.2.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.5" />
