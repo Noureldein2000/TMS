@@ -14,6 +14,7 @@ namespace TMS.Data.Configurations
             builder.HasKey(s => s.ID);
             builder.Property(s => s.Balance).HasColumnType("decimal(18,3)");
             builder.Property(s => s.ProviderAmount).HasColumnType("decimal(18,3)");
+          
             builder.HasOne(s => s.ServiceProvider).WithMany(s => s.DenominationServiceProviders)
                 .HasForeignKey(s => s.ServiceProviderID)
                 .OnDelete(DeleteBehavior.NoAction);

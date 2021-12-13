@@ -48,6 +48,29 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpGet]
+        [Route("SearchServices")]
+        [ProducesResponseType(typeof(PagedResult<AdminServiceModel>), StatusCodes.Status200OK)]
+        public IActionResult SearchServices(int? dropDownFilter, string searchKey, int pageNumber = 1, int pageSize = 10, string language = "ar")
+        {
+            try
+            {
+                var result = _adminService.SearchServices(dropDownFilter, searchKey, pageNumber, pageSize, language);
+                return Ok(new PagedResult<AdminServiceModel>
+                {
+                    Results = result.Results.Select(ard => Map(ard)).ToList(),
+                    PageCount = result.PageCount
+                });
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         [HttpPost]
         [Route("AddService")]
@@ -117,7 +140,7 @@ namespace TMS.API.Controllers
                     Status = model.Status,
                     Code = model.Code,
                     ServiceEntityID = model.ServiceEntityID,
-                    ClassType=model.ClassType,
+                    ClassType = model.ClassType,
                     PathClass = model.PathClass,
                 });
 

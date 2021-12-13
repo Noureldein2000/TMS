@@ -83,91 +83,6 @@ namespace TMS.Data.Migrations
                     b.ToTable("AccountFees");
                 });
 
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileCommission", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountProfileDenominationID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CommissionID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("AccountProfileDenominationID");
-
-                    b.HasIndex("CommissionID");
-
-                    b.ToTable("AccountProfileCommissions");
-                });
-
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileDenomination", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountProfileID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DenominationID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DenominationID");
-
-                    b.ToTable("AccountProfileDenominations");
-                });
-
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileFee", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountProfileDenominationID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FeesID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("AccountProfileDenominationID");
-
-                    b.HasIndex("FeesID");
-
-                    b.ToTable("AccountProfileFees");
-                });
-
             modelBuilder.Entity("TMS.Data.Entities.AccountTransactionCommission", b =>
                 {
                     b.Property<int>("ID")
@@ -192,6 +107,92 @@ namespace TMS.Data.Migrations
                     b.HasIndex("TransactionID");
 
                     b.ToTable("AccountTransactionCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileCommission", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountTypeProfileDenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommissionID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AccountTypeProfileDenominationID");
+
+                    b.HasIndex("CommissionID");
+
+                    b.ToTable("AccountTypeProfileCommissions");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileDenomination", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountTypeProfileID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID", "AccountTypeProfileID")
+                        .IsUnique();
+
+                    b.ToTable("AccountTypeProfileDenominations");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileFee", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountTypeProfileDenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FeesID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AccountTypeProfileDenominationID");
+
+                    b.HasIndex("FeesID");
+
+                    b.ToTable("AccountTypeProfileFees");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.BillPaymentMode", b =>
@@ -571,6 +572,20 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("DenominationParamValueModes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 292, DateTimeKind.Local).AddTicks(1274),
+                            Name = "FIXED"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 293, DateTimeKind.Local).AddTicks(7949),
+                            Name = "DYNAMIC"
+                        });
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.DenominationParamValueType", b =>
@@ -593,6 +608,32 @@ namespace TMS.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("DenominationParamValueTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 295, DateTimeKind.Local).AddTicks(9465),
+                            Name = "Number"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 295, DateTimeKind.Local).AddTicks(9482),
+                            Name = "String"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 295, DateTimeKind.Local).AddTicks(9484),
+                            Name = "List"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 295, DateTimeKind.Local).AddTicks(9486),
+                            Name = "Date"
+                        });
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.DenominationParameter", b =>
@@ -733,6 +774,9 @@ namespace TMS.Data.Migrations
 
                     b.Property<int>("ParameterID")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
@@ -1135,28 +1179,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 361, DateTimeKind.Local).AddTicks(2877),
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 324, DateTimeKind.Local).AddTicks(4424),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1843),
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 324, DateTimeKind.Local).AddTicks(4521),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1890),
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 324, DateTimeKind.Local).AddTicks(4525),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 3, 16, 6, 53, 363, DateTimeKind.Local).AddTicks(1893),
+                            CreationDate = new DateTime(2021, 11, 17, 12, 19, 28, 324, DateTimeKind.Local).AddTicks(4527),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -1183,7 +1227,8 @@ namespace TMS.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DenominationServiceProviderID");
+                    b.HasIndex("DenominationServiceProviderID")
+                        .IsUnique();
 
                     b.HasIndex("ServiceConfigerationID");
 
@@ -1554,9 +1599,6 @@ namespace TMS.Data.Migrations
                     b.Property<string>("PathClass")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ServiceCategoryID")
-                        .HasColumnType("int");
-
                     b.Property<int>("ServiceEntityID")
                         .HasColumnType("int");
 
@@ -1570,8 +1612,6 @@ namespace TMS.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("ServiceCategoryID");
 
                     b.HasIndex("ServiceEntityID");
 
@@ -1973,50 +2013,50 @@ namespace TMS.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileCommission", b =>
-                {
-                    b.HasOne("TMS.Data.Entities.AccountProfileDenomination", "AccountProfileDenomination")
-                        .WithMany("AccountProfileCommissions")
-                        .HasForeignKey("AccountProfileDenominationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TMS.Data.Entities.Commission", "Commission")
-                        .WithMany("AccountProfileCommissions")
-                        .HasForeignKey("CommissionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileDenomination", b =>
-                {
-                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
-                        .WithMany("AccountProfileDenominations")
-                        .HasForeignKey("DenominationID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TMS.Data.Entities.AccountProfileFee", b =>
-                {
-                    b.HasOne("TMS.Data.Entities.AccountProfileDenomination", "AccountProfileDenomination")
-                        .WithMany("AccountProfileFees")
-                        .HasForeignKey("AccountProfileDenominationID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("TMS.Data.Entities.Fee", "Fee")
-                        .WithMany("AccountProfileFees")
-                        .HasForeignKey("FeesID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TMS.Data.Entities.AccountTransactionCommission", b =>
                 {
                     b.HasOne("TMS.Data.Entities.Transaction", "Transaction")
                         .WithMany("AccountTransactionCommissions")
                         .HasForeignKey("TransactionID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileCommission", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountTypeProfileDenomination")
+                        .WithMany("AccountTypeProfileCommissions")
+                        .HasForeignKey("AccountTypeProfileDenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Commission", "Commission")
+                        .WithMany("AccountTypeProfileCommissions")
+                        .HasForeignKey("CommissionID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileDenomination", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("AccountTypeProfileDenominations")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.AccountTypeProfileFee", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.AccountTypeProfileDenomination", "AccountTypeProfileDenomination")
+                        .WithMany("AccountTypeProfileFees")
+                        .HasForeignKey("AccountTypeProfileDenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Fee", "Fee")
+                        .WithMany("AccountTypeProfileFees")
+                        .HasForeignKey("FeesID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -2245,8 +2285,8 @@ namespace TMS.Data.Migrations
             modelBuilder.Entity("TMS.Data.Entities.ProviderServiceConfigeration", b =>
                 {
                     b.HasOne("TMS.Data.Entities.DenominationServiceProvider", "DenominationServiceProvider")
-                        .WithMany("ProviderServiceConfigerations")
-                        .HasForeignKey("DenominationServiceProviderID")
+                        .WithOne("ProviderServiceConfigerations")
+                        .HasForeignKey("TMS.Data.Entities.ProviderServiceConfigeration", "DenominationServiceProviderID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -2361,11 +2401,6 @@ namespace TMS.Data.Migrations
 
             modelBuilder.Entity("TMS.Data.Entities.Service", b =>
                 {
-                    b.HasOne("TMS.Data.Entities.ServiceCategory", "ServiceCategory")
-                        .WithMany("Services")
-                        .HasForeignKey("ServiceCategoryID")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("TMS.Data.Entities.ServiceEntity", "ServiceEntity")
                         .WithMany("Services")
                         .HasForeignKey("ServiceEntityID")

@@ -58,9 +58,9 @@ namespace TMS.Data
         public virtual DbSet<AccountFee> AccountFees { get; set; }
         public virtual DbSet<DenominationReceiptParam> DenominationReceiptParams { get; set; }
         public virtual DbSet<AccountCommission> AccountCommissions { get; set; }
-        public virtual DbSet<AccountProfileDenomination> AccountProfileDenominations { get; set; }
-        public virtual DbSet<AccountProfileCommission> AccountProfileCommissions { get; set; }
-        public virtual DbSet<AccountProfileFee> AccountProfileFees { get; set; }
+        public virtual DbSet<AccountTypeProfileDenomination> AccountTypeProfileDenominations { get; set; }
+        public virtual DbSet<AccountTypeProfileCommission> AccountTypeProfileCommissions { get; set; }
+        public virtual DbSet<AccountTypeProfileFee> AccountTypeProfileFees { get; set; }
         public virtual DbSet<Request> Requests { get; set; }
         //public virtual DbSet<Invoice> Invoices { get; set; }
         //public virtual DbSet<InvoiceDetails> InvoiceDetails { get; set; }

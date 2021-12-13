@@ -14,20 +14,20 @@ namespace TMS.Services.Services
     {
         private readonly IBaseRepository<Commission, int> _commission;
         private readonly IBaseRepository<AccountCommission, int> _accountCommission;
-        private readonly IBaseRepository<AccountProfileCommission, int> _accountProfileCommission;
+        private readonly IBaseRepository<AccountTypeProfileCommission, int> _accountTypeProfileCommission;
         private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
         private readonly IUnitOfWork _unitOfWork;
 
         public CommissionService(
             IBaseRepository<Commission, int> commission,
             IBaseRepository<AccountCommission, int> accountCommission,
-            IBaseRepository<AccountProfileCommission, int> accountProfileCommission,
+            IBaseRepository<AccountTypeProfileCommission, int> accountProfileCommission,
             IBaseRepository<DenominationCommission, int> denominationCommission,
             IUnitOfWork unitOfWork)
         {
             _commission = commission;
             _accountCommission = accountCommission;
-            _accountProfileCommission = accountProfileCommission;
+            _accountTypeProfileCommission = accountProfileCommission;
             _denominationCommission = denominationCommission;
             _unitOfWork = unitOfWork;
         }

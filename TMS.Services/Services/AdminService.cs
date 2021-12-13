@@ -41,7 +41,6 @@ namespace TMS.Services.Services
                 Name = service.Name,
                 ArName = service.ArName,
                 ServiceTypeID = service.ServiceTypeID,
-                ServiceCategoryID = service.ServiceCategoryID,
                 Status = service.Status,
                 Code = service.Code,
                 ServiceEntityID = service.ServiceEntityID,
@@ -68,7 +67,6 @@ namespace TMS.Services.Services
             current.ArName = service.ArName;
             current.ServiceEntityID = service.ServiceEntityID;
             current.ServiceTypeID = service.ServiceTypeID;
-            current.ServiceCategoryID = service.ServiceCategoryID;
             current.Code = service.Code;
             current.PathClass = service.PathClass;
             current.ClassType = service.ClassType;
@@ -85,8 +83,6 @@ namespace TMS.Services.Services
                 ArName = x.ArName,
                 ServiceTypeID = x.ServiceTypeID,
                 ServiceTypeName = x.ServiceType.Name,
-                ServiceCategoryID = x.ServiceCategoryID,
-                ServiceCategoryName = x.ServiceCategory.Name,
                 Status = x.Status,
                 Code = x.Code,
                 ServiceEntityID = x.ServiceEntityID,
@@ -126,8 +122,8 @@ namespace TMS.Services.Services
                 NameAr = x.ArName,
                 ServiceTypeID = x.ServiceTypeID,
                 ServiceTypeName = x.ServiceType.Name,
-                ServiceCategoryID = x.ServiceCategoryID,
-                ServiceCategoryName = language == "en" ? x.ServiceCategory.Name : x.ServiceCategory.ArName,
+                //ServiceCategoryID = x.ServiceCategoryID,
+                //ServiceCategoryName = language == "en" ? x.ServiceCategory.Name : x.ServiceCategory.ArName,
                 Status = x.Status,
                 Code = x.Code,
                 ServiceEntityID = x.ServiceEntityID,
@@ -152,8 +148,8 @@ namespace TMS.Services.Services
                     ArName = x.NameAr,
                     ServiceTypeID = x.ServiceTypeID,
                     ServiceTypeName = x.ServiceTypeName,
-                    ServiceCategoryID = x.ServiceCategoryID,
-                    ServiceCategoryName = x.ServiceCategoryName,
+                    //ServiceCategoryID = x.ServiceCategoryID,
+                    //ServiceCategoryName = x.ServiceCategoryName,
                     Status = x.Status,
                     Code = x.Code,
                     ServiceEntityID = x.ServiceEntityID,
@@ -175,5 +171,54 @@ namespace TMS.Services.Services
             });
         }
 
+        public PagedResult<AdminServiceDTO> SearchServices(int? dropDownFilter, string searchKey, int pageNumber, int pageSize, string language = "ar")
+        {
+            var serviceList = _serviceRepository.Getwhere(x => (dropDownFilter != null ? x.ServiceTypeID == dropDownFilter : true) && (!string.IsNullOrEmpty(searchKey) ? (x.Code.Contains(searchKey) || x.Name.Contains(searchKey)) : true))
+            .Select(x => new
+            {
+                Id = x.ID,
+                Name = x.Name,
+                NameAr = x.ArName,
+                ServiceTypeID = x.ServiceTypeID,
+                ServiceTypeName = x.ServiceType.Name,
+                //ServiceCategoryID = x.ServiceCategoryID,
+                //ServiceCategoryName = language == "en" ? x.ServiceCategory.Name : x.ServiceCategory.ArName,
+                Status = x.Status,
+                Code = x.Code,
+                ServiceEntityID = x.ServiceEntityID,
+                ServiceEntityName = language == "en" ? x.ServiceEntity.Name : x.ServiceEntity.ArName,
+                PathClass = x.PathClass,
+                ClassType = x.ClassType,
+                CreationDate = x.CreationDate
+            });
+
+            var count = serviceList.Count();
+
+            var resultList = serviceList.OrderByDescending(ar => ar.CreationDate)
+          .Skip(pageNumber - 1).Take(pageSize)
+          .ToList();
+
+            return new PagedResult<AdminServiceDTO>
+            {
+                Results = resultList.Select(x => new AdminServiceDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    ArName = x.NameAr,
+                    ServiceTypeID = x.ServiceTypeID,
+                    ServiceTypeName = x.ServiceTypeName,
+                    //ServiceCategoryID = x.ServiceCategoryID,
+                    //ServiceCategoryName = x.ServiceCategoryName,
+                    Status = x.Status,
+                    Code = x.Code,
+                    ServiceEntityID = x.ServiceEntityID,
+                    ServiceEntityName = x.ServiceEntityName,
+                    PathClass = x.PathClass,
+                    ClassType = x.ClassType,
+                    CreationDate = x.CreationDate
+                }).ToList(),
+                PageCount = count
+            };
+        }
     }
 }

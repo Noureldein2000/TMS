@@ -12,5 +12,6 @@ namespace TMS.Data.Entities
         public virtual Parameter Parameter { get; set; }
         public bool Bold { get; set; }
         public int Alignment { get; set; }
+        public bool Status { get; set; }
     }
 }

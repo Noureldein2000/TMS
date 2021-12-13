@@ -89,6 +89,25 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpPut]
+        [Route("EditServiceProvider")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditServiceProvider(ServiceProviderModel model)
+        {
+            try
+            {
+                _serviceProvider.EditServiceProviders(new ServiceProviderDTO { Id = model.Id, Name = model.Name });
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         [HttpDelete]
         [Route("DeleteServiceProvider/{id}")]

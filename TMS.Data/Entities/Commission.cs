@@ -20,6 +20,6 @@ namespace TMS.Data.Entities
         public virtual CommissionType CommissionType { get; set; }
         public virtual ICollection<DenominationCommission> DenominationCommissions { get; set; }
         public virtual ICollection<AccountCommission> AccountCommissions { get; set; }
-        public virtual ICollection<AccountProfileCommission> AccountProfileCommissions { get; set; }
+        public virtual ICollection<AccountTypeProfileCommission> AccountTypeProfileCommissions { get; set; }
     }
 }

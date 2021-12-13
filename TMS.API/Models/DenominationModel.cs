@@ -12,6 +12,7 @@ namespace TMS.API.Models
         public string Name { get; set; }
         public decimal Value { get; set; }
         public int ServiceID { get; set; }
+        public string ServiceName { get; set; }
         public string OldDenominationID { get; set; }
         public bool Status { get; set; }
         public int CurrencyID { get; set; }

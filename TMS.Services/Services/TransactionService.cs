@@ -22,7 +22,7 @@ namespace TMS.Services.Services
         private readonly IBaseRepository<Transaction, int> _transactions;
         private readonly IBaseRepository<AccountTransactionCommission, int> _accountTransactionCommission;
         private readonly IBaseRepository<AccountCommission, int> _accountCommission;
-        private readonly IBaseRepository<AccountProfileCommission, int> _accountProfileCommission;
+        private readonly IBaseRepository<AccountTypeProfileCommission, int> _accountTypeProfileCommission;
         private readonly IBaseRepository<DenominationCommission, int> _denominationCommission;
         private readonly IBaseRepository<TransactionReceipt, int> _transactionReceipt;
         private readonly IBaseRepository<PendingPaymentCard, int> _pendingPaymentCard;
@@ -35,7 +35,7 @@ namespace TMS.Services.Services
             IBaseRepository<Transaction, int> transactions,
             IBaseRepository<AccountTransactionCommission, int> accountTransactionCommission,
             IBaseRepository<AccountCommission, int> accountCommission,
-            IBaseRepository<AccountProfileCommission, int> accountProfileCommission,
+            IBaseRepository<AccountTypeProfileCommission, int> accountTypeProfileCommission,
             IBaseRepository<DenominationCommission, int> denominationCommission,
             IBaseRepository<TransactionReceipt, int> transactionReceipt,
             IBaseRepository<PendingPaymentCard, int> pendingPaymentCard,
@@ -51,7 +51,7 @@ namespace TMS.Services.Services
             _accountCommission = accountCommission;
             //_invoice = invoice;
             _unitOfWork = unitOfWork;
-            _accountProfileCommission = accountProfileCommission;
+            _accountTypeProfileCommission = accountTypeProfileCommission;
             _denominationCommission = denominationCommission;
             _configuration = configuration;
             _context = context;
@@ -154,8 +154,8 @@ namespace TMS.Services.Services
         }
         private decimal GetAccountProfileCommission(int denominationId, decimal originalAmount, int accountProfileId)
         {
-            return _accountProfileCommission.Getwhere(a => a.AccountProfileDenomination.DenominationID == denominationId
-                && a.AccountProfileDenomination.AccountProfileID == accountProfileId && a.Commission.Status == true
+            return _accountTypeProfileCommission.Getwhere(a => a.AccountTypeProfileDenomination.DenominationID == denominationId
+                && a.AccountTypeProfileDenomination.AccountTypeProfileID == accountProfileId && a.Commission.Status == true
                 && a.Commission.AmountFrom <= originalAmount
                 && a.Commission.AmountTo >= originalAmount
                 && a.Commission.StartDate <= DateTime.Today
@@ -165,7 +165,7 @@ namespace TMS.Services.Services
                     s.Commission.CommissionTypeID,
                     Commission = s.Commission.PaymentModeID == 1 ? s.Commission.Value
                   : s.Commission.PaymentModeID == 2 ? (s.Commission.Value *
-                  (s.AccountProfileDenomination.Denomination.Value > 0 ? (s.AccountProfileDenomination.Denomination.Value * s.AccountProfileDenomination.Denomination.Currency.Value) : originalAmount)) / 100
+                  (s.AccountTypeProfileDenomination.Denomination.Value > 0 ? (s.AccountTypeProfileDenomination.Denomination.Value * s.AccountTypeProfileDenomination.Denomination.Currency.Value) : originalAmount)) / 100
                   : 0
                 }).ToList()
                 .GroupBy(s => s.CommissionTypeID)

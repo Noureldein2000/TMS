@@ -36,7 +36,7 @@ namespace TMS.Data.Entities
         public virtual ICollection<DenominationParameter> DenominationParameters { get; set; }
         public virtual DenominationReceiptData DenominationReceiptData { get; set; }
         public virtual ICollection<AccountCommission> AccountCommissions { get; set; }
-        public virtual ICollection<AccountProfileDenomination> AccountProfileDenominations { get; set; }
+        public virtual ICollection<AccountTypeProfileDenomination> AccountTypeProfileDenominations { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
         public virtual ICollection<DenominationReceiptParam> DenominationReceiptParams { get; set; }
     }
