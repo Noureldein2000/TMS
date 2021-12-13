@@ -61,5 +61,11 @@ namespace TMS.Services.Services
         void UpdatePendingPaymentCardStatus(int transactionId, int pendingPaymentCardStatusID);
         void TEDataLogUpdate(string chargeStatus, int requestId);
         int AddTEDataProcLog(string providerCompany, string mobileNumber, decimal value, string chargeStatus, int statusTransfer, int userId, int servId, int transId);
+        int AddInvoiceSocialInsurance(int accountId, decimal basicValue, int userId, string BillingAccount, int serviceId, int servId, decimal value, decimal addedMoney);
+        int AddInvoiceTamkeenLoan(int accountId, decimal basicValue, int userId, string BillingAccount, int serviceId, int servId, decimal value, decimal addedMoney, string accountNumber, string providerTransactionID, string providerResponse, string branchNumber, string dueDate);
+        int AddInvoiceTalabat(string requestId, decimal basicValue, int userId, int accountId, int serviceId, decimal addedMoney, string restaurantCode);
+        int AddInvoiceUniversityBeniSuef(int accountId, decimal basicValue, int userId, string billingAccount, int servId, decimal value, decimal addedMoney, string educationYear,
+            string facultyName, string studentName, string SSN, string studentCode, string section, string studyNature, string newRequestId);
+        int AddInvoiceZaha(int accountId, decimal basicValue, int userId, string billingAccount, string serviceProviderName, int servId, decimal value, decimal addedMoney, string providerTransactionID, string providerResponse);
     }
 }

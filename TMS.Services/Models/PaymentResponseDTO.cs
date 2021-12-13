@@ -10,6 +10,7 @@ namespace TMS.Services.Models
         public string Message { get; set; }
         public decimal AvailableBalance { get; set; }
         public int TransactionId { get; set; }
+        public int ProviderTransactionId { get; set; }
         public int InvoiceId { get; set; }
         public string LocalDate { get; set; }
         public string ServerDate { get; set; }

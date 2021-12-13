@@ -114,11 +114,11 @@ namespace TMS.Services.ProviderLayer
                 var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquireBills.ToString(), "Basic ");
 
                 //Logging Provider Response
-                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-                if (Validates.CheckJSON(response))
+                if (response.Code == 200)
                 {
-                    JObject o = JObject.Parse(response);
+                    JObject o = JObject.Parse(response.Message);
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
                     CustomerInfoSubscriptionChannelsDTO CustList = JsonConvert.DeserializeObject<CustomerInfoSubscriptionChannelsDTO>(o["customerInfo"].ToString());
@@ -297,7 +297,7 @@ namespace TMS.Services.ProviderLayer
                 else
                 {
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }

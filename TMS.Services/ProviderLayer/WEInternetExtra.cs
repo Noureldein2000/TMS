@@ -253,13 +253,13 @@ namespace TMS.Services.ProviderLayer
             var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            response = "{\"transactionId\":\"225457878465\",\"productOffer\": [{\"name\": \"Addon Offer Name\",\"chargeAmount\": 56500,\"chargeAmountWithTaxes\":59800},{\"name\": \"Addon Offer Name 2\",\"chargeAmount\":6900 ,\"chargeAmountWithTaxes\":7800}]}";
+            //response = "{\"transactionId\":\"225457878465\",\"productOffer\": [{\"name\": \"Addon Offer Name\",\"chargeAmount\": 56500,\"chargeAmountWithTaxes\":59800},{\"name\": \"Addon Offer Name 2\",\"chargeAmount\":6900 ,\"chargeAmountWithTaxes\":7800}]}";
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 var count = 0;
@@ -306,7 +306,7 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
             inquiryResponse.Code = 200;
@@ -401,14 +401,14 @@ namespace TMS.Services.ProviderLayer
 
             var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.submitPayment.ToString(), "Basic ");
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
             //TE_log_update
             _transactionService.TEDataLogUpdate("Payment=" + response, requestID);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 if (!string.IsNullOrEmpty(o["transactionId"].ToString()))
                 {
                     Thread.Sleep(7000);
@@ -502,14 +502,14 @@ namespace TMS.Services.ProviderLayer
                         switchEndPoint.URL = "http://10.90.3.158:7001/WEService/rest/services/";
                         var checkResponse = _switchService.Connect(checkTransactionDTO, switchEndPoint, SwitchEndPointAction.queryTransaction.ToString(), "Basic ");
 
-                        await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                        await _loggingService.Log(JsonConvert.SerializeObject(checkResponse), providerServiceRequestId, LoggingType.ProviderResponse);
 
                         _transactionService.TEDataLogUpdate("-CheckTrxn=" + checkResponse, requestID);
 
                         //Log Response
-                        if (Validates.CheckJSON(checkResponse))
+                        if (checkResponse.Code == 200)
                         {
-                            JObject CheckTrxnO = JObject.Parse(checkResponse);
+                            JObject CheckTrxnO = JObject.Parse(checkResponse.Message);
                             if (CheckTrxnO["transactionStatus"].ToString().ToLower() != "declined")
                             {
                                 message = "Sucess";
@@ -564,7 +564,7 @@ namespace TMS.Services.ProviderLayer
                                 throw new TMSException("FailedTrx", "2");
                             }
                         }
-                        else if (checkResponse.Contains("timed out"))
+                        else if (checkResponse.Code == -200)
                         {
                             message = "PendingTrx";
                             code = 3;
@@ -583,7 +583,7 @@ namespace TMS.Services.ProviderLayer
                             _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
                             //throw new TMSException("PendingTrx", "3");
                         }
-                        else if (checkResponse.Contains("720"))
+                        else if (checkResponse.StatusCode == 720)
                         {
                             message = "PendingTrx";
                             code = 3;
@@ -618,12 +618,12 @@ namespace TMS.Services.ProviderLayer
                     await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                     //_transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                    var msg = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var msg = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(msg.Message, msg.Code);
                 }
 
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 message = "PendingTrx";
                 code = 3;

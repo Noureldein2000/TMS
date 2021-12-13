@@ -171,16 +171,16 @@ namespace TMS.Services.ProviderLayer
                 var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancelPayment.ToString(), "Basic ");
 
                 //Logging Provider Response
-                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-                if (Validates.CheckJSON(response))
+                if (response.Code == 200)
                 {
-                    JObject o = JObject.Parse(response);
+                    JObject o = JObject.Parse(response.Message);
 
                     var oldTransaction = _transactionService.GetTransactionByBrn(payModel.Brn);
 
                     // call Return invoice SP to another data base system
-                    paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response);
+                    paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response.Message);
 
                     // Refund sof
                     await _accountsApi.ApiAccountsReturnBalanceFromAccountIdToAccountIdBalancesAmountPutAsync(26457, payModel.AccountId, (double?)oldTransaction.TotalAmount);
@@ -188,13 +188,13 @@ namespace TMS.Services.ProviderLayer
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
                 }
-                else if (response.Contains("timed out"))
+                else if (response.Code == -200)
                 {
                     throw new TMSException("PendingTrx", "3");
                 }
                 else
                 {
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
@@ -228,7 +228,7 @@ namespace TMS.Services.ProviderLayer
                   providerServiceRequestId,
                   LoggingType.ProviderRequest);
 
-                var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ");
+                var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ", UrlType.Custom);
 
                 //Logging Provider Response
                 await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);

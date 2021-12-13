@@ -42,7 +42,12 @@ namespace TMS.Infrastructure
         Voucher = 22,
         WaterBill = 23,
         WEInternet = 24,
-        WEInternetExtra = 25
+        WEInternetExtra = 25,
+        SocialInsurance = 26,
+        TamkeenLoan = 27,
+        Talabat = 28,
+        BeniSwefUniversity = 29,
+        Zaha = 30
     }
 
     public enum ParameterProviderNames
