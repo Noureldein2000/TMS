@@ -98,14 +98,14 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
-            if (Validates.CheckJSON(response))
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
+            if (response.Code == 200)
             {
                 var count = 1;
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                 //DtMsg = DB_MessageMapping.GetMessage((int)DB_MessageMapping.MomknMessage.Sucess, 0, _IDTO.Language);
 
@@ -137,7 +137,7 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
             inquiryResponse.Code = 200;
@@ -338,14 +338,14 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.submitPayment.ToString(), "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.submitPayment.ToString(), "Basic ");
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
             _transactionService.TEDataLogUpdate("Payment=" + response, newRequestId);
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 if (!string.IsNullOrEmpty(o["transactionId"].ToString()))
                 {
                     Thread.Sleep(7000);
@@ -364,7 +364,7 @@ namespace TMS.Services.ProviderLayer
                             var receiptNumber = oo["Transaction"].ToString();
                             paymentResponse.InvoiceId = _transactionService.AddInvoiceTedataTest(
                                 Validates.GetCodeAndTelephone(payModel.BillingAccount)[0], Validates.GetCodeAndTelephone(payModel.BillingAccount)[1], DateTime.Now.ToString(), totalAmount,
-                                     fees, 1, userId, payModel.BillingAccount, response, receiptNumber, "200", response, requestID, "WE ADSL", denominationServiceProviderDetails.OldServiceId);
+                                     fees, 1, userId, payModel.BillingAccount, response.Message, receiptNumber, "200", response.Message, requestID, "WE ADSL", denominationServiceProviderDetails.OldServiceId);
 
                             var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                             paymentResponse.TransactionId = transactionId;
@@ -441,14 +441,14 @@ namespace TMS.Services.ProviderLayer
                           LoggingType.ProviderRequest);
 
                         switchEndPoint.URL = "http://10.90.3.158:7001/WEService/rest/services/";
-                        var checkResponse = _switchService.Connect(checkTransactionDTO, switchEndPoint, SwitchEndPointAction.queryTransaction.ToString(), "Basic ", UrlType.Custom);
+                        var checkResponse = _switchService.Connect(checkTransactionDTO, switchEndPoint, SwitchEndPointAction.queryTransaction.ToString(), "Basic ");
 
-                        await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                        await _loggingService.Log(JsonConvert.SerializeObject(checkResponse), providerServiceRequestId, LoggingType.ProviderResponse);
 
                         _transactionService.TEDataLogUpdate("-CheckTrxn=" + checkResponse, requestID);
-                        if (Validates.CheckJSON(checkResponse))
+                        if (checkResponse.Code == 200)
                         {
-                            JObject CheckTrxnO = JObject.Parse(checkResponse);
+                            JObject CheckTrxnO = JObject.Parse(checkResponse.Message);
                             if (CheckTrxnO["transactionStatus"].ToString().ToLower() != "declined")
                             {
                                 message = "Sucess";
@@ -503,7 +503,7 @@ namespace TMS.Services.ProviderLayer
                                 throw new TMSException("FailedTrx", "2");
                             }
                         }
-                        else if (checkResponse.Contains("timed out"))
+                        else if (checkResponse.Code == -200)
                         {
                             message = "PendingTrx";
                             code = 3;
@@ -522,7 +522,7 @@ namespace TMS.Services.ProviderLayer
                             _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
                             //throw new TMSException("PendingTrx", "3");
                         }
-                        else if (checkResponse.Contains("720"))
+                        else if (checkResponse.Message.Contains("720"))
                         {
                             message = "PendingTrx";
                             code = 3;
@@ -556,11 +556,11 @@ namespace TMS.Services.ProviderLayer
                     await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                     //_transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                    var msg = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var msg = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(msg.Message, msg.Code);
                 }
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 message = "PendingTrx";
                 code = 3;

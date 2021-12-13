@@ -206,11 +206,11 @@ namespace TMS.Services.ProviderLayer
             var response = _switchService.Connect(switchEndPoint, url);
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 if (o["Code"].ToString() == "200")
                 {
 
@@ -251,14 +251,14 @@ namespace TMS.Services.ProviderLayer
                 else
                 {
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
@@ -339,14 +339,14 @@ namespace TMS.Services.ProviderLayer
 
             string url = switchEndPoint.URL + "requestID=" + providerServiceRequestId + "&phone=" + payModel.BillingAccount + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword + "&amount=" + payModel.Amount;
             switchEndPoint.URL = url;
-            var response = _switchService.Connect(new EmptyObject(), switchEndPoint, "", "Basic ", UrlType.Fixed);
+            var response = _switchService.Connect(new EmptyObject(), switchEndPoint, "", "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 if (o["Code"].ToString() != "-2")
                 {
 
@@ -394,11 +394,11 @@ namespace TMS.Services.ProviderLayer
                     _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                     // GET MESSAGE PROVIDER ID
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 // send add invoice to another data base system
                 if (denominationServiceProviderDetails.DenominationId == 63)
@@ -425,7 +425,7 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 

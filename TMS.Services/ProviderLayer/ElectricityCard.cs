@@ -120,14 +120,14 @@ namespace TMS.Services.ProviderLayer
                      LoggingType.ProviderRequest);
 
                     //Connect to Switch
-                    var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.calculateFees.ToString(), "Basic ", UrlType.Custom);
+                    var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.calculateFees.ToString(), "Basic ");
 
                     //Logging Provider Response
-                    _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                    _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-                    if (Validates.CheckJSON(response))
+                    if (response.Code == 200)
                     {
-                        JObject o = JObject.Parse(response);
+                        JObject o = JObject.Parse(response.Message);
 
                         _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
@@ -287,7 +287,7 @@ namespace TMS.Services.ProviderLayer
                     else
                     {
                         _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                        var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: 0);
+                        var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: 0);
                         throw new TMSException(message.Message, message.Code);
                     }
                 }
@@ -372,14 +372,14 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
 
-            var response = _switchService.Connect(IE, switchEndPoint, SwitchEndPointAction.inquireBills.ToString(), "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(IE, switchEndPoint, SwitchEndPointAction.inquireBills.ToString(), "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
 
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
@@ -511,7 +511,7 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 
@@ -643,21 +643,21 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.paymentBills.ToString(), "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.paymentBills.ToString(), "Basic ");
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
 
                 // send add invoice to another data base system
                 if (denomation.ServiceID == 20)
                     paymentResponse.InvoiceId = _transactionService.AddInvoiceElectricityCard(int.Parse(DS.ProviderCode), payModel.BillingAccount, accountName, "", "", totaAmount, fees, 1, userId,
-                    response, response, null, response, "", _providerService.GetProviderServiceRequestParams(payModel.Brn, "ar", "CardType").Select(x => x.Value).FirstOrDefault(), o["cardData"].ToString(), newRequestId, o["momknPaymentId"].ToString());
+                    response.Message, response.Message, null, response.Message, "", _providerService.GetProviderServiceRequestParams(payModel.Brn, "ar", "CardType").Select(x => x.Value).FirstOrDefault(), o["cardData"].ToString(), newRequestId, o["momknPaymentId"].ToString());
                 else
                     paymentResponse.InvoiceId = _transactionService.AddInvoiceWaterCard(int.Parse(DS.ProviderCode), payModel.BillingAccount, accountName, "", "", totaAmount, fees, 1, userId,
-                    response, response, null, response, "", _providerService.GetProviderServiceRequestParams(payModel.Brn, "ar", "CardType").Select(x => x.Value).FirstOrDefault(), o["cardData"].ToString(), newRequestId, o["momknPaymentId"].ToString());
+                    response.Message, response.Message, null, response.Message, "", _providerService.GetProviderServiceRequestParams(payModel.Brn, "ar", "CardType").Select(x => x.Value).FirstOrDefault(), o["cardData"].ToString(), newRequestId, o["momknPaymentId"].ToString());
 
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", 0, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
@@ -738,7 +738,7 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 //**Note Noureldein: There are another implment that use Cancel provider
 
@@ -766,7 +766,7 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 

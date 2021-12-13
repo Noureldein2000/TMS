@@ -297,14 +297,14 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "", "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "", "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 int ID_ = ReturnBee_Sev(denominationServiceProviderDetails.ProviderCode, payModel.Amount, GetProviderName(denomination.ServiceEntity));
 
                 if (o["vouchers"] != null)
@@ -314,7 +314,7 @@ namespace TMS.Services.ProviderLayer
                     foreach (var item in vouchers)
                     {
                         // send add invoice to another data base system
-                        paymentResponse.InvoiceId = _transactionService.AddInvoiceElectronicChargeNewVoucher(GetProviderName(denomination.ServiceEntity), "", payModel.Amount, response, 1, userId,
+                        paymentResponse.InvoiceId = _transactionService.AddInvoiceElectronicChargeNewVoucher(GetProviderName(denomination.ServiceEntity), "", payModel.Amount, response.Message, 1, userId,
                             "", item.pin, item.serial, 0, ID_, queryResult);
 
                         var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
@@ -386,7 +386,7 @@ namespace TMS.Services.ProviderLayer
                     {
 
                         // send add invoice to another data base system
-                        paymentResponse.InvoiceId = _transactionService.AddInvoiceElectronicChargeNewVoucher(GetProviderName(denomination.ServiceEntity), "", payModel.Amount, response, 1, userId,
+                        paymentResponse.InvoiceId = _transactionService.AddInvoiceElectronicChargeNewVoucher(GetProviderName(denomination.ServiceEntity), "", payModel.Amount, response.Message, 1, userId,
                             "", o["pin"].ToString(), o["serialNumber"].ToString(), int.Parse(o["providerID"].ToString()), ID_, queryResult);
 
                         var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
@@ -456,7 +456,7 @@ namespace TMS.Services.ProviderLayer
                         _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                         _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                         // GET MESSAGE PROVIDER ID
-                        var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                        var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                         throw new TMSException(message.Message, message.Code);
                     }
                 }
@@ -467,7 +467,7 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 

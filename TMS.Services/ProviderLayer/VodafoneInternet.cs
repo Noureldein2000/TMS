@@ -273,21 +273,21 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchBodyRequest, switchEndPoint, "", "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchBodyRequest, switchEndPoint, "", "Basic ");
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
             var transactionId = 0;
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
                 if (o["code"].ToString() == "200" || o["code"].ToString() == "-300")
                 {
 
                     // send add invoice to another data base system
                     paymentResponse.InvoiceId = _transactionService.AddInvoiceVodafoneInternet(
-                        response, payModel.BillingAccount,
+                        response.Message, payModel.BillingAccount,
                         DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "");
 
 
@@ -328,15 +328,15 @@ namespace TMS.Services.ProviderLayer
                     _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
 
                     // GET MESSAGE PROVIDER ID
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
-            else if (string.IsNullOrEmpty(response) || response.Contains("underlying connection was closed"))
+            else if (string.IsNullOrEmpty(response.Message) || response.Message.Contains("underlying connection was closed"))
             {
                 // send add invoice to another data base system
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceVodafoneInternet(
-                      response, payModel.BillingAccount, DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "");
+                      response.Message, payModel.BillingAccount, DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "");
 
                 transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
@@ -360,11 +360,11 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 // send add invoice to another data base system
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceVodafoneInternet(
-                      response, payModel.BillingAccount, DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "");
+                      response.Message, payModel.BillingAccount, DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "");
 
                 transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
@@ -384,7 +384,7 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
 

@@ -209,13 +209,13 @@ namespace TMS.Services.ProviderLayer
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
 
-            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "BranchNumber",
-                "DueDate", "AccountNumber", "Balance");
+            //var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "BranchNumber",
+            //    "DueDate", "AccountNumber", "Balance");
 
-            var branchNumber = providerResponseParams.Where(s => s.ProviderName == "BranchNumber").Select(s => s.Value).FirstOrDefault().ToString();
-            var dueDate = providerResponseParams.Where(s => s.ProviderName == "DueDate").Select(s => s.Value).FirstOrDefault().ToString();
-            var accountNumber = providerResponseParams.Where(s => s.ProviderName == "AccountNumber").Select(s => s.Value).FirstOrDefault().ToString();
-            var balanceParam = providerResponseParams.Where(s => s.ProviderName == "Balance").Select(s => s.Value).FirstOrDefault().ToString();
+            //var branchNumber = providerResponseParams.Where(s => s.ProviderName == "BranchNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            //var dueDate = providerResponseParams.Where(s => s.ProviderName == "DueDate").Select(s => s.Value).FirstOrDefault().ToString();
+            //var accountNumber = providerResponseParams.Where(s => s.ProviderName == "AccountNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            //var balanceParam = providerResponseParams.Where(s => s.ProviderName == "Balance").Select(s => s.Value).FirstOrDefault().ToString();
 
             var switchRequestDto = new SwitchPaymentRequest
             {
@@ -376,12 +376,14 @@ namespace TMS.Services.ProviderLayer
                 Data = new List<SwitchData> { new SwitchData { Key = "billingAcctTypeId", Value = BillingAccountType } }
             };
 
+            var userPassword = _switchService.GetToken(serviceConfiguration);
+
             var switchEndPoint = new SwitchEndPointDTO
             {
                 URL = serviceConfiguration.URL,
                 TimeOut = serviceConfiguration.TimeOut,
                 UserName = serviceConfiguration.UserName,
-                UserPassword = _switchService.GetToken(serviceConfiguration)
+                UserPassword = userPassword
             };
 
             //Logging Provider Request
@@ -390,16 +392,16 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
             //PSC[0] = "http://164.160.104.136:8087/momknswitch/api/v1.0/";
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "services/" + 2 + "/inquiry", "Bearer ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "services/" + 2 + "/inquiry", "Bearer ");
             //Response = "{ \"responseCode\": 200, \"responseMessage\": \"SUCCESS\", \"responseDate\": \"07/10/2021 21:12:05\", \"totalAmount\": 300.0, \"invoices\": [ {\"sequence\": 16, \"amount\": 15.0, \"data\": [  {  \"key\": \"sequence\",  \"value\": \"1\" },{  \"key\": \"year_descr_ar\",  \"value\": \"2009\" },{  \"key\": \"fac_name\",  \"value\": \"Computer\" },{  \"key\": \"stud_name\",  \"value\": \"Tony\" },{  \"key\": \"NATIONAL_NUMBER\",  \"value\": \"2551030214456\" },{  \"key\": \"STUD_CODE\",  \"value\": \"123\" },{  \"key\": \"phase_node\",  \"value\": \"1\" },{  \"key\": \"sem_desc\",  \"value\": \"2\" },{  \"key\": \"ED_CODE_STUDY_NATURE_DESC\",  \"value\": \"3\" }  ] } ]}";
 
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
-                SwitchInquiryResponseDTO SIRS = JsonConvert.DeserializeObject<SwitchInquiryResponseDTO>(response);
+                //JObject o = JObject.Parse(response);
+                SwitchInquiryResponseDTO SIRS = JsonConvert.DeserializeObject<SwitchInquiryResponseDTO>(response.Message);
 
                 if (SIRS.ResponseCode == "200")
                 {
@@ -425,7 +427,7 @@ namespace TMS.Services.ProviderLayer
                 else
                 {
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(SIRS.ResponseCode), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
 
@@ -433,7 +435,7 @@ namespace TMS.Services.ProviderLayer
             else
             {
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
 
             }
