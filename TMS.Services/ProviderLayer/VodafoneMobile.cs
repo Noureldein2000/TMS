@@ -145,7 +145,7 @@ namespace TMS.Services.ProviderLayer
                        {
                            ParameterName = "Service Fees",// "Service Fees",
                            ProviderServiceRequestID = feesModel.Brn,
-                           TransactionID = 0,
+                           TransactionID = null,
                            Value = feesAmount.ToString("0.000")
                        });
                 }

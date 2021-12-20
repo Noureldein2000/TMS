@@ -118,7 +118,7 @@ namespace TMS.Services.ProviderLayer
                            {
                                ParameterName = item.FeesTypeName,
                                ProviderServiceRequestID = feesModel.Brn,
-                               TransactionID = 0,
+                               TransactionID = null,
                                Value = item.Fees.ToString("0.000")
                            });
                     }
@@ -248,7 +248,7 @@ namespace TMS.Services.ProviderLayer
                 };
 
 
-                    inquiryResponse.Brn = providerServiceResponseId;
+                    inquiryResponse.Brn = providerServiceRequestId;
                     inquiryResponse.TotalAmount = inquiryResponse.Invoices.Select(x => x.Amount).FirstOrDefault();
                     var responseParams = _providerService.GetProviderServiceResponseParams(providerServiceRequestId, language: "ar", "arabicName");
 
@@ -274,7 +274,7 @@ namespace TMS.Services.ProviderLayer
                     {
                         ParameterName = "arabicName",
                         ProviderServiceRequestID = providerServiceRequestId,
-                        TransactionID = 0,
+                        TransactionID = null,
                         Value = o["customerName"].ToString()
                     });
                 }

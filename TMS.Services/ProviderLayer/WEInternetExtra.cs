@@ -250,7 +250,7 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.inquiry.ToString(), "Basic ");
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, "quotaInquiry", "");
 
             //Logging Provider Response
             await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);

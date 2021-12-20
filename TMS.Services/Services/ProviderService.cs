@@ -96,7 +96,7 @@ namespace TMS.Services.Services
 
         public int GetMaxProviderServiceRequest(int brn, RequestType requestTypeId)
         {
-            return _providerServiceRequests.Getwhere(s => s.Brn == brn && s.ProviderServiceRequestStatusID == 2
+            return _providerServiceRequests.Getwhere(s => (s.Brn == brn || s.ID == brn) && s.ProviderServiceRequestStatusID == 2
             && s.RequestTypeID == (int)requestTypeId).Max(s => s.ID);
         }
 

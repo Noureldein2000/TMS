@@ -141,6 +141,7 @@ namespace TMS.Services.ProviderLayer
                 throw new TMSException(message.Message, message.Code);
             }
             inquiryResponse.Code = 200;
+            inquiryResponse.Brn = providerServiceRequestId;
             inquiryResponse.Message = "Success";
 
             //Logging Client Response
@@ -599,7 +600,7 @@ namespace TMS.Services.ProviderLayer
 
             paymentResponse.Code = code;
             paymentResponse.Message = message;
-            paymentResponse.InvoiceId = 0;
+            //paymentResponse.InvoiceId = 0;
             paymentResponse.ServerDate = DateTime.Now.ToString();
             paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
             paymentResponse.Receipt = new List<Root> {
