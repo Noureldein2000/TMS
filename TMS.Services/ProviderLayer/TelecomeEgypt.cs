@@ -390,7 +390,7 @@ namespace TMS.Services.ProviderLayer
             if (response.Code == 200)
             {
                 JObject o = JObject.Parse(response.Message);
-                if (o["code"].ToString() != "200")
+                if (o["code"].ToString() == "200")
                 {
 
                     paymentResponse.InvoiceId = _transactionService.AddInvoiceTelecomEgypt("", payModel.BillingAccount, DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "", "", newRequestId);
