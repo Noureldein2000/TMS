@@ -134,17 +134,6 @@ namespace TMS.Services.Services
                 //var splitedUrl = PSC.URL.Split('/');
                 //var newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
                 ////PSC.URL = newUrl;
-                //string newUrl = "";
-
-                //var splitedUrl = baseAddress.Split('/');
-
-                //if (splitedUrl.Length > 5)
-                //    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
-                //else
-                //    if (splitedUrl.Length > 4)
-                //    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
-                //else
-                //    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
 
                 var http = (HttpWebRequest)WebRequest.Create(new Uri(baseAddress));
                 http.ContentType = "application/json";

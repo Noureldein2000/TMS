@@ -202,7 +202,7 @@ namespace TMS.Services.ProviderLayer
                LoggingType.ProviderRequest);
 
 
-            string url = switchEndPoint.URL + "requestID=" + providerServiceRequestId + "&telephoneCode=" + Validates.GetCodeAndTelephone(inquiryModel.BillingAccount)[0] + "&phone=" + Validates.GetCodeAndTelephone(inquiryModel.BillingAccount)[1] + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword;
+            string url = switchEndPoint.URL + "?requestID=" + providerServiceRequestId + "&telephoneCode=" + Validates.GetCodeAndTelephone(inquiryModel.BillingAccount)[0] + "&phone=" + Validates.GetCodeAndTelephone(inquiryModel.BillingAccount)[1] + "&userName=" + switchEndPoint.UserName + "&password=" + switchEndPoint.UserPassword;
 
             var response = _switchService.Connect(switchEndPoint, url);
 
