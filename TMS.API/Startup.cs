@@ -15,6 +15,7 @@ using TMS.Data;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Repositories;
 using TMS.Services.Services;
+using TMS.Services.SOFClientAPIs;
 
 namespace TMS.API
 {
@@ -40,6 +41,7 @@ namespace TMS.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(ApplicationDbContext));
             services.AddScoped(typeof(Provider));
+            services.AddScoped<IAccountsApi>(s => new AccountsApi(Configuration.GetValue<string>("SOFConfigurations:URL")));
 
             services.AddScoped<IDynamicService, DynamicService>();
             services.AddScoped<ILoggingService, LoggingService>();

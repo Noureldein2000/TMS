@@ -36,7 +36,8 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService
+           ITransactionService transactionService,
+           IAccountsApi accountsApi
             )
         {
             _denominationService = denominationService;
@@ -47,7 +48,7 @@ namespace TMS.Services.ProviderLayer
             _dbMessageService = dbMessageService;
             _feesService = feesService;
             _transactionService = transactionService;
-            _accountsApi = new AccountsApi("http://localhost:5000");
+            _accountsApi = accountsApi;
         }
         public FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id)
         {

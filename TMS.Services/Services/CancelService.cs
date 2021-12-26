@@ -40,7 +40,9 @@ namespace TMS.Services.Services
            IDbMessageService dbMessageService,
            IFeesService feesService,
            ITransactionService transactionService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IAccountsApi accountsApi
+            )
         {
             _denominationService = denominationService;
             _providerService = providerService;
@@ -50,7 +52,7 @@ namespace TMS.Services.Services
             _dbMessageService = dbMessageService;
             _feesService = feesService;
             _transactionService = transactionService;
-            _accountsApi = new AccountsApi("http://localhost:5000");
+            _accountsApi = accountsApi;
             _unitOfWork = unitOfWork;
         }
         public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId)
