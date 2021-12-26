@@ -21,12 +21,14 @@ namespace TMS.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+        private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -48,7 +50,7 @@ namespace TMS.API
             services.AddScoped<IDenominationService, DenominationService>();
             services.AddScoped<IInquiryBillService, InquiryBillService>();
             services.AddScoped<IProviderService, ProviderService>();
-            services.AddScoped<ISwitchService, SwitchService>();
+            services.AddScoped<ISwitchService>(x => new SwitchService(CurrentEnvironment.IsDevelopment()));
             services.AddScoped<IDbMessageService, DbMessageService>();
             services.AddScoped<IFeesService, FeesService>();
             services.AddScoped<ICommissionService, CommissionService>();

@@ -17,6 +17,11 @@ namespace TMS.Services.Services
 {
     public class SwitchService : ISwitchService
     {
+        private readonly bool _isEnvirnomentDevelopment;
+        public SwitchService(bool isEnvirnomentDevelopment)
+        {
+            _isEnvirnomentDevelopment = isEnvirnomentDevelopment;
+        }
         public string Connect<T>(T obj, SwitchEndPointDTO PSC, string baseAddress, string tokenType, UrlType urlType = UrlType.Custom)
         {
             try
@@ -96,17 +101,20 @@ namespace TMS.Services.Services
                 //var splitedUrl = PSC.URL.Split('/');
                 //var newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
                 //PSC.URL = newUrl;
-                string newUrl = "";
+                string newUrl = baseAddress;
 
-                var splitedUrl = baseAddress.Split('/');
+                if(_isEnvirnomentDevelopment)
+                {
+                    var splitedUrl = baseAddress.Split('/');
 
-                if (splitedUrl.Length > 5)
-                    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
-                else
-                    if (splitedUrl.Length > 4)
-                    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
-                else
-                    newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
+                    if (splitedUrl.Length > 5)
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
+                    else
+                        if (splitedUrl.Length > 4)
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+                    else
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
+                }
 
                 var http = (HttpWebRequest)WebRequest.Create(new Uri(newUrl));
                 http.ContentType = "application/json";
@@ -133,9 +141,23 @@ namespace TMS.Services.Services
             {
                 //var splitedUrl = PSC.URL.Split('/');
                 //var newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}/{splitedUrl[5]}/";
-                ////PSC.URL = newUrl;
+                //PSC.URL = newUrl;
+                string newUrl = baseAddress;
 
-                var http = (HttpWebRequest)WebRequest.Create(new Uri(baseAddress));
+                if (_isEnvirnomentDevelopment)
+                {
+                    var splitedUrl = baseAddress.Split('/');
+
+                    if (splitedUrl.Length > 5)
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
+                    else
+                        if (splitedUrl.Length > 4)
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+                    else
+                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
+                }
+
+                var http = (HttpWebRequest)WebRequest.Create(new Uri(newUrl));
                 http.ContentType = "application/json";
                 http.Method = "GET";
                 http.Timeout = PSC.TimeOut;
