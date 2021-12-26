@@ -285,12 +285,6 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
-            foreach (var item in bills)
-            {
-                payModel.Amount = item.Amount;
-            }
-
             var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
 
             var newRequestId = _transactionService.AddRequest(new RequestDTO
