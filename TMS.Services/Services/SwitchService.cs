@@ -144,18 +144,18 @@ namespace TMS.Services.Services
                 //PSC.URL = newUrl;
                 string newUrl = baseAddress;
 
-                if (_isEnvirnomentDevelopment)
-                {
-                    var splitedUrl = baseAddress.Split('/');
+                //if (_isEnvirnomentDevelopment)
+                //{
+                //    var splitedUrl = baseAddress.Split('/');
 
-                    if (splitedUrl.Length > 5)
-                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
-                    else
-                        if (splitedUrl.Length > 4)
-                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
-                    else
-                        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
-                }
+                //    if (splitedUrl.Length > 5)
+                //        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}?{splitedUrl[5]}";
+                //    else
+                //        if (splitedUrl.Length > 4)
+                //        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}/{splitedUrl[4]}";
+                //    else
+                //        newUrl = $"http://164.160.104.66:7001/{splitedUrl[3]}";
+                //}
 
                 var http = (HttpWebRequest)WebRequest.Create(new Uri(newUrl));
                 http.ContentType = "application/json";
@@ -271,7 +271,7 @@ namespace TMS.Services.Services
             try
             {
 
-                //PSC.URL = "http://164.160.104.66:7001/btech/rest/service/";
+                //PSC.URL = "http://10.90.3.158:7001/cashin/rest/service/";
                 var http = (HttpWebRequest)WebRequest.Create(new Uri(PSC.URL + baseAddress));
                 if (tokenType.Contains("Bearer"))
                     http.Headers.Add(HttpRequestHeader.Authorization, tokenType + (PSC.UserPassword));

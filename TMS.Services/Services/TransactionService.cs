@@ -1030,5 +1030,88 @@ namespace TMS.Services.Services
             cmd.Parameters.AddWithValue("@Provider_Response", providerResponse);
             return InitiateSqlCommand(cmd);
         }
+        public int AddInvoiceWaterBill(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile)
+        {
+            using var cmd = new SqlCommand("[Water_egypt_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@account_code", accountCode);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            cmd.Parameters.AddWithValue("@address", address);
+            cmd.Parameters.AddWithValue("@due_Date", dueDate);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Code", code);
+            cmd.Parameters.AddWithValue("@Message", message);
+            cmd.Parameters.AddWithValue("@ProviderTransactionId", providerTransactionId);
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@mobile_no", mobile);
+            return InitiateSqlCommand(cmd);
+        }
+        public int AddInvoiceSubscriptionChannels(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile, int request_id)
+        {
+            using var cmd = new SqlCommand("[SubscriptionChannels_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@account_code", accountCode);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            cmd.Parameters.AddWithValue("@address", address);
+            cmd.Parameters.AddWithValue("@due_Date", dueDate);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Code", code);
+            cmd.Parameters.AddWithValue("@Message", message);
+            cmd.Parameters.AddWithValue("@ProviderTransactionId", providerTransactionId);
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@mobile_no", mobile);
+            cmd.Parameters.AddWithValue("@request_id", request_id);
+            return InitiateSqlCommand(cmd);
+        }
+        public int AddInvoiceGas(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile)
+        {
+            using var cmd = new SqlCommand("[Gas_egypt_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@account_code", accountCode);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            cmd.Parameters.AddWithValue("@address", address);
+            cmd.Parameters.AddWithValue("@due_Date", dueDate);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Code", code);
+            cmd.Parameters.AddWithValue("@Message", message);
+            cmd.Parameters.AddWithValue("@ProviderTransactionId", providerTransactionId);
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@mobile_no", mobile);
+            return InitiateSqlCommand(cmd);
+        }
+
+        public int AddInvoiceEfinanceService(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile, int request_id)
+        {
+            using var cmd = new SqlCommand("[EfinanceService_send]");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@service_id", serviceId);
+            cmd.Parameters.AddWithValue("@account_code", accountCode);
+            cmd.Parameters.AddWithValue("@AccountName", accountName);
+            cmd.Parameters.AddWithValue("@address", address);
+            cmd.Parameters.AddWithValue("@due_Date", dueDate);
+            cmd.Parameters.AddWithValue("@basic_value", basicValue);
+            cmd.Parameters.AddWithValue("@added_money", addedMoney);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@Code", code);
+            cmd.Parameters.AddWithValue("@Message", message);
+            cmd.Parameters.AddWithValue("@ProviderTransactionId", providerTransactionId);
+            cmd.Parameters.AddWithValue("@data", data);
+            cmd.Parameters.AddWithValue("@mobile_no", mobile);
+            cmd.Parameters.AddWithValue("@request_id", request_id);
+            return InitiateSqlCommand(cmd);
+        }
     }
 }

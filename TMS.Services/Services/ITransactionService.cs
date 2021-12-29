@@ -67,5 +67,9 @@ namespace TMS.Services.Services
         int AddInvoiceUniversityBeniSuef(int accountId, decimal basicValue, int userId, string billingAccount, int servId, decimal value, decimal addedMoney, string educationYear,
             string facultyName, string studentName, string SSN, string studentCode, string section, string studyNature, string newRequestId);
         int AddInvoiceZaha(int accountId, decimal basicValue, int userId, string billingAccount, string serviceProviderName, int servId, decimal value, decimal addedMoney, string providerTransactionID, string providerResponse);
+        public int AddInvoiceWaterBill(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile);
+        public int AddInvoiceSubscriptionChannels(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile, int request_id);
+        public int AddInvoiceGas(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile);
+        public int AddInvoiceEfinanceService(int serviceId, string accountCode, string accountName, string address, string dueDate, decimal basicValue, decimal addedMoney, int status, decimal userId, string code, string message, int? providerTransactionId, string data, string mobile, int request_id);
     }
 }

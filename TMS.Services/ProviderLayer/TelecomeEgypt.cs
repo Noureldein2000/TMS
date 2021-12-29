@@ -145,7 +145,7 @@ namespace TMS.Services.ProviderLayer
                        {
                            ParameterName = "Service Fees",// "Service Fees",
                            ProviderServiceRequestID = feesModel.Brn,
-                           TransactionID = 0,
+                           TransactionID = null,
                            Value = feesAmount.ToString("0.000")
                        });
                 }
@@ -342,10 +342,7 @@ namespace TMS.Services.ProviderLayer
             var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
             var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
             if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-            {
-               var log = _accountsApi.Configuration.BasePath;
-                throw new TMSException("BalanceError", log);
-            }
+                throw new TMSException("BalanceError", "-5");
 
             // post to hold
             await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
@@ -407,8 +404,7 @@ namespace TMS.Services.ProviderLayer
 
                     // confirm sof
                     await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                        new List<int?> { transactionId
-    });
+                        new List<int?> { transactionId });
 
                     var providerServiceResponeId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
                     {

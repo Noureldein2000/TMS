@@ -67,24 +67,24 @@ namespace TMS.Services.Models
     //    public int BillsCount { get; set; }
     //}
 
-    public class InquiryCashIn : SwitchRequestBodyDTO
+    public class InquiryCashIn 
     {
         public string BillReference { get; set; }
-        public string CardNumber { get; set; }
-        private string creationDate;
-        public string CreationDate
-        {
-            get { return creationDate; }
-            set { creationDate = value; }
-        }
-        public string DenominationValue { get; set; }
-        private string expirationDate;
-        public string ExpirationDate
-        {
-            get { return expirationDate; }
-            set { expirationDate = value; }
-        }
-        public string Serial { get; set; }
+        public string TransactionId { get; set; }
+        //private string creationDate;
+        //public string CreationDate
+        //{
+        //    get { return creationDate; }
+        //    set { creationDate = value; }
+        //}
+        //public string DenominationValue { get; set; }
+        //private string expirationDate;
+        //public string ExpirationDate
+        //{
+        //    get { return expirationDate; }
+        //    set { expirationDate = value; }
+        //}
+        //public string Serial { get; set; }
 
     }
 

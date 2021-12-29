@@ -109,7 +109,7 @@ namespace TMS.Services.ProviderLayer
                            {
                                ParameterName = item.FeesTypeName,
                                ProviderServiceRequestID = feesModel.Brn,
-                               TransactionID = 0,
+                               TransactionID = null,
                                Value = item.Fees.ToString("0.000")
                            });
                     }
@@ -135,7 +135,7 @@ namespace TMS.Services.ProviderLayer
                        {
                            ParameterName = "Service Fees",// "Service Fees",
                            ProviderServiceRequestID = feesModel.Brn,
-                           TransactionID = 0,
+                           TransactionID = null,
                            Value = feesAmount.ToString("0.000")
                        });
                 }
@@ -193,7 +193,7 @@ namespace TMS.Services.ProviderLayer
             var switchRequestDto = new InquiryCashIn
             {
                 BillReference = inquiryModel.BillingAccount,
-                TransactionId = providerServiceRequestId
+                TransactionId = providerServiceRequestId.ToString()
             };
             var switchEndPoint = new SwitchEndPointDTO
             {

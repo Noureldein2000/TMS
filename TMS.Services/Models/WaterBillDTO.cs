@@ -11,12 +11,31 @@ namespace TMS.Services.Models
     public class InquiryWaterDTO
     {
         public string BillingAcccount { get; set; }
-        public int TransactionId { get; set; }
+        public string TransactionId { get; set; }
         public string BillType = "0";
         public string BillerId { get; set; }
         public string MeterReading { get; set; }
 
     }
+
+    class FeesWaterDTO
+    {
+        public string TransactionId { get; set; }
+
+        public string BillerId { get; set; }
+        public string BillingAccount { get; set; }
+        public string BillRecId { get; set; }
+        public List<PaymentAmounts> PaymentAmounts { get; set; }
+
+    }
+
+    class PaymentWater : FeesWaterDTO
+    {
+        public string PaymentRefInfo { get; set; }
+        public string BillNumber { get; set; }
+        public List<FeesAmounts> FeesAmounts { get; set; }
+    }
+
 
     public class FeesAmountDTO
     {
