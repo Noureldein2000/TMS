@@ -29,6 +29,7 @@ namespace TMS.Services.Services
         DenominationParameterDTO EditDenominationParameter(DenominationParameterDTO model);
         DenominationParameterDTO AddDenominationParameter(DenominationParameterDTO model);
         void DeleteDenominationParameter(int id);
+        DenominationParameterDTO GetDenominationParameterByDenominationId(int denominationId, string paramKey);
         void EditDenominationReceiptData(DenominationReceiptDataDTO model);
         DenominationReceiptParamDTO GetDenominationReceiptParamById(int id);
         void EditDenominationReceiptParam(DenominationReceiptParamDTO model);
