@@ -404,10 +404,10 @@ namespace TMS.Services.Services
                 ST.Username = PSC.UserName;
 
                 //PSC[0] = "http://164.160.104.136:8087/momknswitch/api/v1.0/";
-                string Response = Connect(ST, PSC, "login", "Basic ", UrlType.Custom);
-                if (Validates.CheckJSON(Response))
+                var response = Connect(ST, PSC, "login", "Basic ");
+                if (response.Code==200)
                 {
-                    JObject o = JObject.Parse(Response);
+                    JObject o = JObject.Parse(response.Message);
                     if (o["responseCode"].ToString() == "200")
                     {
                         string data = o["data"].ToString();

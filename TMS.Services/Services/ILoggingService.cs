@@ -10,5 +10,6 @@ namespace TMS.Services.Services
     {
         Task Log(string obj, int providerServiceRequestId, LoggingType loggingType);
         string GetLog(int providerServiceRequestId, LoggingType loggingType);
+        void LogTest(string msg);
     }
 }

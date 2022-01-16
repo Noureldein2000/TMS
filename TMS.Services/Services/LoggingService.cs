@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,17 @@ namespace TMS.Services.Services
         {
             return _logRepository.Getwhere(x => x.ProviderServiceRequestID == providerServiceRequestId && x.LogTypeID == loggingType)
                 .Select(x => x.LogText).FirstOrDefault();
+        }
+
+        public void LogTest(string msg)
+        {
+            using (StreamWriter st = File.AppendText(Directory.GetCurrentDirectory() + "/LogTMS.txt"))
+            {
+                st.Write("\r\n Log Entry: ");
+                st.WriteLine(DateTime.Now.ToLongDateString() + " | " + DateTime.Now.ToLongTimeString());
+                st.WriteLine(msg);
+                st.WriteLine("------------------------------------------------------------------------");
+            }
         }
     }
 }

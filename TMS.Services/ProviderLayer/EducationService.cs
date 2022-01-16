@@ -500,13 +500,13 @@ namespace TMS.Services.ProviderLayer
               providerServiceRequestId,
               LoggingType.ProviderRequest);
 
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ", UrlType.Custom);
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ");
             //Logging Provider Response
-            await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+            await _loggingService.Log(response.Message, providerServiceRequestId, LoggingType.ProviderResponse);
 
-            if (Validates.CheckJSON(response))
+            if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response);
+                JObject o = JObject.Parse(response.Message);
 
                 var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
                 {
@@ -560,7 +560,7 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else if (response.Contains("timed out"))
+            else if (response.Code == -200)
             {
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;
@@ -579,7 +579,7 @@ namespace TMS.Services.ProviderLayer
                 _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
                 _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
                 // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                 throw new TMSException(message.Message, message.Code);
             }
             paymentResponse.Code = 200;

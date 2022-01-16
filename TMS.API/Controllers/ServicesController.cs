@@ -117,13 +117,13 @@ namespace TMS.API.Controllers
             }
         }
         [HttpDelete]
-        [Route("{serviceId}/{transactionId}/{accountId}/payment")]
+        [Route("{serviceId}/payment")]
         [ProducesResponseType(typeof(PaymentResponseDTO), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Cancel(int serviceId, int transactionId, int accountId)
+        public async Task<IActionResult> Cancel([FromBody] CancelRequestModel model, int serviceId)
         {
             try
             {
-                var response = await _service.Cancel(transactionId, accountId, UserIdentityId, serviceId);
+                var response = await _service.Cancel(model.TransactionId, model.AccountId, UserIdentityId, serviceId);
                 return Ok(response);
             }
             catch (TMSException ex)

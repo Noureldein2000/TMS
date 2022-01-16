@@ -203,7 +203,8 @@ namespace TMS.Services.ProviderLayer
             //var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "BranchNumber",
             //    "DueDate", "AccountNumber", "Balance");
             string ProviderResponse = _loggingService.GetLog(payModel.Brn, LoggingType.ProviderResponse);
-            JObject o = JObject.Parse(ProviderResponse);
+            var jsonMessage = JsonConvert.DeserializeObject<ProviderResponseDTO>(ProviderResponse);
+            JObject o = JObject.Parse(jsonMessage.Message);
 
             var branchNumber = o["BranchNumber"].ToString();
             var dueDate = o["DueDate"].ToString();
@@ -417,12 +418,12 @@ namespace TMS.Services.ProviderLayer
                              ServiceRequestID = providerServiceResponseId,
                              Value = o["totalAmount"].ToString()
                          },
-                        //new ProviderServiceResponseParamDTO
-                        //{
-                        //    ParameterName = "openAmount",
-                        //    ServiceRequestID = providerServiceResponseId,
-                        //    Value = o["openAmount"].ToString()
-                        //},
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "openAmount",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["openAmount"].ToString()
+                        },
                         new ProviderServiceResponseParamDTO
                         {
                             ParameterName = "totalPaidAmount",
@@ -440,13 +441,13 @@ namespace TMS.Services.ProviderLayer
                             ParameterName = "penaltyPaid",
                             ServiceRequestID = providerServiceResponseId,
                             Value = o["penaltyPaid"].ToString()
+                        },
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "loanNumber",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = o["loanNumber"].ToString()
                         }
-                        //new ProviderServiceResponseParamDTO
-                        //{
-                        //    ParameterName = "loanNumber",
-                        //    ServiceRequestID = providerServiceResponseId,
-                        //    Value = o["loanNumber"].ToString()
-                        //}
                         );
 
                     inquiryResponse.Data.AddRange(new List<DataDTO>
@@ -475,11 +476,11 @@ namespace TMS.Services.ProviderLayer
                         Key = "totalAmount",
                         Value = o["totalAmount"].ToString()
                     }
-                    //,    new DataDTO
-                    //{
-                    //    Key = "openAmount",
-                    //    Value = o["openAmount"].ToString()
-                    //}
+                    ,    new DataDTO
+                    {
+                        Key = "openAmount",
+                        Value = o["openAmount"].ToString()
+                    }
                     , new DataDTO
                     {
                         Key = "totalPaidAmount",
@@ -497,12 +498,21 @@ namespace TMS.Services.ProviderLayer
                         Key = "penaltyPaid",
                         Value = o["penaltyPaid"].ToString()
                     },
-                    //    new DataDTO
-                    //{
-                    //    Key = "loanNumber",
-                    //    Value = o["loanNumber"].ToString()
-                    //}
+                        new DataDTO
+                    {
+                        Key = "loanNumber",
+                        Value = o["loanNumber"].ToString()
+                    }
                   });
+
+                    //Add InquiryBill
+                    _inquiryBillService.AddInquiryBill(new InquiryBillDTO
+                    {
+                        Amount = decimal.Parse(o["totalAmount"].ToString()),
+                        ProviderServiceResponseID = providerServiceResponseId,
+                        Sequence = 1
+                    });
+
 
                     inquiryResponse.Brn = providerServiceRequestId;
                     inquiryResponse.TotalAmount = totalAmount;
