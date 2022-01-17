@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMS.Data.Entities;
 using TMS.Infrastructure;
@@ -214,31 +215,36 @@ namespace TMS.Services.BusinessLayer
         {
             await base.Inquiry(inquiry, userId, id);
 
-            var denomination = _denominationService.GetDenomination(id);
-            if ((denomination.ServiceID == 19 || denomination.ServiceID == 20 || denomination.ServiceID == 26
-                || denomination.ServiceID == 27 || denomination.ServiceID == 31 || denomination.ServiceID == 38
-                || denomination.ServiceID == 40 || denomination.ServiceID == 41 || denomination.ServiceID == 56
-                || denomination.ServiceID == 62)
-                || (Validates.CheckMobileNumber(inquiry.BillingAccount) || Validates.CheckLandLineNumber(inquiry.BillingAccount)))
+            var noValidationServicesIds = new List<int>
             {
-                if (denomination.Status == false)
-                    throw new TMSException("ServiceUnavailable", "");
+                19, 27, 40, 41, 62, 31, 20, 26, 38, 56
+            };
 
-                if (denomination.ClassType == 0)
-                    throw new TMSException("UnsupportedService", "");
+            var denominationParamters = _denominationService.GetDenominationParameterByDenominationId(id, "BillingAccount");
 
-                var denoProvider = _provider.CreateDenominationProvider(denomination.ClassType);
-                return await denoProvider.Inquiry(inquiry, userId, id, denomination.ServiceProviderId);
+            if (!string.IsNullOrEmpty(denominationParamters.ValidationExpression))
+            {
+                if (!new Regex(denominationParamters.ValidationExpression).IsMatch(inquiry.BillingAccount))
+                {
+                    throw new TMSException(denominationParamters.ValidationMessage, "");
+                }
+            }
+            else if (!Validates.CheckMobileNumber(inquiry.BillingAccount) && !Validates.CheckLandLineNumber(inquiry.BillingAccount) && !noValidationServicesIds.Contains(id))
+            {
+                throw new TMSException("InvalidTelephoneNumber", "");
             }
 
-            if (Validates.CheckMobileNumber(inquiry.BillingAccount))
-                throw new TMSException("InvalidMobileNumber", "");
+            var denomination = _denominationService.GetDenomination(id);
 
-            else if (Validates.CheckLandLineNumber(inquiry.BillingAccount))
-                throw new TMSException("InvalidTelephoneNumber", "");
+            if (denomination.Status == false)
+                throw new TMSException("ServiceUnavailable", "");
 
-            else
-                throw new TMSException("Invalid", "");
+            if (denomination.ClassType == 0)
+                throw new TMSException("UnsupportedService", "");
+
+            var denoProvider = _provider.CreateDenominationProvider(denomination.ClassType);
+            return await denoProvider.Inquiry(inquiry, userId, id, denomination.ServiceProviderId);
+
         }
 
         public override async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id)

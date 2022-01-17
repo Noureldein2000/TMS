@@ -526,6 +526,23 @@ namespace TMS.Services.Services
             _denominationParamter.Delete(id);
             _unitOfWork.SaveChanges();
         }
+        public DenominationParameterDTO GetDenominationParameterByDenominationId(int denominationId, string paramKey)
+        {
+            var denominatiaon = _denominationParamter.Getwhere(s => s.DenominationID == denominationId && s.DenominationParam.ParamKey == paramKey)
+               .Select(dp => new DenominationParameterDTO
+               {
+                   Id = dp.ID,
+                   Optional = dp.Optional,
+                   Sequence = dp.Sequence,
+                   ValidationExpression = dp.ValidationExpression,
+                   ValidationMessage = dp.ValidationMessage,
+                   DenominationParamID = dp.DenominationParamID,
+                   Value = dp.Value,
+                   ValueList = dp.ValueList
+               }).FirstOrDefault();
+
+            return denominatiaon;
+        }
 
         public void EditDenominationReceiptData(DenominationReceiptDataDTO model)
         {
