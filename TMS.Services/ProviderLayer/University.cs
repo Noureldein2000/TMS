@@ -145,7 +145,7 @@ namespace TMS.Services.ProviderLayer
                                 if (!String.IsNullOrEmpty(SequenceValue))
                                 {
                                     var IBDList = _inquiryBillService.GetInquiryBillDetails(feesModel.Brn, int.Parse(SequenceValue));
-                                    if (IBDList != null)
+                                    if (IBDList.Count > 0)
                                     {
                                         PaymentAmounts PA = new PaymentAmounts();
 
@@ -173,7 +173,7 @@ namespace TMS.Services.ProviderLayer
                                     TransactionId = providerServiceRequestId.ToString(),
                                     BillerId = denomination.ProviderCode,
                                     PaymentAmounts = _PayList,
-                                    BillRecId = _providerService.GetProviderServiceResponseParams(feesModel.Brn, "billRecId", "ar").Select(x => x.Value).FirstOrDefault()
+                                    BillRecId = denomination.ProviderCode
                                 };
 
                                 var switchEndPoint = new SwitchEndPointDTO
@@ -267,7 +267,7 @@ namespace TMS.Services.ProviderLayer
                                         ParameterName = "Provider Service Fees",
                                         ProviderServiceRequestID = providerServiceRequestId,
                                         Value = ProviderFees.ToString(),
-                                        TransactionID = 0
+                                        TransactionID = null
                                     });
 
                                     //Add InquiryBill
@@ -561,21 +561,21 @@ namespace TMS.Services.ProviderLayer
                        ParameterName = "arabicName",
                        ProviderServiceRequestID = providerServiceRequestId,
                        Value = CustList.ArabicName,
-                       TransactionID = 0
+                       TransactionID = null
                    },
                     new ReceiptBodyParamDTO
                     {
                         ParameterName = "collageName",
                         ProviderServiceRequestID = providerServiceRequestId,
                         Value = CustList.CollageName,
-                        TransactionID = 0
+                        TransactionID = null
                     },
                      new ReceiptBodyParamDTO
                      {
                          ParameterName = "educationYear",
                          ProviderServiceRequestID = providerServiceRequestId,
                          Value = CustList.EducationYear,
-                         TransactionID = 0
+                         TransactionID = null
                      });
 
                 //Add InquiryBill
@@ -591,31 +591,31 @@ namespace TMS.Services.ProviderLayer
                     _inquiryBillService.AddInquiryBillDetail(new InquiryBillDetailDTO
                     {
                         InquiryBillID = inquiryId,
-                        ParameterName = "currentCode",
+                        ProviderName = "currentCode",
                         Value = item.CurrentCode
                     },
                     new InquiryBillDetailDTO
                     {
                         InquiryBillID = inquiryId,
-                        ParameterName = "minAmount",
+                        ProviderName = "minAmount",
                         Value = item.MinAmount
                     },
                      new InquiryBillDetailDTO
                      {
                          InquiryBillID = inquiryId,
-                         ParameterName = "paymentMode",
+                         ProviderName = "paymentMode",
                          Value = item.PaymentMode
                      },
                       new InquiryBillDetailDTO
                       {
                           InquiryBillID = inquiryId,
-                          ParameterName = "shortDescAR",
+                          ProviderName = "shortDescAR",
                           Value = item.ShortDescAR
                       },
                        new InquiryBillDetailDTO
                        {
                            InquiryBillID = inquiryId,
-                           ParameterName = "shortDescEN",
+                           ProviderName = "shortDescEN",
                            Value = item.ShortDescEN
                        }
                     );
@@ -731,8 +731,9 @@ namespace TMS.Services.ProviderLayer
 
             //Get Fees Amount
             FeesAmounts FA = new FeesAmounts();
-            FA.Amount = _providerService.GetProviderServiceResponseParams(BrnFees, "amountFees", "ar").Select(x => x.Value).FirstOrDefault();
-            FA.CurrentCode = _providerService.GetProviderServiceResponseParams(BrnFees, "currentCode", "ar").Select(x => x.Value).FirstOrDefault();
+            var paramaters = _providerService.GetProviderServiceResponseParams(BrnFees, "ar", "amountFees", "currentCode").ToList();
+            FA.Amount = paramaters.FirstOrDefault(x=>x.ParameterName=="amountFees").ParameterName;
+            FA.CurrentCode = paramaters.FirstOrDefault(x=>x.ParameterName== "currentCode").ParameterName;
             _FeeList.Add(FA);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);

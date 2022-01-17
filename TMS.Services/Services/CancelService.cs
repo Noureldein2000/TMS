@@ -58,13 +58,11 @@ namespace TMS.Services.Services
         public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            string printedReciept = "";
             decimal totalAmount = 0;
             decimal amount = 0;
             bool isCancelled;
             var _FeeList = new List<FeesAmounts>();
             var _PayList = new List<PaymentCardAmounts>();
-            AccountBalanceResponseModel balance = null;
             var denomination = _denominationService.GetDenomination(id);
 
             //Get BillingAccount For Inquiry Brn
@@ -122,7 +120,7 @@ namespace TMS.Services.Services
                   payModel.Brn,
                   LoggingType.CustomerRequest);
 
-                string response = CallCancellProvider(new CancellProviderDTO
+                var response = CallCancellProvider(new CancellProviderDTO
                 {
                     ServiceID = denomination.ServiceID,
                     FeesAmounts = _FeeList,
@@ -137,17 +135,17 @@ namespace TMS.Services.Services
                 }, out isCancelled);
 
                 //Logging Provider Response
-                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                await _loggingService.Log(response.Message, providerServiceRequestId, LoggingType.ProviderResponse);
 
-                if (Validates.CheckJSON(response))
+                if (response.Code == 200)
                 {
-                    JObject o = JObject.Parse(response);
+                    JObject o = JObject.Parse(response.Message);
 
                     var oldTransaction = _transactionService.GetTransactionByBrn(payModel.Brn);
 
                     if (oldTransaction != null)
                     {
-                        paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response);
+                        paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response.Message);
 
                         var transactionId = _transactionService.AddTransaction(null, totalAmount, id, payModel.Amount, fees, oldTransaction.Id.ToString(), payModel.AccountId, paymentResponse.InvoiceId, oldTransaction.RequestId);
                         paymentResponse.TransactionId = transactionId;
@@ -163,13 +161,13 @@ namespace TMS.Services.Services
                     }
 
                 }
-                else if (response.Contains("timed out"))
+                else if (response.Code == -200)
                 {
                     throw new TMSException("PendingTrx", "3");
                 }
                 else
                 {
-                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response), providerId: serviceProviderId);
+                    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
                     throw new TMSException(message.Message, message.Code);
                 }
             }
@@ -180,7 +178,7 @@ namespace TMS.Services.Services
                  payModel.Brn,
                  LoggingType.CustomerRequest);
 
-                string response = CallCancellProvider(new CancellProviderDTO
+                var response = CallCancellProvider(new CancellProviderDTO
                 {
                     ServiceID = denomination.ServiceID,
                     FeesAmounts = _FeeList,
@@ -195,16 +193,16 @@ namespace TMS.Services.Services
                 }, out isCancelled);
 
                 //Logging Provider Response
-                await _loggingService.Log(response, providerServiceRequestId, LoggingType.ProviderResponse);
+                await _loggingService.Log(response.Message, providerServiceRequestId, LoggingType.ProviderResponse);
 
-                if (Validates.CheckJSON(response))
+                if (response.Code == 200)
                 {
-                    JObject o = JObject.Parse(response);
+                    JObject o = JObject.Parse(response.Message);
 
                     var oldTransaction = _transactionService.GetTransactionByBrn(payModel.Brn);
                     if (oldTransaction != null)
                     {
-                        paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response);
+                        paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response.Message);
 
                         var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, oldTransaction.Id.ToString(), null, paymentResponse.InvoiceId, oldTransaction.RequestId);
                         paymentResponse.TransactionId = transactionId;
@@ -216,7 +214,7 @@ namespace TMS.Services.Services
 
                         _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
 
-                        _transactionService.UpdatePendingPaymentCardStatus(transactionId, 2);
+                        //_transactionService.UpdatePendingPaymentCardStatus(transactionId, 2);
                     }
 
                 }
@@ -234,9 +232,9 @@ namespace TMS.Services.Services
             return paymentResponse;
         }
 
-        public string CallCancellProvider(CancellProviderDTO model, out bool isCancelled)
+        public ProviderResponseDTO CallCancellProvider(CancellProviderDTO model, out bool isCancelabled)
         {
-            var response = "";
+            var response = new ProviderResponseDTO();
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(model.DenomationId);
 
@@ -280,8 +278,8 @@ namespace TMS.Services.Services
                 model.ProviderServiceRequestId,
                 LoggingType.ProviderRequest);
 
-                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancelPayment.ToString(), "Basic ", UrlType.Custom);
-                isCancelled = Validates.CheckJSON(response);
+                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancelPayment.ToString(), "Basic ");
+                isCancelabled = Validates.CheckJSON(response.Message);
             }
             else if (model.ServiceID == 36)
             {
@@ -307,8 +305,8 @@ namespace TMS.Services.Services
                 model.ProviderServiceRequestId,
                 LoggingType.ProviderRequest);
 
-                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ", UrlType.Custom);
-                isCancelled = Validates.CheckJSON(response);
+                response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.cancel.ToString(), "Basic ");
+                isCancelabled = Validates.CheckJSON(response.Message);
             }
             else
                 throw new TMSException("RequestNotFound", "14");
