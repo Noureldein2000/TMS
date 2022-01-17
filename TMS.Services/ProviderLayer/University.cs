@@ -752,7 +752,7 @@ namespace TMS.Services.ProviderLayer
             var switchRequestDto = new PaymentUniversity
             {
                 BillingAcccount = payModel.BillingAccount,
-                TransactionId = newRequestId.ToString(),
+                TransactionId = "200",
                 BillerId = denomation.ProviderCode,
                 BillNumber = billNumber,
                 BillRecId = billRecId,
