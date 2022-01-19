@@ -732,8 +732,8 @@ namespace TMS.Services.ProviderLayer
             //Get Fees Amount
             FeesAmounts FA = new FeesAmounts();
             var paramaters = _providerService.GetProviderServiceResponseParams(BrnFees, "ar", "amountFees", "currentCode").ToList();
-            FA.Amount = paramaters.FirstOrDefault(x=>x.ParameterName=="amountFees").ParameterName;
-            FA.CurrentCode = paramaters.FirstOrDefault(x=>x.ParameterName== "currentCode").ParameterName;
+            FA.Amount = paramaters.FirstOrDefault(x=>x.ProviderName=="amountFees").Value;
+            FA.CurrentCode = paramaters.FirstOrDefault(x=>x.ProviderName== "currentCode").Value;
             _FeeList.Add(FA);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
