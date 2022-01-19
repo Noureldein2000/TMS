@@ -222,7 +222,7 @@ namespace TMS.Services.BusinessLayer
 
             var denominationParamters = _denominationService.GetDenominationParameterByDenominationId(id, "BillingAccount");
 
-            if (!string.IsNullOrEmpty(denominationParamters.ValidationExpression))
+            if (denominationParamters != null && !string.IsNullOrEmpty(denominationParamters.ValidationExpression))
             {
                 if (!new Regex(denominationParamters.ValidationExpression).IsMatch(inquiry.BillingAccount))
                 {
