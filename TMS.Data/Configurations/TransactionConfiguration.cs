@@ -15,6 +15,7 @@ namespace TMS.Data.Configurations
             builder.Property(s => s.OriginalAmount).HasColumnType("decimal(18, 3)");
             builder.Property(s => s.TotalAmount).HasColumnType("decimal(18, 3)");
             builder.Property(s => s.Fees).HasColumnType("decimal(18, 3)");
+            builder.Property(s => s.Taxes).HasColumnType("decimal(18, 3)");
         }
     }
 }

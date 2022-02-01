@@ -10,6 +10,6 @@ namespace TMS.Services.BusinessLayer
     {
         Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId);
         FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id);
-        Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId);
+        Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId, decimal taxes = 0.0M);
     }
 }

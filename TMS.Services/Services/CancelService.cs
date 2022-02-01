@@ -55,7 +55,7 @@ namespace TMS.Services.Services
             _accountsApi = accountsApi;
             _unitOfWork = unitOfWork;
         }
-        public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId)
+        public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId,decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             decimal totalAmount = 0;
@@ -147,7 +147,7 @@ namespace TMS.Services.Services
                     {
                         paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response.Message);
 
-                        var transactionId = _transactionService.AddTransaction(null, totalAmount, id, payModel.Amount, fees, oldTransaction.Id.ToString(), payModel.AccountId, paymentResponse.InvoiceId, oldTransaction.RequestId);
+                        var transactionId = _transactionService.AddTransaction(null, totalAmount, id, payModel.Amount, fees, taxes, oldTransaction.Id.ToString(), payModel.AccountId, paymentResponse.InvoiceId, oldTransaction.RequestId);
                         paymentResponse.TransactionId = transactionId;
 
                         _transactionService.UpdateTransction(oldTransaction.Id);
@@ -204,7 +204,7 @@ namespace TMS.Services.Services
                     {
                         paymentResponse.InvoiceId = _transactionService.ReturnInvoice((int)oldTransaction.InvoiceId, userId, response.Message);
 
-                        var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, oldTransaction.Id.ToString(), null, paymentResponse.InvoiceId, oldTransaction.RequestId);
+                        var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, oldTransaction.Id.ToString(), null, paymentResponse.InvoiceId, oldTransaction.RequestId);
                         paymentResponse.TransactionId = transactionId;
 
                         _transactionService.UpdateTransction(oldTransaction.Id);

@@ -22,6 +22,8 @@ namespace TMS.Services.Models
         public int BillsCount { get; set; }
     }
 
+   
+
     public class CashUCoupon
     {
         public string CardNumber { get; set; }

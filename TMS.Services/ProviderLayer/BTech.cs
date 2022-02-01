@@ -27,6 +27,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
+        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public BTech(
@@ -37,6 +38,7 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
+           ITaxService taxesService,
            ITransactionService transactionService,
            IAccountsApi accountsApi
             )
@@ -48,251 +50,9 @@ namespace TMS.Services.ProviderLayer
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
             _feesService = feesService;
+            _taxesService = taxesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
-        }
-        public FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id)
-        {
-            var feeResponse = new FeesResponseDTO();
-            var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
-            {
-                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
-                RequestTypeID = Infrastructure.RequestType.Fees,
-                BillingAccount = null,
-                Brn = feesModel.Brn,
-                CreatedBy = userId,
-                DenominationID = id
-            });
-            var providerResponseParams = _providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees");
-            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
-
-            var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
-            foreach (var item in bills)
-            {
-                feesModel.Amount = item.Amount;
-            }
-            var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
-            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
-            feeResponse.Fees = Math.Round(feesAmount + decimal.Parse(amountFees), 3);
-            feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
-            var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
-            {
-                ProviderServiceRequestID = providerServiceRequestId,
-                TotalAmount = feeResponse.TotalAmount
-            });
-
-            if (feesList.Count > 0)
-            {
-                foreach (var item in feesList)
-                {
-                    if (item.Fees.ToString("0.000") != "0.000")
-                    {
-                        feeResponse.Data.Add(new DataDTO
-                        {
-                            Key = item.FeesTypeName,
-                            Value = item.Fees.ToString("0.000")
-                        });
-                        _providerService.AddProviderServiceResponseParam(
-                            new ProviderServiceResponseParamDTO
-                            {
-                                ParameterName = item.FeesTypeName,
-                                ServiceRequestID = providerServiceResponseId,
-                                Value = item.Fees.ToString("0.000")
-                            });
-                        _inquiryBillService.AddReceiptBodyParam(
-                           new ReceiptBodyParamDTO
-                           {
-                               ParameterName = item.FeesTypeName,
-                               ProviderServiceRequestID = feesModel.Brn,
-                               TransactionID = null,
-                               Value = item.Fees.ToString("0.000")
-                           });
-                    }
-                }
-            }
-            else
-            {
-                feeResponse.Amount = feesModel.Amount;
-                feeResponse.TotalAmount = feesModel.Amount + feesAmount;
-                feeResponse.Fees = feesAmount;
-
-                if (feesAmount.ToString() != "0.000")
-                {
-                    _providerService.AddProviderServiceResponseParam(
-                        new ProviderServiceResponseParamDTO
-                        {
-                            ParameterName = "Service Fees",// "Service Fees",
-                            ServiceRequestID = providerServiceResponseId,
-                            Value = feesAmount.ToString("0.000")
-                        });
-                    _inquiryBillService.AddReceiptBodyParam(
-                       new ReceiptBodyParamDTO
-                       {
-                           ParameterName = "Service Fees",// "Service Fees",
-                           ProviderServiceRequestID = feesModel.Brn,
-                           TransactionID = null,
-                           Value = feesAmount.ToString("0.000")
-                       });
-                }
-            }
-            _inquiryBillService.AddInquiryBill(new InquiryBillDTO
-            {
-                Amount = feesModel.Amount,
-                ProviderServiceResponseID = providerServiceResponseId,
-                Sequence = 1
-            });
-            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-            feeResponse.Brn = feesModel.Brn;
-            feeResponse.Code = 200;
-            feeResponse.Message = "Success";
-            return feeResponse;
-        }
-        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
-        {
-            var paymentResponse = new PaymentResponseDTO();
-            Root printedReciept = null;
-            var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
-            {
-                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
-                RequestTypeID = Infrastructure.RequestType.Payment,
-                BillingAccount = payModel.BillingAccount,
-                Brn = payModel.Brn,
-                CreatedBy = userId,
-                DenominationID = id
-            });
-            var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
-            foreach (var item in bills)
-            {
-                payModel.Amount = item.Amount;
-            }
-
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
-
-            var newRequestId = _transactionService.AddRequest(new RequestDTO
-            {
-                AccountId = payModel.AccountId,
-                Amount = payModel.Amount,
-                BillingAccount = payModel.BillingAccount,
-                ChannelID = payModel.ChannelId,
-                DenominationId = id,
-                HostTransactionId = payModel.HostTransactionID
-            });
-            // check balance 
-
-            var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
-            var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
-            if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
-                throw new TMSException("BalanceError", "-5");
-
-            // post to hold
-            await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
-                new Models.SwaggerModels.HoldBalanceModel
-                (
-                    amount: (double)totalAmount
-                ));
-
-            //Logging Client Request
-            await _loggingService.Log($"{JsonConvert.SerializeObject(payModel)}- DenominationID:{id} -TotalAmount:{totalAmount} -Fees:{fees}",
-              payModel.Brn,
-              LoggingType.CustomerRequest);
-
-            var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
-
-            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber",
-                "AsyncRqUID", "ExtraBillInfo", "amountFees");
-
-            var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
-            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
-            var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
-            var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
-            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
-
-            var switchRequestDto = new SwitchPaymentRequestBodyDTO
-            {
-                BillsCount = 1,
-                PaymentCode = payModel.BillingAccount,
-                TransactionId = newRequestId,
-                AsyncRqUID = asyncRqUID,
-                Amount = payModel.Amount,
-                BillRefNumber = billReferenceNumber,
-                ExtraBillInfo = extraBillInfo,
-                Fees = amountFees,
-            };
-            var switchEndPoint = new SwitchEndPointDTO
-            {
-                URL = serviceConfiguration.URL,
-                TimeOut = serviceConfiguration.TimeOut,
-                UserName = serviceConfiguration.UserName,
-                UserPassword = serviceConfiguration.UserPassword
-            };
-
-
-            await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
-              providerServiceRequestId,
-              LoggingType.ProviderRequest);
-
-            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ");
-            //Logging Provider Response
-            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
-
-            if (response.Code == 200)
-            {
-                JObject o = JObject.Parse(response.Message);
-
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
-
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
-                paymentResponse.TransactionId = transactionId;
-                // confirm sof
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                    new List<int?> { transactionId });
-
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
-
-                // add commission
-                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
-
-            }
-            else if (response.Code == -200)
-            {
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
-
-                paymentResponse.TransactionId = transactionId;
-                // confirm sof
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
-                    new List<int?> { transactionId });
-
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
-                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
-                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
-
-                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
-                    payModel.BillingAccount, fees, extraBillInfo);
-
-                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
-            }
-            else
-            {
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
-                throw new TMSException(message.Message, message.Code);
-            }
-            paymentResponse.Code = 200;
-            paymentResponse.Message = "Success";
-            paymentResponse.ServerDate = DateTime.Now.ToString();
-            paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
-            paymentResponse.Receipt = new List<Root> {
-                printedReciept
-            };
-            await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
-
-            return paymentResponse;
         }
         public async Task<InquiryResponseDTO> Inquiry(InquiryRequestDTO inquiryModel, int userId, int id, int serviceProviderId)
         {
@@ -602,6 +362,308 @@ namespace TMS.Services.ProviderLayer
             //Logging Client Response
             await _loggingService.Log(JsonConvert.SerializeObject(inquiryResponse), providerServiceRequestId, LoggingType.CustomerResponse);
             return inquiryResponse;
+        }
+        public FeesResponseDTO Fees(FeesRequestDTO feesModel, int userId, int id)
+        {
+            var feeResponse = new FeesResponseDTO();
+            var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
+            {
+                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = Infrastructure.RequestType.Fees,
+                BillingAccount = null,
+                Brn = feesModel.Brn,
+                CreatedBy = userId,
+                DenominationID = id
+            });
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(feesModel.Brn, language: "ar", "amountFees");
+            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+
+            var bills = _inquiryBillService.GetInquiryBillSequence(feesModel.Brn);
+            foreach (var item in bills)
+            {
+                feesModel.Amount = item.Amount;
+            }
+
+            var taxesList = _taxesService.GetTaxes(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal taxesAmount).ToList();
+
+            var feesList = _feesService.GetFees(id, feesModel.Amount + taxesAmount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
+
+            feeResponse.Amount = Math.Round(feesModel.Amount, 3);
+            feeResponse.Fees = Math.Round(feesAmount + decimal.Parse(amountFees), 3);
+            feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees + taxesAmount;
+            var providerServiceResponseId = _providerService.AddProviderServiceResponse(new ProviderServiceResponseDTO
+            {
+                ProviderServiceRequestID = providerServiceRequestId,
+                TotalAmount = feeResponse.TotalAmount
+            });
+
+            if (feesList.Count > 0)
+            {
+                foreach (var item in feesList)
+                {
+                    if (item.Fees.ToString("0.000") != "0.000")
+                    {
+                        feeResponse.Data.Add(new DataDTO
+                        {
+                            Key = item.FeesTypeName,
+                            Value = item.Fees.ToString("0.000")
+                        });
+                        _providerService.AddProviderServiceResponseParam(
+                            new ProviderServiceResponseParamDTO
+                            {
+                                ParameterName = item.FeesTypeName,
+                                ServiceRequestID = providerServiceResponseId,
+                                Value = item.Fees.ToString("0.000")
+                            });
+                        _inquiryBillService.AddReceiptBodyParam(
+                           new ReceiptBodyParamDTO
+                           {
+                               ParameterName = item.FeesTypeName,
+                               ProviderServiceRequestID = feesModel.Brn,
+                               TransactionID = null,
+                               Value = item.Fees.ToString("0.000")
+                           });
+                    }
+                }
+            }
+            else
+            {
+                feeResponse.Amount = feesModel.Amount;
+                feeResponse.TotalAmount = feesModel.Amount + feesAmount + taxesAmount;
+                feeResponse.Fees = feesAmount;
+
+                if (feesAmount.ToString() != "0.000")
+                {
+                    _providerService.AddProviderServiceResponseParam(
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "Service Fees",// "Service Fees",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = feesAmount.ToString("0.000")
+                        });
+                    _inquiryBillService.AddReceiptBodyParam(
+                       new ReceiptBodyParamDTO
+                       {
+                           ParameterName = "Service Fees",// "Service Fees",
+                           ProviderServiceRequestID = feesModel.Brn,
+                           TransactionID = null,
+                           Value = feesAmount.ToString("0.000")
+                       });
+                }
+            }
+
+            //Add taxes into provider service Response param
+            if (taxesList.Count > 0)
+            {
+                foreach (var item in taxesList)
+                {
+                    if (item.Taxes.ToString("0.000") != "0.000")
+                    {
+                        feeResponse.Data.Add(new DataDTO
+                        {
+                            Key = item.TaxesTypeName,
+                            Value = item.Taxes.ToString("0.000")
+                        });
+                        _providerService.AddProviderServiceResponseParam(
+                            new ProviderServiceResponseParamDTO
+                            {
+                                ParameterName = item.TaxesTypeName,
+                                ServiceRequestID = providerServiceResponseId,
+                                Value = item.Taxes.ToString("0.000")
+                            });
+                        _inquiryBillService.AddReceiptBodyParam(
+                           new ReceiptBodyParamDTO
+                           {
+                               ParameterName = item.TaxesTypeName,
+                               ProviderServiceRequestID = feesModel.Brn,
+                               TransactionID = null,
+                               Value = item.Taxes.ToString("0.000")
+                           });
+                    }
+                }
+            }
+            else
+            {
+                if (taxesAmount.ToString() != "0.000")
+                {
+                    _providerService.AddProviderServiceResponseParam(
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "Tax",// "Service Taxes",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = taxesAmount.ToString("0.000")
+                        });
+                    _inquiryBillService.AddReceiptBodyParam(
+                       new ReceiptBodyParamDTO
+                       {
+                           ParameterName = "Tax",// "Service Taxes",
+                           ProviderServiceRequestID = feesModel.Brn,
+                           TransactionID = null,
+                           Value = taxesAmount.ToString("0.000")
+                       });
+                }
+            }
+
+            feeResponse.Taxes = taxesAmount;
+
+            _inquiryBillService.AddInquiryBill(new InquiryBillDTO
+            {
+                Amount = feesModel.Amount,
+                ProviderServiceResponseID = providerServiceResponseId,
+                Sequence = 1
+            });
+            _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+            feeResponse.Brn = feesModel.Brn;
+            feeResponse.Code = 200;
+            feeResponse.Message = "Success";
+            return feeResponse;
+        }
+        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId, decimal taxes)
+        {
+            var paymentResponse = new PaymentResponseDTO();
+            Root printedReciept = null;
+            var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
+            {
+                ProviderServiceRequestStatusID = ProviderServiceRequestStatusType.UnderProcess,
+                RequestTypeID = Infrastructure.RequestType.Payment,
+                BillingAccount = payModel.BillingAccount,
+                Brn = payModel.Brn,
+                CreatedBy = userId,
+                DenominationID = id
+            });
+            var bills = _inquiryBillService.GetInquiryBillSequence(payModel.Brn);
+            foreach (var item in bills)
+            {
+                payModel.Amount = item.Amount;
+            }
+
+            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+
+            var newRequestId = _transactionService.AddRequest(new RequestDTO
+            {
+                AccountId = payModel.AccountId,
+                Amount = payModel.Amount,
+                BillingAccount = payModel.BillingAccount,
+                ChannelID = payModel.ChannelId,
+                DenominationId = id,
+                HostTransactionId = payModel.HostTransactionID
+            });
+            // check balance 
+
+            var serviceBalanceTypeId = _denominationService.GetServiceBalanceType(id);
+            var balance = await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdGetAsync(payModel.AccountId, serviceBalanceTypeId);
+            if (balance == null || ((decimal)balance.TotalAvailableBalance < totalAmount && (decimal)balance.TotalAvailableBalance != 0))
+                throw new TMSException("BalanceError", "-5");
+
+            // post to hold
+            await _accountsApi.ApiAccountsAccountIdBalancesBalanceTypeIdRequestsRequestIdPostAsync(payModel.AccountId, newRequestId, 1,
+                new Models.SwaggerModels.HoldBalanceModel
+                (
+                    amount: (double)totalAmount
+                ));
+
+            //Logging Client Request
+            await _loggingService.Log($"{JsonConvert.SerializeObject(payModel)}- DenominationID:{id} -TotalAmount:{totalAmount} -Fees:{fees}",
+              payModel.Brn,
+              LoggingType.CustomerRequest);
+
+            var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
+
+            var providerResponseParams = _providerService.GetProviderServiceResponseParams(payModel.Brn, language: "ar", "billReferenceNumber",
+                "AsyncRqUID", "ExtraBillInfo", "amountFees");
+
+            var billReferenceNumber = providerResponseParams.Where(s => s.ProviderName == "billReferenceNumber").Select(s => s.Value).FirstOrDefault().ToString();
+            ////var billCount = _denominationService.GetProviderServiceRequestParam(payModel.Brn, "BillCount");
+            var asyncRqUID = providerResponseParams.Where(s => s.ProviderName == "AsyncRqUID").Select(s => s.Value).FirstOrDefault().ToString();
+            var extraBillInfo = providerResponseParams.Where(s => s.ProviderName == "ExtraBillInfo").Select(s => s.Value).FirstOrDefault().ToString();
+            var amountFees = providerResponseParams.Where(s => s.ProviderName == "amountFees").Select(s => s.Value).FirstOrDefault().ToString();
+
+            var switchRequestDto = new SwitchPaymentRequestBodyDTO
+            {
+                BillsCount = 1,
+                PaymentCode = payModel.BillingAccount,
+                TransactionId = newRequestId,
+                AsyncRqUID = asyncRqUID,
+                Amount = payModel.Amount,
+                BillRefNumber = billReferenceNumber,
+                ExtraBillInfo = extraBillInfo,
+                Fees = amountFees,
+            };
+            var switchEndPoint = new SwitchEndPointDTO
+            {
+                URL = serviceConfiguration.URL,
+                TimeOut = serviceConfiguration.TimeOut,
+                UserName = serviceConfiguration.UserName,
+                UserPassword = serviceConfiguration.UserPassword
+            };
+
+
+            await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
+              providerServiceRequestId,
+              LoggingType.ProviderRequest);
+
+            var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.payment.ToString(), "Basic ");
+            //Logging Provider Response
+            await _loggingService.Log(JsonConvert.SerializeObject(response), providerServiceRequestId, LoggingType.ProviderResponse);
+
+            if (response.Code == 200)
+            {
+                JObject o = JObject.Parse(response.Message);
+
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
+                    payModel.BillingAccount, fees, extraBillInfo);
+
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, paymentResponse.InvoiceId, newRequestId);
+                paymentResponse.TransactionId = transactionId;
+                // confirm sof
+                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                    new List<int?> { transactionId });
+
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                printedReciept = _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Success, userId, payModel.Brn);
+
+                // add commission
+                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
+
+            }
+            else if (response.Code == -200)
+            {
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, null, newRequestId);
+
+                paymentResponse.TransactionId = transactionId;
+                // confirm sof
+                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
+                    new List<int?> { transactionId });
+
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
+                _inquiryBillService.UpdateReceiptBodyParam(payModel.Brn, transactionId);
+                _transactionService.UpdateRequest(transactionId, newRequestId, "", RequestStatusCodeType.Pending, userId, payModel.Brn);
+
+                paymentResponse.InvoiceId = _transactionService.AddInvoiceBTech(newRequestId, payModel.Amount, userId,
+                    payModel.BillingAccount, fees, extraBillInfo);
+
+                _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
+            }
+            else
+            {
+                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
+                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
+                _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
+                // GET MESSAGE PROVIDER ID
+                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode(response.Message), providerId: serviceProviderId);
+                throw new TMSException(message.Message, message.Code);
+            }
+            paymentResponse.Code = 200;
+            paymentResponse.Message = "Success";
+            paymentResponse.ServerDate = DateTime.Now.ToString();
+            paymentResponse.AvailableBalance = (decimal)balance.TotalAvailableBalance - totalAmount;
+            paymentResponse.Receipt = new List<Root> {
+                printedReciept
+            };
+            await _loggingService.Log(JsonConvert.SerializeObject(paymentResponse), providerServiceRequestId, LoggingType.CustomerResponse);
+
+            return paymentResponse;
         }
     }
 }

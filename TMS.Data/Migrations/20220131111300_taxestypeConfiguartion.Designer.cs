@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMS.Data;
 
 namespace TMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220131111300_taxestypeConfiguartion")]
+    partial class taxestypeConfiguartion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -577,13 +579,13 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 386, DateTimeKind.Local).AddTicks(6116),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 144, DateTimeKind.Local).AddTicks(8685),
                             Name = "FIXED"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 387, DateTimeKind.Local).AddTicks(8592),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 146, DateTimeKind.Local).AddTicks(884),
                             Name = "DYNAMIC"
                         });
                 });
@@ -613,25 +615,25 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6126),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 147, DateTimeKind.Local).AddTicks(6763),
                             Name = "Number"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6145),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 147, DateTimeKind.Local).AddTicks(6773),
                             Name = "String"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6146),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 147, DateTimeKind.Local).AddTicks(6775),
                             Name = "List"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6148),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 147, DateTimeKind.Local).AddTicks(6776),
                             Name = "Date"
                         });
                 });
@@ -1207,28 +1209,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 409, DateTimeKind.Local).AddTicks(9961),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 166, DateTimeKind.Local).AddTicks(1971),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(41),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 166, DateTimeKind.Local).AddTicks(2048),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(43),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 166, DateTimeKind.Local).AddTicks(2051),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(45),
+                            CreationDate = new DateTime(2022, 1, 31, 13, 13, 0, 166, DateTimeKind.Local).AddTicks(2052),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -2068,9 +2070,6 @@ namespace TMS.Data.Migrations
 
                     b.Property<int?>("RequestID")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Taxes")
-                        .HasColumnType("decimal(18, 3)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 3)");
