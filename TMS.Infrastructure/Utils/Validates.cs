@@ -74,7 +74,7 @@ namespace TMS.Infrastructure.Utils
                 JToken.Parse(s);
                 return true;
             }
-            catch (JsonReaderException ex)
+            catch (JsonReaderException )
             {
                 //Trace.WriteLine(ex);
                 return false;
@@ -159,7 +159,6 @@ namespace TMS.Infrastructure.Utils
         public static string[] GetCodeAndTelephone(string Number)
         {
             string[] CodeAndTelephone = new string[2];
-            string Code = "";
             Regex rgx1 = new Regex(@"^(03|068|097|082|057|064|095|050|048|066|065|062|069|055|088|013|045|084|047|093|096|013|055|092|040|046|086)[0-9]{7}$");
             Regex rgx2 = new Regex(@"^(02)[0-9]{8}$");
             if (rgx1.IsMatch(Number))

@@ -167,7 +167,7 @@ namespace TMS.Services.ProviderLayer
                 payModel.Amount = item.Amount;
             }
 
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
             var denomination = _denominationService.GetDenomination(id);
 
             var newRequestId = _transactionService.AddRequest(new RequestDTO
@@ -209,7 +209,7 @@ namespace TMS.Services.ProviderLayer
             var branchNumber = o["BranchNumber"].ToString();
             var dueDate = o["DueDate"].ToString();
             var accountNumber = o["AccountNumber"].ToString();
-            var balanceParam = o["Balance"].ToString();
+            //var balanceParam = o["Balance"].ToString();
 
             var switchRequestDto = new PaymentLoan
             {

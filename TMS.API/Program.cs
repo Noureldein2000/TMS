@@ -48,7 +48,7 @@ namespace TMS.API
                     Log.Information($"Database run migration");
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex )
             {
                 Log.Fatal(ex, "Application start-up failed");
             }

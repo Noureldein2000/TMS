@@ -43,7 +43,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -63,7 +63,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -93,7 +93,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -113,7 +113,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -132,7 +132,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -151,7 +151,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -170,7 +170,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -189,7 +189,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -208,7 +208,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -227,7 +227,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -246,7 +246,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -265,7 +265,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -284,7 +284,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -303,7 +303,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -322,7 +322,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -341,7 +341,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -360,7 +360,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -379,7 +379,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -402,7 +402,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -425,7 +425,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -472,17 +472,17 @@ namespace TMS.API.Controllers
                 PathClass = denomination.PathClass
             };
         }
-        private ServiceConfigerationModel MapToModel(ServiceConfigerationDTO model)
-        {
-            return new ServiceConfigerationModel
-            {
-                Id = model.Id,
-                URL = model.URL,
-                TimeOut = model.TimeOut,
-                UserName = model.UserName,
-                UserPassword = model.UserPassword
-            };
-        }
+        //private ServiceConfigerationModel MapToModel(ServiceConfigerationDTO model)
+        //{
+        //    return new ServiceConfigerationModel
+        //    {
+        //        Id = model.Id,
+        //        URL = model.URL,
+        //        TimeOut = model.TimeOut,
+        //        UserName = model.UserName,
+        //        UserPassword = model.UserPassword
+        //    };
+        //}
         private DenominationServiceProvidersModel MapToModel(DenominationServiceProviderDTO model)
         {
             return new DenominationServiceProvidersModel

@@ -76,8 +76,8 @@ namespace TMS.Services.ProviderLayer
                                 Count = 1;
                             else if (!int.TryParse(item.Value, out Count))
                             {
-                                throw new TMSException("InvalidData", "12");
                                 flag = false;
+                                throw new TMSException("InvalidData", "12");
                             }
                             else
                                 Count = int.Parse(item.Value);
@@ -500,8 +500,7 @@ namespace TMS.Services.ProviderLayer
 
         private int ReturnBee_Sev(string Service_ID, decimal value, string network)
         {
-            int serv_id = 0;
-            serv_id = _transactionService.CheckVoucherValue(int.Parse(Service_ID), network, value);
+            int serv_id = _transactionService.CheckVoucherValue(int.Parse(Service_ID), network, value);
             return serv_id;
 
         }

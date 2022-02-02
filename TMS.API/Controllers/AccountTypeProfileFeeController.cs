@@ -19,7 +19,6 @@ namespace TMS.API.Controllers
         private readonly IAccountTypeProfileFeeService _accountTypeProfileFeeService;
         private readonly IStringLocalizer<LanguageResource> _localizer;
         public AccountTypeProfileFeeController(IAccountTypeProfileFeeService accountTypeProfileFeeService,
-            IAccountTypeProfileDenominationService accountTypeProfileDenominationService,
             IStringLocalizer<LanguageResource> localizer)
         {
             _accountTypeProfileFeeService = accountTypeProfileFeeService;
@@ -44,7 +43,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -63,7 +62,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -82,7 +81,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }

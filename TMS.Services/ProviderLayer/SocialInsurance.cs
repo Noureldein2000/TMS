@@ -1,19 +1,14 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 namespace TMS.Services.ProviderLayer
 {
@@ -63,7 +58,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var denominationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
 
             if (feesModel.Data != null)
                 foreach (var item in feesModel.Data)

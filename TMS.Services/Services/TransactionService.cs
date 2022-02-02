@@ -338,7 +338,7 @@ namespace TMS.Services.Services
             {
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception )
             {
             }
             finally
@@ -871,7 +871,7 @@ namespace TMS.Services.Services
 
                 _unitOfWork.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
 
                 throw;

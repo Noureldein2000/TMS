@@ -258,8 +258,8 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
         {
             var paymentResponse = new PaymentResponseDTO();
-            Root printedReciept = null;
-            string message = "";
+            Root printedReciept ;
+            string message ;
             int code = 0;
 
             RequestStatusCodeType RequestStatus = RequestStatusCodeType.Success;

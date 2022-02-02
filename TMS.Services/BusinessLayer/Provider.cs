@@ -68,7 +68,7 @@ namespace TMS.Services.BusinessLayer
                 case DenominationClassType.BTech:
                     return new BTech(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
                 case DenominationClassType.Cancel:
-                    return new Cancel(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
+                    return new Cancel(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _transactionService, _accountsApi);
                 case DenominationClassType.CashIn:
                     return new CashIn(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
                 case DenominationClassType.CashU:
@@ -121,9 +121,9 @@ namespace TMS.Services.BusinessLayer
                     return new TamkeenLoan(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
                 case DenominationClassType.Talabat:
                     return new Talabat(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
-                 case DenominationClassType.BeniSwefUniversity:
+                case DenominationClassType.BeniSwefUniversity:
                     return new BeniSuefUniversity(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
-                 case DenominationClassType.Zaha:
+                case DenominationClassType.Zaha:
                     return new Zaha(_denominationService, _providerService, _switchService, _inquiryBillService, _loggingService, _dbMessageService, _feesService, _transactionService, _accountsApi);
                 default:
                     return null;

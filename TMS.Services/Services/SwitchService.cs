@@ -85,7 +85,7 @@ namespace TMS.Services.Services
                 using var streamReader = new StreamReader(httpResponse.GetResponseStream());
                 return streamReader.ReadToEnd();
             }
-            catch (Exception ex)
+            catch (Exception  ex)
             {
                 //return ex.Message;
                 throw new TMSException(ex.Message, "");
@@ -127,7 +127,7 @@ namespace TMS.Services.Services
                 using var streamReader = new StreamReader(httpResponse.GetResponseStream());
                 return streamReader.ReadToEnd();
             }
-            catch (Exception ex)
+            catch (Exception  ex)
             {
                 //return ex.Message;
                 throw new TMSException(ex.Message, "");
@@ -249,7 +249,7 @@ namespace TMS.Services.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception  ex)
             {
                 // Get stack trace for the exception with source file information
                 var st = new StackTrace(ex, true);
@@ -377,7 +377,7 @@ namespace TMS.Services.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception  ex)
             {
                 // Get stack trace for the exception with source file information
                 var st = new StackTrace(ex, true);

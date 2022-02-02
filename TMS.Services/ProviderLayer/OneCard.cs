@@ -57,7 +57,6 @@ namespace TMS.Services.ProviderLayer
             var feeResponse = new FeesResponseDTO();
             decimal ProviderFees = 0;
             decimal totalAmount = 0;
-            int count = 1;
 
 
             var Ds = _denominationService.GetDenominationServiceProvider(id);

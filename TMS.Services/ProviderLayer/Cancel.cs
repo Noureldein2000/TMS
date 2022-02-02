@@ -27,7 +27,6 @@ namespace TMS.Services.ProviderLayer
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
-        private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public Cancel(
@@ -37,7 +36,6 @@ namespace TMS.Services.ProviderLayer
            IInquiryBillService inquiryBillService,
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
-           IFeesService feesService,
            ITransactionService transactionService,
            IAccountsApi accountsApi
             )
@@ -48,7 +46,6 @@ namespace TMS.Services.ProviderLayer
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
-            _feesService = feesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
         }

@@ -16,14 +16,12 @@ namespace TMS.API.Controllers
     [ApiController]
     public class AccountTypeProfileDenominationController : BaseController
     {
-        private readonly IDenominationService _denominationService;
         private readonly IAccountTypeProfileDenominationService _accountTypeProfileDenominationService;
         private readonly IStringLocalizer<LanguageResource> _localizer;
-        public AccountTypeProfileDenominationController(IDenominationService denominatioService,
+        public AccountTypeProfileDenominationController(
             IAccountTypeProfileDenominationService accountTypeProfileDenominationService,
             IStringLocalizer<LanguageResource> localizer)
         {
-            _denominationService = denominatioService;
             _accountTypeProfileDenominationService = accountTypeProfileDenominationService;
             _localizer = localizer;
         }
@@ -31,7 +29,7 @@ namespace TMS.API.Controllers
         [HttpGet]
         [Route("GetAccountTypeProfileDenominations")]
         [ProducesResponseType(typeof(PagedResult<AccountTypeProfileDenominationModel>), StatusCodes.Status200OK)]
-        public IActionResult GetAccountTypeProfileDenominations(int pageNumber = 1, int pageSize = 10, string language = "ar")
+        public IActionResult GetAccountTypeProfileDenominations(int pageNumber = 1, int pageSize = 10)
         {
             try
             {
@@ -46,7 +44,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -65,7 +63,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -84,7 +82,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -103,7 +101,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }

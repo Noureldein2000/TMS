@@ -14,17 +14,14 @@ namespace TMS.Services.Services
 {
     public class AccountTypeProfileDenominationService : IAccountTypeProfileDenominationService
     {
-        private readonly IBaseRepository<Denomination, int> _denominationRepository;
         private readonly IBaseRepository<AccountTypeProfileDenomination, int> _accountTypeProfileDenomination;
         private readonly IUnitOfWork _unitOfWork;
 
         public AccountTypeProfileDenominationService(
-            IBaseRepository<Denomination, int> denominationRepository,
             IBaseRepository<AccountTypeProfileDenomination, int> accountTypeProfileDenomination,
             IUnitOfWork unitOfWork
             )
         {
-            _denominationRepository = denominationRepository;
             _accountTypeProfileDenomination = accountTypeProfileDenomination;
             _unitOfWork = unitOfWork;
         }
@@ -54,14 +51,14 @@ namespace TMS.Services.Services
 
         public PagedResult<AccountTypeProfileDenominationDTO> GetAccountTypeProfileDenominations(int page, int pageSize)
         {
-           var accountTypeProfileDenomination=  _accountTypeProfileDenomination.Getwhere(x=>true).Select(x => new
+            var accountTypeProfileDenomination = _accountTypeProfileDenomination.Getwhere(x => true).Select(x => new
             {
-               Id=x.ID,
-               DenominationId=x.DenominationID,
-               DenominationName=x.Denomination.Name,
-               AccountTypeProfileID=x.AccountTypeProfileID,
-               Status=x.Status,
-               CreationDate =x.CreationDate
+                Id = x.ID,
+                DenominationId = x.DenominationID,
+                DenominationName = x.Denomination.Name,
+                AccountTypeProfileID = x.AccountTypeProfileID,
+                Status = x.Status,
+                CreationDate = x.CreationDate
             });
 
             var count = accountTypeProfileDenomination.Count();
@@ -78,7 +75,7 @@ namespace TMS.Services.Services
                     DenominationID = x.DenominationId,
                     DenominationName = x.DenominationName,
                     AccountTypeProfileID = x.AccountTypeProfileID,
-                    Status=x.Status
+                    Status = x.Status
                 }).ToList(),
                 PageCount = count
             };

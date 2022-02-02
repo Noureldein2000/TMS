@@ -299,7 +299,7 @@ namespace TMS.Services.ProviderLayer
             }
 
 
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
 
             var newRequestId = _transactionService.AddRequest(new RequestDTO
             {

@@ -163,7 +163,7 @@ namespace TMS.Services.ProviderLayer
             InquiryValU IV = new InquiryValU();
             List<InvoiceDTO> InList = new List<InvoiceDTO>();
 
-            var denomation = _denominationService.GetDenominationServiceProvider(id);
+            //var denomation = _denominationService.GetDenominationServiceProvider(id);
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {

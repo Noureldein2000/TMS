@@ -43,7 +43,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -69,7 +69,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -89,7 +89,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception  )
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }

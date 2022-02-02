@@ -312,7 +312,7 @@ namespace TMS.Services.ProviderLayer
                         paymentResponse.InvoiceId = _transactionService.AddInvoiceElectronicChargeProcBeeAwIncomeNew(
                            paymentResponse.InvoiceId, payModel.Amount, denominationServiceProviderDetails.OldServiceId, userId, userId, totalAmount, payModel.BillingAccount);
                     }
-                    catch (Exception ex)
+                    catch (Exception  )
                     {
                     }
                 }
@@ -353,17 +353,13 @@ namespace TMS.Services.ProviderLayer
 
         private string GetProviderName(string serviceEntity)
         {
-            switch (serviceEntity)
+            return serviceEntity switch
             {
-                case "اورنج":
-                    return "موبينيل";
-                case "فودافون":
-                    return "موبينيل";
-                case "إتصالات":
-                    return "إتصالات";
-                default:
-                    return "المصرية WE";
-            }
+                "اورنج" => "موبينيل",
+                "فودافون" => "موبينيل",
+                "إتصالات" => "إتصالات",
+                _ => "المصرية WE",
+            };
         }
     }
 }

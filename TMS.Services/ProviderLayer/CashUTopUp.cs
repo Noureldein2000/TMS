@@ -66,7 +66,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+            //var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
 
             //if (demonationServiceProvider.ProviderHasFees)
             //    providerFees = 0;
@@ -221,7 +221,6 @@ namespace TMS.Services.ProviderLayer
             await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
                providerServiceRequestId,
                LoggingType.ProviderRequest);
-            var d = 5;
 
             var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.getAccountInfo.ToString(), "Basic ");
 
@@ -325,7 +324,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
             var currency = _denominationService.GetCurrencyValue(id);
             var newRequestId = _transactionService.AddRequest(new RequestDTO
             {
@@ -382,7 +381,7 @@ namespace TMS.Services.ProviderLayer
 
             if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response.Message);
+                //JObject o = JObject.Parse(response.Message);
 
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;

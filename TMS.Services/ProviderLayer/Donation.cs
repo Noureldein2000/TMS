@@ -65,7 +65,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var demonation = _denominationService.GetDenominationServiceProvider(id);
+            //var demonation = _denominationService.GetDenominationServiceProvider(id);
 
             if (feesModel.Data != null)
                 foreach (var item in feesModel.Data)
