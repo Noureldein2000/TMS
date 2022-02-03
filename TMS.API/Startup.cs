@@ -43,7 +43,7 @@ namespace TMS.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(ApplicationDbContext));
             services.AddScoped(typeof(Provider));
-            services.AddScoped<IAccountsApi>(s => new AccountsApi(Configuration.GetValue<string>("SOFConfigurations:URL")));
+            services.AddScoped<IAccountsApi>(s => new AccountsApi(Configuration.GetValue<string>("Urls:SOF")));
 
             services.AddScoped<IDynamicService, DynamicService>();
             services.AddScoped<ILoggingService, LoggingService>();
@@ -88,6 +88,17 @@ namespace TMS.API
                 )
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix);
 
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = Configuration.GetValue<string>("Urls:Authority");
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+
+                });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -131,6 +142,8 @@ namespace TMS.API
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
             app.UseRequestLocalization(locOptions.Value);
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();

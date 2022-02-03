@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;Production</Configurations>
+    <Configurations>Debug;Release;Testing</Configurations>
     <Deterministic>false</Deterministic>
     <AssemblyVersion>1.1.0</AssemblyVersion>
   </PropertyGroup>
@@ -11,11 +11,11 @@
     <EnvironmentName>Development</EnvironmentName>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Production'">
-    <EnvironmentName>Production</EnvironmentName>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <EnvironmentName>Release</EnvironmentName>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <PropertyGroup Condition="'$(Configuration)'=='Testing'">
     <EnvironmentName>Release</EnvironmentName>
   </PropertyGroup>
 
@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.22" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.16">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
