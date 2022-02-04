@@ -29,6 +29,11 @@ namespace TMS.Services.Services
         }
         public void AddDenominationFees(AddDenominationFeesDTO model)
         {
+            if(_denominationFeeRepository.Any(x => x.DenominationID == model.DenominationId && x.FeesID == model.FeesId))
+            {
+                throw new TMSException("Denomination-Fees already exist", "-5");
+            }
+
             _denominationFeeRepository.Add(new DenominationFee
             {
                 DenominationID = model.DenominationId,

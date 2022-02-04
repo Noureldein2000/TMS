@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -22,6 +23,11 @@ namespace TMS.Services.Services
 
         public void AddDenominationCommission(AddDenominationCommissionDTO model)
         {
+            if (_denominationCommission.Any(x => x.DenominationID == model.DenominationId && x.CommissionID == model.CommissionId))
+            {
+                throw new TMSException("Denomination-Commission already exist", "-5");
+            }
+
             _denominationCommission.Add(new DenominationCommission
             {
                 DenominationID = model.DenominationId,
