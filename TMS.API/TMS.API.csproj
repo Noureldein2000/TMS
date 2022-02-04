@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Testing'">
-    <EnvironmentName>Release</EnvironmentName>
+    <EnvironmentName>Testing</EnvironmentName>
   </PropertyGroup>
 
   
