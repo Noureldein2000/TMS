@@ -29,7 +29,7 @@ namespace TMS.Services.Services
         }
         public void AddDenominationFees(AddDenominationFeesDTO model)
         {
-            if(_denominationFeeRepository.Any(x => x.DenominationID == model.DenominationId && x.FeesID == model.FeesId))
+            if (_denominationFeeRepository.Any(x => x.DenominationID == model.DenominationId && x.FeesID == model.FeesId))
             {
                 throw new TMSException("Denomination-Fees already exist", "-5");
             }
@@ -60,7 +60,8 @@ namespace TMS.Services.Services
                 PaymentModeId = x.Fee.PaymentModeID,
                 PaymentMode = language == "en" ? x.Fee.PaymentMode.Name : x.Fee.PaymentMode.ArName,
                 DenominationId = x.DenominationID,
-                DenominationFullName = x.Denomination.Service.Name + " - " + x.Denomination.Name,
+                DenominationFullName = $"{x.Denomination.Service.Name} - {x.Denomination.Name}",
+                Range = $"{x.Fee.AmountFrom} - { x.Fee.AmountTo}",
                 CreationDate = x.CreationDate
             }).ToList();
         }
