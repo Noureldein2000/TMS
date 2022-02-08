@@ -100,7 +100,6 @@ namespace TMS.API.Controllers
                 PaymentModeId = model.PaymentModeId,
                 PaymentMode = model.PaymentMode,
                 DenominationId = model.DenominationId,
-                DenominationFullName = model.DenominationFullName,
                 Range = model.Range
             };
         }
