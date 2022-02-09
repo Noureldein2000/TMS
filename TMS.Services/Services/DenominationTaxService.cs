@@ -30,7 +30,7 @@ namespace TMS.Services.Services
         {
             if (_denominationTaxRepository.Any(x => x.DenominationID == model.DenominationId && x.TaxID == model.TaxId))
             {
-                throw new TMSException("Denomination-Fees already exist", "-5");
+                throw new TMSException("Denomination-Taxes already exist", "-5");
             }
 
             _denominationTaxRepository.Add(new DenominationTax
