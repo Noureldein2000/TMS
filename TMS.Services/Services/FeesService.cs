@@ -74,7 +74,7 @@ namespace TMS.Services.Services
             current.AmountTo = fee.AmountTo;
             current.StartDate = fee.StartDate;
             current.EndDate = fee.EndDate;
-            current.UpdatedBy = fee.CreatedBy;
+            //current.UpdatedBy = fee.CreatedBy;
 
             _unitOfWork.SaveChanges();
         }
@@ -222,7 +222,7 @@ namespace TMS.Services.Services
                 FeesTypeID = fee.FeesTypeID,
                 FeesTypeName = language == "en" ? fee.FeesType.Name : fee.FeesType.ArName,
                 Value = fee.Value,
-                FeeRange = fee.Value + " [" + fee.AmountFrom.ToString() + " - " + fee.AmountTo + "] " + fee.PaymentMode.Name,
+                FeeRange = $"{fee.Value } [ {fee.AmountFrom} - { fee.AmountTo} ] {fee.PaymentMode.Name}",
                 PaymentModeID = fee.PaymentModeID,
                 PaymentModeName = language == "en" ? fee.PaymentMode.Name : fee.PaymentMode.ArName,
                 Status = fee.Status,

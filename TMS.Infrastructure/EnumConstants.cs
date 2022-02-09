@@ -232,4 +232,12 @@ namespace TMS.Infrastructure
         CanNotPayMoreThanOneBill = 179,
         BadRequest = 180
     }
+
+    public enum LookupType : short
+    {
+        FeesType = 1,
+        CommissionType = 2,
+        TaxesType = 3,
+        ServiceType = 4
+    }
 }

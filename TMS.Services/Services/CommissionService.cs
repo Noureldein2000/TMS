@@ -74,7 +74,7 @@ namespace TMS.Services.Services
             current.AmountTo = commission.AmountTo;
             current.StartDate = commission.StartDate;
             current.EndDate = commission.EndDate;
-            current.UpdatedBy = commission.CreatedBy;
+            //current.UpdatedBy = commission.CreatedBy;
 
             _unitOfWork.SaveChanges();
         }
@@ -102,7 +102,7 @@ namespace TMS.Services.Services
                 CommissionTypeID = com.CommissionTypeID,
                 CommissionTypeName = language == "en" ? com.CommissionType.Name : com.CommissionType.ArName,
                 Value = com.Value,
-                CommissionRange = com.Value + " [" + com.AmountFrom.ToString() + " - " + com.AmountTo + "] " + com.PaymentMode.Name,
+                CommissionRange = $"{com.Value } [ {com.AmountFrom} - { com.AmountTo} ] {com.PaymentMode.Name}",
                 PaymentModeID = com.PaymentModeID,
                 PaymentModeName = language == "en" ? com.PaymentMode.Name : com.PaymentMode.ArName,
                 Status = com.Status,

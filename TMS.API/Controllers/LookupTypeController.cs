@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TMS.API.Models;
+using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Services;
@@ -35,9 +36,9 @@ namespace TMS.API.Controllers
                 var response = _lookupTypeService.GetAllLookups(language);
                 return Ok(new LookupTypeModel()
                 {
-                    Fees = response.Where(x => x.IdentifierType == 1).Select(x => MapToModel(x)).ToList(),
-                    Commissions = response.Where(x => x.IdentifierType == 2).Select(x => MapToModel(x)).ToList(),
-                    Taxes = response.Where(x => x.IdentifierType == 3).Select(x => MapToModel(x)).ToList(),
+                    Fees = response.Where(x => x.IdentifierType == LookupType.FeesType).Select(x => MapToModel(x)).ToList(),
+                    Commissions = response.Where(x => x.IdentifierType == LookupType.CommissionType).Select(x => MapToModel(x)).ToList(),
+                    Taxes = response.Where(x => x.IdentifierType == LookupType.TaxesType).Select(x => MapToModel(x)).ToList(),
                 });
             }
             catch (TMSException ex)
@@ -66,7 +67,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                var x =ex.Message;
+                var x = ex.Message;
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }

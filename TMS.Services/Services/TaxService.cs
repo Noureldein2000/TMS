@@ -27,6 +27,7 @@ namespace TMS.Services.Services
 
         public void AddTax(TaxesDTO tax)
         {
+
             _taxes.Add(new Tax
             {
                 TaxTypeID = tax.TaxesTypeID,
@@ -67,7 +68,7 @@ namespace TMS.Services.Services
             current.AmountTo = tax.AmountTo;
             current.StartDate = tax.StartDate;
             current.EndDate = tax.EndDate;
-            current.UpdatedBy = tax.CreatedBy;
+            //current.UpdatedBy = tax.CreatedBy;
 
             _unitOfWork.SaveChanges();
         }
@@ -123,13 +124,13 @@ namespace TMS.Services.Services
 
         public PagedResult<TaxesDTO> GetTaxes(int page, int pageSize, string language)
         {
-            var taxes = _taxes.Getwhere(x => true).Include(x => x.TaxType).Select(tax => new
+            var taxes = _taxes.Getwhere(x => true).Select(tax => new
             {
                 ID = tax.ID,
                 TaxesTypeID = tax.TaxTypeID,
                 TaxesTypeName = language == "en" ? tax.TaxType.Name : tax.TaxType.ArName,
                 Value = tax.Value,
-                TaxRange = tax.Value + " [" + tax.AmountFrom.ToString() + " - " + tax.AmountTo + "] " + tax.PaymentMode.Name,
+                TaxRange = $"{tax.Value } [ {tax.AmountFrom} - { tax.AmountTo} ] {tax.PaymentMode.Name}",
                 PaymentModeID = tax.PaymentModeID,
                 PaymentModeName = language == "en" ? tax.PaymentMode.Name : tax.PaymentMode.ArName,
                 Status = tax.Status,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -37,21 +38,21 @@ namespace TMS.Services.Services
 
             switch (dto.IdentifierType)
             {
-                case 1:
+                case LookupType.FeesType:
                     addedEntity = (FeesType)_feesTypeRepository.Add(new FeesType
                     {
                         Name = dto.Name,
                         ArName = dto.NameAr,
                     });
                     break;
-                case 2:
+                case LookupType.CommissionType:
                     addedEntity = (CommissionType)_commissionTypeRepository.Add(new CommissionType
                     {
                         Name = dto.Name,
                         ArName = dto.NameAr,
                     });
                     break;
-                case 3:
+                case LookupType.TaxesType:
                     addedEntity = (TaxType)_taxesTypeRepository.Add(new TaxType
                     {
                         Name = dto.Name,
@@ -74,7 +75,7 @@ namespace TMS.Services.Services
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
-                IdentifierType = 1
+                IdentifierType = LookupType.FeesType
             }).ToList();
 
             dtos.AddRange(_commissionTypeRepository.GetAll().Select(x => new LookupTypeDTO
@@ -82,7 +83,7 @@ namespace TMS.Services.Services
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
-                IdentifierType = 2
+                IdentifierType = LookupType.CommissionType
             }).ToList());
 
             dtos.AddRange(_taxesTypeRepository.GetAll().Select(x => new LookupTypeDTO
@@ -90,7 +91,7 @@ namespace TMS.Services.Services
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
-                IdentifierType = 3
+                IdentifierType = LookupType.TaxesType
             }).ToList());
 
             return dtos;
