@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -27,6 +28,11 @@ namespace TMS.Services.Services
 
         public void AddDenominationTaxes(AddDenominationTaxesDTO model)
         {
+            if (_denominationTaxRepository.Any(x => x.DenominationID == model.DenominationId && x.TaxID == model.TaxId))
+            {
+                throw new TMSException("Denomination-Fees already exist", "-5");
+            }
+
             _denominationTaxRepository.Add(new DenominationTax
             {
                 DenominationID = model.DenominationId,
