@@ -68,31 +68,43 @@ namespace TMS.Services.Services
 
         public IEnumerable<LookupTypeDTO> GetAllLookups(string language)
         {
-            List<LookupTypeDTO> dtos;
+            var dtos = new List<LookupTypeDTO>();
 
-            dtos = _feesTypeRepository.GetAll().Select(x => new LookupTypeDTO
+            var fees = _feesTypeRepository.GetAll().Select(x => new LookupTypeDTO
             {
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
                 IdentifierType = LookupType.FeesType
             }).ToList();
+            if(fees != null && fees.Count > 0)
+            {
+                dtos.AddRange(fees);
+            }
 
-            dtos.AddRange(_commissionTypeRepository.GetAll().Select(x => new LookupTypeDTO
+            var commessions = _commissionTypeRepository.GetAll().Select(x => new LookupTypeDTO
             {
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
                 IdentifierType = LookupType.CommissionType
-            }).ToList());
-
-            dtos.AddRange(_taxesTypeRepository.GetAll().Select(x => new LookupTypeDTO
+            }).ToList();
+            if (commessions != null && commessions.Count > 0)
+            {
+                dtos.AddRange(commessions);
+            }
+            
+            var taxes = _taxesTypeRepository.GetAll().Select(x => new LookupTypeDTO
             {
                 Id = x.ID,
                 Name = x.Name,
                 NameAr = x.ArName,
                 IdentifierType = LookupType.TaxesType
-            }).ToList());
+            }).ToList();
+            if (taxes != null && taxes.Count > 0)
+            {
+                dtos.AddRange(taxes);
+            }
 
             return dtos;
         }
