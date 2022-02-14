@@ -66,6 +66,45 @@ namespace TMS.Services.Services
             return MapToDto(addedEntity);
         }
 
+        public void DeleteLookupType(int id, LookupType identifier)
+        {
+            switch (identifier)
+            {
+                case LookupType.FeesType:
+                    _feesTypeRepository.Delete(id);
+                    break;
+                case LookupType.CommissionType:
+                    _commissionTypeRepository.Delete(id);
+                    break;
+                case LookupType.TaxesType:
+                    _taxesTypeRepository.Delete(id);
+                    break;
+            }
+
+            _unitOfWork.SaveChanges();
+        }
+
+        public void EditLookupType(LookupTypeDTO dto)
+        {
+            dynamic current = null;
+            switch (dto.IdentifierType)
+            {
+                case LookupType.FeesType:
+                    current = _feesTypeRepository.GetById(dto.Id);
+                    break;
+                case LookupType.CommissionType:
+                    current = MapToDto(_commissionTypeRepository.GetById(dto.Id));
+                    break;
+                case LookupType.TaxesType:
+                    current = MapToDto(_taxesTypeRepository.GetById(dto.Id));
+                    break;
+            }
+
+            current.Name = dto.Name;
+            current.ArName = dto.NameAr;
+            _unitOfWork.SaveChanges();
+        }
+
         public IEnumerable<LookupTypeDTO> GetAllLookups(string language)
         {
             List<LookupTypeDTO> dtos;
@@ -95,6 +134,22 @@ namespace TMS.Services.Services
             }).ToList());
 
             return dtos;
+        }
+
+        public LookupTypeDTO GetLookupTypeById(int id, LookupType identifier)
+        {
+            LookupTypeDTO dto;
+
+            switch (identifier)
+            {
+                case LookupType.FeesType:
+                    return dto = MapToDto(_feesTypeRepository.GetById(id));
+                case LookupType.CommissionType:
+                    return dto = MapToDto(_commissionTypeRepository.GetById(id));
+                case LookupType.TaxesType:
+                    return dto = MapToDto(_taxesTypeRepository.GetById(id));
+            }
+            return dto = null;
         }
 
         private LookupTypeDTO MapToDto(dynamic model)

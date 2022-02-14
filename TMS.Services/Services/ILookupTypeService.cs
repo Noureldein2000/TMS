@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TMS.Infrastructure;
 using TMS.Services.Models;
 
 namespace TMS.Services.Services
@@ -8,10 +9,9 @@ namespace TMS.Services.Services
     public interface ILookupTypeService
     {
         IEnumerable<LookupTypeDTO> GetAllLookups(string language);
-        //TaxesDTO GetTaxById(int id);
-        //void ChangeStatus(int id);
-        //void DeleteTax(int id);
+        LookupTypeDTO GetLookupTypeById(int id, LookupType identifier);
+        void DeleteLookupType(int id, LookupType identifier );
         LookupTypeDTO AddLookupType(LookupTypeDTO dto);
-        //void EditTax(TaxesDTO tax);
+        void EditLookupType(LookupTypeDTO tax);
     }
 }

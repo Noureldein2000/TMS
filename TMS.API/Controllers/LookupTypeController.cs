@@ -72,6 +72,48 @@ namespace TMS.API.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("DeleteLookupType/{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult DeleteLookupType(int id, LookupType lookup)
+        {
+            try
+            {
+                _lookupTypeService.DeleteLookupType(id, lookup);
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                var x = ex.Message;
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+
+        [HttpPost]
+        [Route("EditLookupType")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult EditLookupType(GeneralLookupTypeModel model)
+        {
+            try
+            {
+                _lookupTypeService.EditLookupType(MapToDto(model));
+                return Ok();
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                var x = ex.Message;
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+
         private GeneralLookupTypeModel MapToModel(LookupTypeDTO dto)
         {
             return new GeneralLookupTypeModel
