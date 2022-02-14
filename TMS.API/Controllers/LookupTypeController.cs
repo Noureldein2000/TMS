@@ -111,6 +111,26 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpGet]
+        [Route("GetLookupTypeById/{id}")]
+        [ProducesResponseType(typeof(GeneralLookupTypeModel), StatusCodes.Status200OK)]
+        public IActionResult GetLookupTypeById(int id, LookupType lookup)
+        {
+            try
+            {
+                var response = _lookupTypeService.GetLookupTypeById(id, lookup);
+                return Ok(MapToModel(response));
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                var x = ex.Message;
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         private GeneralLookupTypeModel MapToModel(LookupTypeDTO dto)
         {

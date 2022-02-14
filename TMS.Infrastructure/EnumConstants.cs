@@ -237,7 +237,6 @@ namespace TMS.Infrastructure
     {
         FeesType = 1,
         CommissionType = 2,
-        TaxesType = 3,
-        ServiceType = 4
+        TaxesType = 3
     }
 }

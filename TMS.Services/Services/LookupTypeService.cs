@@ -93,10 +93,10 @@ namespace TMS.Services.Services
                     current = _feesTypeRepository.GetById(dto.Id);
                     break;
                 case LookupType.CommissionType:
-                    current = MapToDto(_commissionTypeRepository.GetById(dto.Id));
+                    current = _commissionTypeRepository.GetById(dto.Id);
                     break;
                 case LookupType.TaxesType:
-                    current = MapToDto(_taxesTypeRepository.GetById(dto.Id));
+                    current = _taxesTypeRepository.GetById(dto.Id);
                     break;
             }
 
