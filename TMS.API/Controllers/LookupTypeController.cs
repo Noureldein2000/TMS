@@ -36,9 +36,7 @@ namespace TMS.API.Controllers
                 var response = _lookupTypeService.GetAllLookups(language);
                 return Ok(new LookupTypeModel()
                 {
-                    Fees = response.Where(x => x.IdentifierType == LookupType.FeesType).Select(x => MapToModel(x)).ToList(),
-                    Commissions = response.Where(x => x.IdentifierType == LookupType.CommissionType).Select(x => MapToModel(x)).ToList(),
-                    Taxes = response.Where(x => x.IdentifierType == LookupType.TaxesType).Select(x => MapToModel(x)).ToList(),
+                    GeneralLookups = response.Select(x => MapToModel(x)).ToList()
                 });
             }
             catch (TMSException ex)
