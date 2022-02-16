@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
 using TMS.Infrastructure;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -34,36 +35,38 @@ namespace TMS.Services.Services
 
         public LookupTypeDTO AddLookupType(LookupTypeDTO dto)
         {
-            dynamic addedEntity = null;
-
             switch (dto.IdentifierType)
             {
                 case LookupType.FeesType:
-                    addedEntity = (FeesType)_feesTypeRepository.Add(new FeesType
+                    var fee = _feesTypeRepository.Add(new FeesType
                     {
                         Name = dto.Name,
                         ArName = dto.NameAr,
                     });
+                    dto.Id = fee.ID;
                     break;
                 case LookupType.CommissionType:
-                    addedEntity = (CommissionType)_commissionTypeRepository.Add(new CommissionType
+                    var commission = _commissionTypeRepository.Add(new CommissionType
                     {
                         Name = dto.Name,
                         ArName = dto.NameAr,
                     });
+                    dto.Id = commission.ID;
                     break;
                 case LookupType.TaxesType:
-                    addedEntity = (TaxType)_taxesTypeRepository.Add(new TaxType
+                    var tax = _taxesTypeRepository.Add(new TaxType
                     {
                         Name = dto.Name,
                         ArName = dto.NameAr,
                     });
+                    dto.Id = tax.ID;
                     break;
+                default:
+                    throw new TMSException("Not supported type", "-1");
             }
 
             _unitOfWork.SaveChanges();
-
-            return MapToDto(addedEntity);
+            return dto;
         }
 
         public void DeleteLookupType(int id, LookupType identifier)
@@ -86,22 +89,26 @@ namespace TMS.Services.Services
 
         public void EditLookupType(LookupTypeDTO dto)
         {
-            dynamic current = null;
             switch (dto.IdentifierType)
             {
                 case LookupType.FeesType:
-                    current = _feesTypeRepository.GetById(dto.Id);
+                    var fee = _feesTypeRepository.GetById(dto.Id);
+                    fee.Name = dto.Name;
+                    fee.ArName = dto.NameAr;
                     break;
                 case LookupType.CommissionType:
-                    current = _commissionTypeRepository.GetById(dto.Id);
+                    var commission = _commissionTypeRepository.GetById(dto.Id);
+                    commission.Name = dto.Name;
+                    commission.ArName = dto.NameAr;
                     break;
                 case LookupType.TaxesType:
-                    current = _taxesTypeRepository.GetById(dto.Id);
+                    var tax = _taxesTypeRepository.GetById(dto.Id);
+                    tax.Name = dto.Name;
+                    tax.ArName = dto.NameAr;
                     break;
+                default:
+                    throw new TMSException("Not supported type", "-1");
             }
-
-            current.Name = dto.Name;
-            current.ArName = dto.NameAr;
             _unitOfWork.SaveChanges();
         }
 
@@ -150,27 +157,27 @@ namespace TMS.Services.Services
 
         public LookupTypeDTO GetLookupTypeById(int id, LookupType identifier)
         {
-            LookupTypeDTO dto;
-
             switch (identifier)
             {
                 case LookupType.FeesType:
-                    return dto = MapToDto(_feesTypeRepository.GetById(id));
+                    return MapToDto(_feesTypeRepository.GetById(id));
                 case LookupType.CommissionType:
-                    return dto = MapToDto(_commissionTypeRepository.GetById(id));
+                    return MapToDto(_commissionTypeRepository.GetById(id));
                 case LookupType.TaxesType:
-                    return dto = MapToDto(_taxesTypeRepository.GetById(id));
+                    return MapToDto(_taxesTypeRepository.GetById(id));
+                default:
+                    throw new TMSException("Not supported type", "-1");
             }
-            return dto = null;
         }
 
-        private LookupTypeDTO MapToDto(dynamic model)
+        private LookupTypeDTO MapToDto(ILookupType model)
         {
             return new LookupTypeDTO
             {
+                NameAr = model.ArName,
                 Id = model.ID,
                 Name = model.Name,
-                NameAr = model.ArName,
+                IdentifierType = model.IdentifierType
             };
         }
     }
