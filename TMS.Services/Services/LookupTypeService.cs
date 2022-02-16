@@ -177,7 +177,6 @@ namespace TMS.Services.Services
                 NameAr = model.ArName,
                 Id = model.ID,
                 Name = model.Name,
-                IdentifierType = model.IdentifierType
             };
         }
     }
