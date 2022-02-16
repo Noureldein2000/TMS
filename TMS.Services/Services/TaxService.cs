@@ -126,20 +126,19 @@ namespace TMS.Services.Services
         {
             var taxes = _taxes.Getwhere(x => true).Select(tax => new
             {
-                ID = tax.ID,
+                tax.ID,
                 TaxesTypeID = tax.TaxTypeID,
                 TaxesTypeName = language == "en" ? tax.TaxType.Name : tax.TaxType.ArName,
-                Value = tax.Value,
-                TaxRange = $"{tax.Value } [ {tax.AmountFrom} - { tax.AmountTo} ] {tax.PaymentMode.Name}",
-                PaymentModeID = tax.PaymentModeID,
+                tax.Value,
+                tax.PaymentModeID,
                 PaymentModeName = language == "en" ? tax.PaymentMode.Name : tax.PaymentMode.ArName,
-                Status = tax.Status,
-                CreatedBy = tax.CreatedBy,
-                AmountFrom = tax.AmountFrom,
-                AmountTo = tax.AmountTo,
-                StartDate = tax.StartDate,
-                EndDate = tax.EndDate,
-                CreationDate = tax.CreationDate
+                tax.Status,
+                tax.CreatedBy,
+                tax.AmountFrom,
+                tax.AmountTo,
+                tax.StartDate,
+                tax.EndDate,
+                tax.CreationDate
             }).ToList();
 
             var count = taxes.Count();
@@ -156,7 +155,6 @@ namespace TMS.Services.Services
                     TaxesTypeID = tax.TaxesTypeID,
                     TaxesTypeName = tax.TaxesTypeName,
                     Value = tax.Value,
-                    TaxRange = tax.TaxRange,
                     PaymentModeID = tax.PaymentModeID,
                     PaymentModeName = tax.PaymentModeName,
                     Status = tax.Status,

@@ -9,7 +9,6 @@ namespace TMS.Services.Models
         public int ID { get; set; }
         public int TaxesTypeID { get; set; }
         public string TaxesTypeName { get; set; }
-        public string TaxRange { get; set; }
         public decimal Taxes { get; set; }
         public decimal AmountFrom { get; set; }
         public decimal AmountTo { get; set; }

@@ -98,20 +98,19 @@ namespace TMS.Services.Services
         {
             var commissions = _commission.Getwhere(x => true).Include(x => x.CommissionType).Select(com => new
             {
-                ID = com.ID,
-                CommissionTypeID = com.CommissionTypeID,
+                com.ID,
+                com.CommissionTypeID,
                 CommissionTypeName = language == "en" ? com.CommissionType.Name : com.CommissionType.ArName,
-                Value = com.Value,
-                CommissionRange = $"{com.Value } [ {com.AmountFrom} - { com.AmountTo} ] {com.PaymentMode.Name}",
-                PaymentModeID = com.PaymentModeID,
+                com.Value,
+                com.PaymentModeID,
                 PaymentModeName = language == "en" ? com.PaymentMode.Name : com.PaymentMode.ArName,
-                Status = com.Status,
-                CreatedBy = com.CreatedBy,
-                AmountFrom = com.AmountFrom,
-                AmountTo = com.AmountTo,
-                StartDate = com.StartDate,
-                EndDate = com.EndDate,
-                CreationDate = com.CreationDate
+                com.Status,
+                com.CreatedBy,
+                com.AmountFrom,
+                com.AmountTo,
+                com.StartDate,
+                com.EndDate,
+                com.CreationDate
             }).ToList();
 
             var count = commissions.Count();
@@ -128,7 +127,6 @@ namespace TMS.Services.Services
                     CommissionTypeID = com.CommissionTypeID,
                     CommissionTypeName = com.CommissionTypeName,
                     Value = com.Value,
-                    CommissionRange = com.CommissionRange,
                     PaymentModeID = com.PaymentModeID,
                     PaymentModeName = com.PaymentModeName,
                     Status = com.Status,

@@ -45,7 +45,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -65,7 +65,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -85,7 +85,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -105,7 +105,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -136,7 +136,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -168,7 +168,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
@@ -180,7 +180,6 @@ namespace TMS.API.Controllers
                 TaxesTypeID = tax.TaxesTypeID,
                 TaxesTypeName = tax.TaxesTypeName,
                 Value = tax.Value,
-                TaxRange = tax.TaxRange,
                 PaymentModeID = tax.PaymentModeID,
                 PaymentModeName = tax.PaymentModeName,
                 Status = tax.Status,
