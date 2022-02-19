@@ -28,6 +28,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
+        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public Cancel(
@@ -38,7 +39,8 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
+           ITaxService taxesService,
+        ITransactionService transactionService,
            IAccountsApi accountsApi
             )
         {
@@ -49,6 +51,7 @@ namespace TMS.Services.ProviderLayer
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
             _feesService = feesService;
+            _taxesService = taxesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
         }
@@ -63,7 +66,7 @@ namespace TMS.Services.ProviderLayer
             throw new NotImplementedException();
         }
 
-        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
+        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             string printedReciept = "";
@@ -268,9 +271,9 @@ namespace TMS.Services.ProviderLayer
 
         }
 
-        public async Task Execute(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
+        public async Task Execute(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
         {
-            await Pay(payModel, userId, id, totalAmount, fees, serviceProviderId);
+            await Pay(payModel, userId, id, totalAmount, fees, serviceProviderId,taxes);
         }
     }
 }

@@ -53,6 +53,7 @@ namespace TMS.API
             services.AddScoped<ISwitchService>(x => new SwitchService(CurrentEnvironment.IsDevelopment()));
             services.AddScoped<IDbMessageService, DbMessageService>();
             services.AddScoped<IFeesService, FeesService>();
+            services.AddScoped<ITaxService, TaxService>();
             services.AddScoped<ICommissionService, CommissionService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ITransactionService, TransactionService>();
@@ -60,6 +61,7 @@ namespace TMS.API
             services.AddScoped<IServiceProviderService, ServiceProviderService>();
             services.AddScoped<IServiceConfiguarationService, ServiceConfiguarationService>();
             services.AddScoped<IDenominationFeesService, DenominationFeesService>();
+            services.AddScoped<IDenominationTaxService, DenominationTaxService>();
             services.AddScoped<IDenominationCommissionService, DenominationCommissionService>();
             services.AddScoped<IAccountFeesService, AccountFeesService>();
             services.AddScoped<IAccountCommissionService, AccountCommissionService>();
@@ -68,6 +70,7 @@ namespace TMS.API
             services.AddScoped<IAccountTypeProfileDenominationService, AccountTypeProfileDenominationService>();
             services.AddScoped<IAccountTypeProfileFeeService, AccountTypeProfileFeeService>();
             services.AddScoped<IAccountTypeProfileCommissionService, AccountTypeProfileCommissionService>();
+            services.AddScoped<ILookupTypeService, LookupTypeService>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

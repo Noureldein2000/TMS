@@ -30,6 +30,7 @@ namespace TMS.Data.Entities
         public string PathClass { get; set; }
         public DenominationClassType ClassType { get; set; }
         public virtual ICollection<DenominationFee> DenominationFees { get; set; }
+        public virtual ICollection<DenominationTax> DenominationTaxes { get; set; }
         public virtual ICollection<AccountFee> AccountFees { get; set; }
         public virtual ICollection<DenominationEntity> DenominationEntities { get; set; }
         public virtual ICollection<DenominationCommission> DenominationCommissions { get; set; }

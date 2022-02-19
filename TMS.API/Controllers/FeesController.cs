@@ -180,7 +180,6 @@ namespace TMS.API.Controllers
                 FeesTypeID = fee.FeesTypeID,
                 FeesTypeName = fee.FeesTypeName,
                 Value = fee.Value,
-                FeeRange = fee.FeeRange,
                 PaymentModeID = fee.PaymentModeID,
                 PaymentModeName = fee.PaymentModeName,
                 Status = fee.Status,

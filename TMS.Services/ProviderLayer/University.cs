@@ -27,6 +27,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
+        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public University(
@@ -37,6 +38,7 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
+           ITaxService taxesService,
            ITransactionService transactionService,
            IAccountsApi accountsApi
             )
@@ -48,6 +50,7 @@ namespace TMS.Services.ProviderLayer
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
             _feesService = feesService;
+            _taxesService = taxesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
         }
@@ -325,12 +328,13 @@ namespace TMS.Services.ProviderLayer
                                         invoiceList.Add(invoice);
                                         TotalBillAmount += invoice.Amount;
                                     }
-
-                                    _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal fees).ToList();
+                                    var taxesList = _taxesService.GetTaxes(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal taxesAmount).ToList();
+                                    _feesService.GetFees(id, feesModel.Amount + taxesAmount, feesModel.AccountId, feesModel.AccountProfileId, out decimal fees).ToList();
 
                                     feeResponse.Amount = Math.Round(TotalBillAmount, 3);
                                     feeResponse.Fees = Math.Round(fees + ProviderFees, 3);
                                     feeResponse.TotalAmount = TotalBillAmount + feeResponse.Fees;
+                                    feeResponse.Taxes = taxesAmount;
                                     //Update ProviderServiceRequestStatus
                                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
                                 }
@@ -653,7 +657,7 @@ namespace TMS.Services.ProviderLayer
             return inquiryResponse;
         }
 
-        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
+        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId, decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             Root printedReciept = null;
@@ -732,8 +736,8 @@ namespace TMS.Services.ProviderLayer
             //Get Fees Amount
             FeesAmounts FA = new FeesAmounts();
             var paramaters = _providerService.GetProviderServiceResponseParams(BrnFees, "ar", "amountFees", "currentCode").ToList();
-            FA.Amount = paramaters.FirstOrDefault(x=>x.ProviderName=="amountFees").Value;
-            FA.CurrentCode = paramaters.FirstOrDefault(x=>x.ProviderName== "currentCode").Value;
+            FA.Amount = paramaters.FirstOrDefault(x => x.ProviderName == "amountFees").Value;
+            FA.CurrentCode = paramaters.FirstOrDefault(x => x.ProviderName == "currentCode").Value;
             _FeeList.Add(FA);
 
             var serviceConfiguration = _denominationService.GetServiceConfiguration(id);
@@ -786,7 +790,7 @@ namespace TMS.Services.ProviderLayer
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceUniversityBill(int.Parse(denomation.ProviderCode), payModel.BillingAccount, accountName, "Address", "Due_Date", payModel.Amount, fees, 1, userId,
                     response.Message, response.Message, null, newRequestId.ToString());
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees,taxes, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,
@@ -837,7 +841,7 @@ namespace TMS.Services.ProviderLayer
                 paymentResponse.InvoiceId = _transactionService.AddInvoiceUniversityBill(int.Parse(denomation.ProviderCode), payModel.BillingAccount, accountName, "Address", "Due_Date", payModel.Amount, fees, 1, userId,
                    response.Message, response.Message, null, newRequestId.ToString());
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, paymentResponse.InvoiceId, newRequestId);
 
                 paymentResponse.TransactionId = transactionId;
 

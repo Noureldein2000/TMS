@@ -11,6 +11,7 @@ namespace TMS.Services.Models
         public List<DataDTO> Data { get; set; } = new List<DataDTO>();
         public decimal Amount { get; set; }
         public decimal Fees { get; set; }
+        public decimal Taxes { get; set; }
         public decimal TotalAmount { get; set; }
         public int Brn { get; set; }
     }

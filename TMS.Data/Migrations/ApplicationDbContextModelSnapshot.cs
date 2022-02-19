@@ -577,13 +577,13 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 500, DateTimeKind.Local).AddTicks(8792),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 386, DateTimeKind.Local).AddTicks(6116),
                             Name = "FIXED"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 502, DateTimeKind.Local).AddTicks(2466),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 387, DateTimeKind.Local).AddTicks(8592),
                             Name = "DYNAMIC"
                         });
                 });
@@ -613,25 +613,25 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 503, DateTimeKind.Local).AddTicks(9825),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6126),
                             Name = "Number"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 503, DateTimeKind.Local).AddTicks(9842),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6145),
                             Name = "String"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 503, DateTimeKind.Local).AddTicks(9844),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6146),
                             Name = "List"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 503, DateTimeKind.Local).AddTicks(9845),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 389, DateTimeKind.Local).AddTicks(6148),
                             Name = "Date"
                         });
                 });
@@ -834,6 +834,34 @@ namespace TMS.Data.Migrations
                     b.HasIndex("ServiceProviderID");
 
                     b.ToTable("DenominationServiceProviders");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.DenominationTax", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DenominationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaxID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DenominationID");
+
+                    b.HasIndex("TaxID");
+
+                    b.ToTable("DenominationTaxes");
                 });
 
             modelBuilder.Entity("TMS.Data.Entities.Fee", b =>
@@ -1179,28 +1207,28 @@ namespace TMS.Data.Migrations
                         new
                         {
                             ID = 1,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 521, DateTimeKind.Local).AddTicks(1405),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 409, DateTimeKind.Local).AddTicks(9961),
                             Name = "Initiated",
                             NameAr = "بدأت"
                         },
                         new
                         {
                             ID = 2,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 521, DateTimeKind.Local).AddTicks(1473),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(41),
                             Name = "Canceled",
                             NameAr = "ألغيت"
                         },
                         new
                         {
                             ID = 3,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 521, DateTimeKind.Local).AddTicks(1475),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(43),
                             Name = "Confirmed",
                             NameAr = "مؤكد"
                         },
                         new
                         {
                             ID = 4,
-                            CreationDate = new DateTime(2021, 11, 30, 18, 13, 21, 521, DateTimeKind.Local).AddTicks(1476),
+                            CreationDate = new DateTime(2022, 2, 1, 15, 27, 21, 410, DateTimeKind.Local).AddTicks(45),
                             Name = "AutoCanceled",
                             NameAr = "مُلغى تلقائيًا"
                         });
@@ -1931,6 +1959,82 @@ namespace TMS.Data.Migrations
                     b.ToTable("StatusCodes");
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.Tax", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("AmountFrom")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("AmountTo")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentModeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TaxTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PaymentModeID");
+
+                    b.HasIndex("TaxTypeID");
+
+                    b.ToTable("Taxes");
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.TaxType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ArName")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("TaxTypes");
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.Transaction", b =>
                 {
                     b.Property<int>("ID")
@@ -1964,6 +2068,9 @@ namespace TMS.Data.Migrations
 
                     b.Property<int?>("RequestID")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Taxes")
+                        .HasColumnType("decimal(18, 3)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 3)");
@@ -2249,6 +2356,21 @@ namespace TMS.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TMS.Data.Entities.DenominationTax", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.Denomination", "Denomination")
+                        .WithMany("DenominationTaxes")
+                        .HasForeignKey("DenominationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.Tax", "Tax")
+                        .WithMany("DenominationTax")
+                        .HasForeignKey("TaxID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TMS.Data.Entities.Fee", b =>
                 {
                     b.HasOne("TMS.Data.Entities.FeesType", "FeesType")
@@ -2488,6 +2610,21 @@ namespace TMS.Data.Migrations
                         .WithMany("StatusCodes")
                         .HasForeignKey("RequestStatusID")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TMS.Data.Entities.Tax", b =>
+                {
+                    b.HasOne("TMS.Data.Entities.PaymentMode", "PaymentMode")
+                        .WithMany("Taxes")
+                        .HasForeignKey("PaymentModeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TMS.Data.Entities.TaxType", "TaxType")
+                        .WithMany("Taxes")
+                        .HasForeignKey("TaxTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TMS.Data.Entities
 {
-    public class FeesType : BaseEntity<int>
+    public class FeesType : BaseEntity<int>, ILookupType
     {
         public string Name { get; set; }
         public string ArName { get; set; }

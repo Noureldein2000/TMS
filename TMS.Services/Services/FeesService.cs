@@ -74,7 +74,7 @@ namespace TMS.Services.Services
             current.AmountTo = fee.AmountTo;
             current.StartDate = fee.StartDate;
             current.EndDate = fee.EndDate;
-            current.UpdatedBy = fee.CreatedBy;
+            //current.UpdatedBy = fee.CreatedBy;
 
             _unitOfWork.SaveChanges();
         }
@@ -218,20 +218,19 @@ namespace TMS.Services.Services
         {
             var fees = _fees.Getwhere(x => true).Include(x => x.FeesType).Select(fee => new
             {
-                ID = fee.ID,
-                FeesTypeID = fee.FeesTypeID,
+                fee.ID,
+                fee.FeesTypeID,
                 FeesTypeName = language == "en" ? fee.FeesType.Name : fee.FeesType.ArName,
-                Value = fee.Value,
-                FeeRange = fee.Value + " [" + fee.AmountFrom.ToString() + " - " + fee.AmountTo + "] " + fee.PaymentMode.Name,
-                PaymentModeID = fee.PaymentModeID,
+                fee.Value,
+                fee.PaymentModeID,
                 PaymentModeName = language == "en" ? fee.PaymentMode.Name : fee.PaymentMode.ArName,
-                Status = fee.Status,
-                CreatedBy = fee.CreatedBy,
-                AmountFrom = fee.AmountFrom,
-                AmountTo = fee.AmountTo,
-                StartDate = fee.StartDate,
-                EndDate = fee.EndDate,
-                CreationDate = fee.CreationDate
+                fee.Status,
+                fee.CreatedBy,
+                fee.AmountFrom,
+                fee.AmountTo,
+                fee.StartDate,
+                fee.EndDate,
+                fee.CreationDate
             }).ToList();
 
             var count = fees.Count();
@@ -248,7 +247,6 @@ namespace TMS.Services.Services
                     FeesTypeID = fee.FeesTypeID,
                     FeesTypeName = fee.FeesTypeName,
                     Value = fee.Value,
-                    FeeRange = fee.FeeRange,
                     PaymentModeID = fee.PaymentModeID,
                     PaymentModeName = fee.PaymentModeName,
                     Status = fee.Status,

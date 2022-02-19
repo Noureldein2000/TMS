@@ -74,6 +74,9 @@ namespace TMS.Data
         public virtual DbSet<PendingPaymentCardStatus> PendingPaymentCardStatuses { get; set; }
         public virtual DbSet<CardType> CardTypes { get; set; }
         public virtual DbSet<Restaurant> Restaurants { get; set; }
+        public virtual DbSet<Tax> Taxes { get; set; }
+        public virtual DbSet<TaxType> TaxTypes { get; set; }
+        public virtual DbSet<DenominationTax> DenominationTaxes { get; set; }
 
 
         public override int SaveChanges()

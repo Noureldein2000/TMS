@@ -27,6 +27,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
+        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public OrangeInternet(
@@ -37,17 +38,14 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
+            ITaxService taxesService,
+        ITransactionService transactionService,
            IAccountsApi accountsApi
             )
         {
             _denominationService = denominationService;
             _providerService = providerService;
-            _switchService = switchService;
-            _inquiryBillService = inquiryBillService;
-            _loggingService = loggingService;
-            _dbMessageService = dbMessageService;
-            _feesService = feesService;
+            _taxesService = taxesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
         }
@@ -84,7 +82,8 @@ namespace TMS.Services.ProviderLayer
             {
                 ProviderFees = 0;
             }
-            var feesList = _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
+            var taxesList = _taxesService.GetTaxes(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal taxesAmount).ToList();
+            var feesList = _feesService.GetFees(id, feesModel.Amount+ taxesAmount, feesModel.AccountId, feesModel.AccountProfileId, out decimal feesAmount).ToList();
             feeResponse.Amount = Math.Round(feesModel.Amount, 3);
             feeResponse.Fees = Math.Round(feesAmount + ProviderFees, 3);
             feeResponse.TotalAmount = feesModel.Amount + feeResponse.Fees;
@@ -150,6 +149,60 @@ namespace TMS.Services.ProviderLayer
                        });
                 }
             }
+
+            //Add taxes into provider service Response param
+            if (taxesList.Count > 0)
+            {
+                foreach (var item in taxesList)
+                {
+                    if (item.Taxes.ToString("0.000") != "0.000")
+                    {
+                        feeResponse.Data.Add(new DataDTO
+                        {
+                            Key = item.TaxesTypeName,
+                            Value = item.Taxes.ToString("0.000")
+                        });
+                        _providerService.AddProviderServiceResponseParam(
+                            new ProviderServiceResponseParamDTO
+                            {
+                                ParameterName = item.TaxesTypeName,
+                                ServiceRequestID = providerServiceResponseId,
+                                Value = item.Taxes.ToString("0.000")
+                            });
+                        _inquiryBillService.AddReceiptBodyParam(
+                           new ReceiptBodyParamDTO
+                           {
+                               ParameterName = item.TaxesTypeName,
+                               ProviderServiceRequestID = feesModel.Brn,
+                               TransactionID = null,
+                               Value = item.Taxes.ToString("0.000")
+                           });
+                    }
+                }
+            }
+            else
+            {
+                if (taxesAmount.ToString() != "0.000")
+                {
+                    _providerService.AddProviderServiceResponseParam(
+                        new ProviderServiceResponseParamDTO
+                        {
+                            ParameterName = "Tax",// "Service Taxes",
+                            ServiceRequestID = providerServiceResponseId,
+                            Value = taxesAmount.ToString("0.000")
+                        });
+                    _inquiryBillService.AddReceiptBodyParam(
+                       new ReceiptBodyParamDTO
+                       {
+                           ParameterName = "Tax",// "Service Taxes",
+                           ProviderServiceRequestID = feesModel.Brn,
+                           TransactionID = null,
+                           Value = taxesAmount.ToString("0.000")
+                       });
+                }
+            }
+
+            feeResponse.Taxes = taxesAmount;
 
             _inquiryBillService.AddInquiryBill(new InquiryBillDTO
             {
@@ -289,7 +342,7 @@ namespace TMS.Services.ProviderLayer
             return inquiryResponse;
         }
 
-        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
+        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             Root printedReciept = null;
@@ -393,7 +446,7 @@ namespace TMS.Services.ProviderLayer
                             DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "", "");
 
 
-                    transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                    transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, paymentResponse.InvoiceId, newRequestId);
                     paymentResponse.TransactionId = transactionId;
 
                     _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Success, userId);
@@ -433,7 +486,7 @@ namespace TMS.Services.ProviderLayer
                         Validates.GetCodeAndTelephone(payModel.BillingAccount)[0], Validates.GetCodeAndTelephone(payModel.BillingAccount)[1],
                         DateTime.Now.ToString(), payModel.Amount, fees, 1, userId, "", "");
 
-                transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", null, paymentResponse.InvoiceId, newRequestId);
+                transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
 
                 // confirm sof

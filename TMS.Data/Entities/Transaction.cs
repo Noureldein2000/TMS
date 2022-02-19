@@ -11,6 +11,7 @@ namespace TMS.Data.Entities
         public decimal TotalAmount { get; set; }
         public decimal OriginalAmount { get; set; }
         public decimal Fees { get; set; }
+        public decimal Taxes { get; set; }
         public int TransactionType { get; set; }
         public bool IsReversed { get; set; }
         public string OriginalTrx { get; set; }

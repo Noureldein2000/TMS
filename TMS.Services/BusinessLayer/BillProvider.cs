@@ -313,7 +313,7 @@ namespace TMS.Services.BusinessLayer
                 if (feesResponse.Code != 200)
                     throw new TMSException("InvalidFees", "47");
 
-                return await denoProvider.Pay(payModel, userId, id, feesResponse.TotalAmount, feesResponse.Fees, denomination.ServiceProviderId);
+                return await denoProvider.Pay(payModel, userId, id, feesResponse.TotalAmount, feesResponse.Fees, denomination.ServiceProviderId, feesResponse.Taxes);
             }
             else
                 throw new TMSException("InvalidData", "12");

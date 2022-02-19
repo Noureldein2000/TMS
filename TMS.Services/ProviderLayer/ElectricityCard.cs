@@ -29,6 +29,7 @@ namespace TMS.Services.ProviderLayer
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
+        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly ICancelService _cancelService;
         private readonly IAccountsApi _accountsApi;
@@ -40,7 +41,8 @@ namespace TMS.Services.ProviderLayer
            ILoggingService loggingService,
            IDbMessageService dbMessageService,
            IFeesService feesService,
-           ITransactionService transactionService,
+           ITaxService taxesService,
+        ITransactionService transactionService,
            ICancelService cancelService,
            IAccountsApi accountsApi
             )
@@ -52,6 +54,7 @@ namespace TMS.Services.ProviderLayer
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
             _feesService = feesService;
+            _taxesService = taxesService;
             _transactionService = transactionService;
             _cancelService = cancelService;
             _accountsApi = accountsApi;
@@ -262,8 +265,61 @@ namespace TMS.Services.ProviderLayer
                             TotalBillAmount += invoice.Amount;
                         }
 
-                        _feesService.GetFees(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal fees).ToList();
+                        var taxesList = _taxesService.GetTaxes(id, feesModel.Amount, feesModel.AccountId, feesModel.AccountProfileId, out decimal taxesAmount).ToList();
+                        _feesService.GetFees(id, feesModel.Amount+ taxesAmount, feesModel.AccountId, feesModel.AccountProfileId, out decimal fees).ToList();
+                        //Add taxes into provider service Response param
+                        if (taxesList.Count > 0)
+                        {
+                            foreach (var item in taxesList)
+                            {
+                                if (item.Taxes.ToString("0.000") != "0.000")
+                                {
+                                    feeResponse.Data.Add(new DataDTO
+                                    {
+                                        Key = item.TaxesTypeName,
+                                        Value = item.Taxes.ToString("0.000")
+                                    });
+                                    _providerService.AddProviderServiceResponseParam(
+                                        new ProviderServiceResponseParamDTO
+                                        {
+                                            ParameterName = item.TaxesTypeName,
+                                            ServiceRequestID = providerServiceReponseID,
+                                            Value = item.Taxes.ToString("0.000")
+                                        });
+                                    _inquiryBillService.AddReceiptBodyParam(
+                                       new ReceiptBodyParamDTO
+                                       {
+                                           ParameterName = item.TaxesTypeName,
+                                           ProviderServiceRequestID = feesModel.Brn,
+                                           TransactionID = null,
+                                           Value = item.Taxes.ToString("0.000")
+                                       });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (taxesAmount.ToString() != "0.000")
+                            {
+                                _providerService.AddProviderServiceResponseParam(
+                                    new ProviderServiceResponseParamDTO
+                                    {
+                                        ParameterName = "Tax",// "Service Taxes",
+                            ServiceRequestID = providerServiceReponseID,
+                                        Value = taxesAmount.ToString("0.000")
+                                    });
+                                _inquiryBillService.AddReceiptBodyParam(
+                                   new ReceiptBodyParamDTO
+                                   {
+                                       ParameterName = "Tax",// "Service Taxes",
+                           ProviderServiceRequestID = feesModel.Brn,
+                                       TransactionID = null,
+                                       Value = taxesAmount.ToString("0.000")
+                                   });
+                            }
+                        }
 
+                        feeResponse.Taxes = taxesAmount;
                         feeResponse.Amount = Math.Round(TotalBillAmount, 3);
                         feeResponse.Fees = Math.Round(fees + ProviderFees, 3);
                         feeResponse.TotalAmount = TotalBillAmount + feeResponse.Fees;
@@ -524,7 +580,7 @@ namespace TMS.Services.ProviderLayer
             return inquiryResponse;
         }
 
-        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId)
+        public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             Root printedReciept = null;
@@ -660,7 +716,7 @@ namespace TMS.Services.ProviderLayer
                     paymentResponse.InvoiceId = _transactionService.AddInvoiceWaterCard(int.Parse(DS.ProviderCode), payModel.BillingAccount, accountName, "", "", totaAmount, fees, 1, userId,
                     response.Message, response.Message, null, response.Message, "", _providerService.GetProviderServiceRequestParams(payModel.Brn, "ar", "CardType").Select(x => x.Value).FirstOrDefault(), o["cardData"].ToString(), newRequestId, o["momknPaymentId"].ToString());
 
-                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, "", 0, paymentResponse.InvoiceId, newRequestId);
+                var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", 0, paymentResponse.InvoiceId, newRequestId);
                 paymentResponse.TransactionId = transactionId;
                 // confirm sof
                 await _accountsApi.ApiAccountsAccountIdRequestsRequestIdPutAsync(payModel.AccountId, newRequestId,

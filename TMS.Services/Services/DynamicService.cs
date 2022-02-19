@@ -44,9 +44,9 @@ namespace TMS.Services.Services
                         model.AccountId = accountId;
 
                         if (_transactionService.GetPendingPaymentCardStatus(transactionId) == 1 && (denomination.ServiceID == 20 || denomination.ServiceID == 57))
-                            return _cancelService.Cancel(model, userId, id, 0, denomination.ServiceProviderId);
+                            return _cancelService.Cancel(model, userId, id, 0, denomination.ServiceProviderId, 0);
                         else if (denomination.ServiceID == 36)
-                            return _cancelService.Cancel(model, userId, id, 0, denomination.ServiceProviderId);
+                            return _cancelService.Cancel(model, userId, id, 0, denomination.ServiceProviderId, 0);
                         else
                             throw new TMSException("NoDataFounded", "19");
                     }

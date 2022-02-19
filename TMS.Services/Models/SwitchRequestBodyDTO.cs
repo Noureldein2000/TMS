@@ -10,7 +10,6 @@ namespace TMS.Services.Models
         public string UserId { get; private set; } = "momkn";
         public string Password { get; private set; } = "hZ3BGBayXUCXsTnr";
     }
-
     public class SwitchPaymentRequestBodyDTO : SwitchRequestBodyDTO
     {
         public string BillRefNumber { get; set; }
@@ -21,7 +20,6 @@ namespace TMS.Services.Models
         public string PaymentCode { get; set; }
         public int BillsCount { get; set; }
     }
-
     public class CashUCoupon
     {
         public string CardNumber { get; set; }
@@ -67,7 +65,7 @@ namespace TMS.Services.Models
     //    public int BillsCount { get; set; }
     //}
 
-    public class InquiryCashIn 
+    public class InquiryCashIn
     {
         public string BillReference { get; set; }
         public string TransactionId { get; set; }
@@ -87,7 +85,6 @@ namespace TMS.Services.Models
         //public string Serial { get; set; }
 
     }
-
     public class InquiryEducationServiceDTO //: SwitchRequestBodyDTO
     {
         public string UserId { get; private set; } = "momkn";

@@ -43,7 +43,7 @@ namespace TMS.Services.Services
         int AddInvoiceElectronicChargeProcBeeAwIncomeNew(int id, decimal value, int servId, int centerId, int userId, decimal invoicePrice, string mobileNumber);
         int AddInvoiceElectronicChargeNewVoucher(string providerCompany, string mobileNumber, decimal value, string chargeStatus, int statusTransfer, int userId, string masaryTransId, string voucherNumber, string serialNumber, int providerId, int servId, int logId);
         int AddInvoiceElectronicChargeIncomeNewVoucher(string providerCompany, decimal value, int userId, string voucherNumber, int providerId, int servId, int id);
-        int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId);
+        int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, decimal taxes, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId);
         void AddCommission(int transactionId, int? accountId, int denominationId, decimal originalAmount, int? accountProfileId);
         decimal GetTotalCommissions(int denominationId, decimal originalAmount, int? accountId, int? accountProfileId);
         int CheckVoucherValue(int serviceId, string provider, decimal value);

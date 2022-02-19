@@ -46,7 +46,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
         [HttpGet]
@@ -65,7 +65,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
         [HttpPut]
@@ -84,7 +84,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
         [HttpDelete]
@@ -103,7 +103,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
         [HttpPost]
@@ -133,7 +133,7 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
         [HttpPut]
@@ -164,27 +164,26 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(_localizer["GeneralError"].Value, "-1");
+                return BadRequest(ex.Message, "-1");
             }
         }
 
-        private CommissionModel MapToModel(CommissionDTO fee)
+        private CommissionModel MapToModel(CommissionDTO model)
         {
             return new CommissionModel
             {
-                ID = fee.ID,
-                CommissionTypeID = fee.CommissionTypeID,
-                CommissionTypeName = fee.CommissionTypeName,
-                Value = fee.Value,
-                CommissionRange = fee.CommissionRange,
-                PaymentModeID = fee.PaymentModeID,
-                Status = fee.Status,
-                AmountFrom = fee.AmountFrom,
-                AmountTo = fee.AmountTo,
-                StartDate = fee.StartDate,
-                EndDate = fee.EndDate,
-                PaymentModeName = fee.PaymentModeName,
-                CreatedBy = fee.CreatedBy
+                ID = model.ID,
+                CommissionTypeID = model.CommissionTypeID,
+                CommissionTypeName = model.CommissionTypeName,
+                Value = model.Value,
+                PaymentModeID = model.PaymentModeID,
+                Status = model.Status,
+                AmountFrom = model.AmountFrom,
+                AmountTo = model.AmountTo,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                PaymentModeName = model.PaymentModeName,
+                CreatedBy = model.CreatedBy
             };
         }
     }

@@ -95,7 +95,7 @@ namespace TMS.Services.Services
             return request.ID;
         }
 
-        public int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId)
+        public int AddTransaction(int? accountIdFrom, decimal amount, int denominationId, decimal originalAmount, decimal fees, decimal taxes, string originalTrx, int? accountIdTo, int? invoiceId, int? requestId)
         {
             var p = new SqlParameter("@result", SqlDbType.Int);
             p.Direction = ParameterDirection.Output;
@@ -107,6 +107,7 @@ namespace TMS.Services.Services
                 TransactionID = $"MOMKN-{denominationId}-{nextVal}",
                 AccountIDFrom = accountIdFrom,
                 Fees = fees,
+                Taxes = taxes,
                 InvoiceID = invoiceId,
                 OriginalAmount = originalAmount,
                 RequestID = requestId,
