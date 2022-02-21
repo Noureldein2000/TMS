@@ -1,19 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
@@ -214,11 +210,11 @@ namespace TMS.Services.ProviderLayer
         {
             var inquiryResponse = new InquiryResponseDTO();
             int count = 1;
-            decimal totalAmount = 0;
+            decimal totalAmount;
             InquiryValU IV = new InquiryValU();
             List<InvoiceDTO> InList = new List<InvoiceDTO>();
 
-            var denomation = _denominationService.GetDenominationServiceProvider(id);
+            //var denomation = _denominationService.GetDenominationServiceProvider(id);
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
@@ -356,9 +352,11 @@ namespace TMS.Services.ProviderLayer
                               Value = item.PurchaseId
                           });
 
-                    InvoiceDTO Is = new InvoiceDTO();
-                    Is.Amount = decimal.Parse(item.AmountPayable);
-                    Is.Sequence = count;
+                    InvoiceDTO Is = new InvoiceDTO
+                    {
+                        Amount = decimal.Parse(item.AmountPayable),
+                        Sequence = count
+                    };
 
                     var IBDList = _inquiryBillService.GetInquiryBillDetails(providerServiceRequestId, Is.Sequence);
                     if (IBDList != null)

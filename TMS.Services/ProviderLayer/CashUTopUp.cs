@@ -1,19 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
@@ -31,16 +27,16 @@ namespace TMS.Services.ProviderLayer
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public CashUTopUp(
-           IDenominationService denominationService,
-           IProviderService providerService,
-           ISwitchService switchService,
-           IInquiryBillService inquiryBillService,
-           ILoggingService loggingService,
-           IDbMessageService dbMessageService,
-           IFeesService feesService,
-                 ITaxService taxesService,
-        ITransactionService transactionService,
-           IAccountsApi accountsApi
+            IDenominationService denominationService,
+            IProviderService providerService,
+            ISwitchService switchService,
+            IInquiryBillService inquiryBillService,
+            ILoggingService loggingService,
+            IDbMessageService dbMessageService,
+            IFeesService feesService,
+            ITaxService taxesService,
+            ITransactionService transactionService,
+            IAccountsApi accountsApi
             )
         {
             _denominationService = denominationService;
@@ -69,7 +65,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+            //var demonationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
 
             //if (demonationServiceProvider.ProviderHasFees)
             //    providerFees = 0;
@@ -278,7 +274,6 @@ namespace TMS.Services.ProviderLayer
             await _loggingService.Log($"{JsonConvert.SerializeObject(switchRequestDto)} : {JsonConvert.SerializeObject(switchEndPoint)}",
                providerServiceRequestId,
                LoggingType.ProviderRequest);
-            var d = 5;
 
             var response = _switchService.Connect(switchRequestDto, switchEndPoint, SwitchEndPointAction.getAccountInfo.ToString(), "Basic ");
 
@@ -382,7 +377,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
             var currency = _denominationService.GetCurrencyValue(id);
             var newRequestId = _transactionService.AddRequest(new RequestDTO
             {
@@ -439,7 +434,7 @@ namespace TMS.Services.ProviderLayer
 
             if (response.Code == 200)
             {
-                JObject o = JObject.Parse(response.Message);
+                //JObject o = JObject.Parse(response.Message);
 
                 var transactionId = _transactionService.AddTransaction(payModel.AccountId, totalAmount, id, payModel.Amount, fees, taxes, "", null, null, newRequestId);
                 paymentResponse.TransactionId = transactionId;

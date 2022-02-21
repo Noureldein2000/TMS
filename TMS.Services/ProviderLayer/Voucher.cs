@@ -1,21 +1,16 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
-using System.Globalization;
 
 namespace TMS.Services.ProviderLayer
 {
@@ -79,8 +74,9 @@ namespace TMS.Services.ProviderLayer
                                 Count = 1;
                             else if (!int.TryParse(item.Value, out Count))
                             {
+                                //flag = false;
                                 throw new TMSException("InvalidData", "12");
-                                flag = false;
+                                
                             }
                             else
                                 Count = int.Parse(item.Value);
@@ -556,10 +552,8 @@ namespace TMS.Services.ProviderLayer
 
         private int ReturnBee_Sev(string Service_ID, decimal value, string network)
         {
-            int serv_id = 0;
-            serv_id = _transactionService.CheckVoucherValue(int.Parse(Service_ID), network, value);
+            var serv_id = _transactionService.CheckVoucherValue(int.Parse(Service_ID), network, value);
             return serv_id;
-
         }
 
     }

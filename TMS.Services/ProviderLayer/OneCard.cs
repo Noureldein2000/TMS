@@ -1,19 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
@@ -60,8 +56,6 @@ namespace TMS.Services.ProviderLayer
             var feeResponse = new FeesResponseDTO();
             decimal ProviderFees = 0;
             decimal totalAmount = 0;
-            int count = 1;
-
 
             var Ds = _denominationService.GetDenominationServiceProvider(id);
 

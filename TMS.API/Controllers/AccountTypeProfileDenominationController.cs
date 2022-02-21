@@ -16,14 +16,12 @@ namespace TMS.API.Controllers
     [ApiController]
     public class AccountTypeProfileDenominationController : BaseController
     {
-        private readonly IDenominationService _denominationService;
         private readonly IAccountTypeProfileDenominationService _accountTypeProfileDenominationService;
         private readonly IStringLocalizer<LanguageResource> _localizer;
-        public AccountTypeProfileDenominationController(IDenominationService denominatioService,
+        public AccountTypeProfileDenominationController(
             IAccountTypeProfileDenominationService accountTypeProfileDenominationService,
             IStringLocalizer<LanguageResource> localizer)
         {
-            _denominationService = denominatioService;
             _accountTypeProfileDenominationService = accountTypeProfileDenominationService;
             _localizer = localizer;
         }

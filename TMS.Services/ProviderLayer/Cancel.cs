@@ -27,21 +27,17 @@ namespace TMS.Services.ProviderLayer
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
-        private readonly IFeesService _feesService;
-        private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
         public Cancel(
-           IDenominationService denominationService,
-           IProviderService providerService,
-           ISwitchService switchService,
-           IInquiryBillService inquiryBillService,
-           ILoggingService loggingService,
-           IDbMessageService dbMessageService,
-           IFeesService feesService,
-           ITaxService taxesService,
-        ITransactionService transactionService,
-           IAccountsApi accountsApi
+            IDenominationService denominationService,
+            IProviderService providerService,
+            ISwitchService switchService,
+            IInquiryBillService inquiryBillService,
+            ILoggingService loggingService,
+            IDbMessageService dbMessageService,
+            ITransactionService transactionService,
+            IAccountsApi accountsApi
             )
         {
             _denominationService = denominationService;
@@ -50,8 +46,6 @@ namespace TMS.Services.ProviderLayer
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
-            _feesService = feesService;
-            _taxesService = taxesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
         }
@@ -271,9 +265,9 @@ namespace TMS.Services.ProviderLayer
 
         }
 
-        public async Task Execute(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
-        {
-            await Pay(payModel, userId, id, totalAmount, fees, serviceProviderId,taxes);
-        }
+        //public async Task Execute(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId,decimal taxes)
+        //{
+        //    await Pay(payModel, userId, id, totalAmount, fees, serviceProviderId,taxes);
+        //}
     }
 }

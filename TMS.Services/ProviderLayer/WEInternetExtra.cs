@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TMS.Infrastructure;
@@ -379,9 +377,9 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId, decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
-            Root printedReciept = null;
-            string message = "";
-            int code = 0;
+            Root printedReciept;
+            string message;
+            int code;
             RequestStatusCodeType RequestStatus = RequestStatusCodeType.Success;
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {

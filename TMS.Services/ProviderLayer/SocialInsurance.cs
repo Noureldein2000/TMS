@@ -1,19 +1,13 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
-using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 namespace TMS.Services.ProviderLayer
 {
@@ -66,7 +60,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var denominationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProvider = _denominationService.GetDenominationServiceProvider(id);
 
             if (feesModel.Data != null)
                 foreach (var item in feesModel.Data)
@@ -224,7 +218,7 @@ namespace TMS.Services.ProviderLayer
         public async Task<PaymentResponseDTO> Pay(PaymentRequestDTO payModel, int userId, int id, decimal totalAmount, decimal fees, int serviceProviderId, decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
-            Root printedReciept = null;
+            Root printedReciept;
 
             var providerServiceRequestId = _providerService.AddProviderServiceRequest(new ProviderServiceRequestDTO
             {
@@ -282,15 +276,15 @@ namespace TMS.Services.ProviderLayer
                 _transactionService.AddCommission(transactionId, payModel.AccountId, id, payModel.Amount, payModel.AccountProfileId);
 
             }
-            else
-            {
-                await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
-                _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
-                _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
-                // GET MESSAGE PROVIDER ID
-                var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode("General Error"), providerId: serviceProviderId);
-                throw new TMSException(message.Message, message.Code);
-            }
+            //else
+            //{
+            //    await _accountsApi.ApiAccountsAccountIdRequestsRequestIdDeleteAsync(payModel.AccountId, newRequestId);
+            //    _providerService.UpdateProviderServiceRequestStatus(providerServiceRequestId, ProviderServiceRequestStatusType.Failed, userId);
+            //    _transactionService.UpdateRequestStatus(newRequestId, RequestStatusCodeType.Fail);
+            //    // GET MESSAGE PROVIDER ID
+            //    var message = _dbMessageService.GetMainStatusCodeMessage(id: GetData.GetCode("General Error"), providerId: serviceProviderId);
+            //    throw new TMSException(message.Message, message.Code);
+            //}
             paymentResponse.Code = 200;
             paymentResponse.Message = "Success";
             paymentResponse.ServerDate = DateTime.Now.ToString();

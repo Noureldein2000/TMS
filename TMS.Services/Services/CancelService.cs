@@ -27,20 +27,16 @@ namespace TMS.Services.Services
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ILoggingService _loggingService;
         private readonly IDbMessageService _dbMessageService;
-        private readonly IFeesService _feesService;
         private readonly ITransactionService _transactionService;
         private readonly IAccountsApi _accountsApi;
-        private readonly IUnitOfWork _unitOfWork;
         public CancelService(
-             IDenominationService denominationService,
-           IProviderService providerService,
-           ISwitchService switchService,
-           IInquiryBillService inquiryBillService,
-           ILoggingService loggingService,
-           IDbMessageService dbMessageService,
-           IFeesService feesService,
-           ITransactionService transactionService,
-            IUnitOfWork unitOfWork,
+            IDenominationService denominationService,
+            IProviderService providerService,
+            ISwitchService switchService,
+            IInquiryBillService inquiryBillService,
+            ILoggingService loggingService,
+            IDbMessageService dbMessageService,
+            ITransactionService transactionService,
             IAccountsApi accountsApi
             )
         {
@@ -50,12 +46,10 @@ namespace TMS.Services.Services
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
             _dbMessageService = dbMessageService;
-            _feesService = feesService;
             _transactionService = transactionService;
             _accountsApi = accountsApi;
-            _unitOfWork = unitOfWork;
         }
-        public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId,decimal taxes)
+        public async Task<PaymentResponseDTO> Cancel(CancelDTO payModel, int userId, int id, decimal fees, int serviceProviderId, decimal taxes)
         {
             var paymentResponse = new PaymentResponseDTO();
             decimal totalAmount = 0;

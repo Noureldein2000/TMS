@@ -1,19 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
 using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
@@ -225,7 +221,7 @@ namespace TMS.Services.ProviderLayer
                 payModel.Amount = item.Amount;
             }
 
-            var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
+            //var denominationServiceProviderDetails = _denominationService.GetDenominationServiceProvider(id);
             var denomination = _denominationService.GetDenomination(id);
 
             var newRequestId = _transactionService.AddRequest(new RequestDTO
@@ -267,7 +263,7 @@ namespace TMS.Services.ProviderLayer
             var branchNumber = o["BranchNumber"].ToString();
             var dueDate = o["DueDate"].ToString();
             var accountNumber = o["AccountNumber"].ToString();
-            var balanceParam = o["Balance"].ToString();
+            //var balanceParam = o["Balance"].ToString();
 
             var switchRequestDto = new PaymentLoan
             {

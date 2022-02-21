@@ -14,17 +14,14 @@ namespace TMS.Services.Services
 {
     public class AccountTypeProfileDenominationService : IAccountTypeProfileDenominationService
     {
-        private readonly IBaseRepository<Denomination, int> _denominationRepository;
         private readonly IBaseRepository<AccountTypeProfileDenomination, int> _accountTypeProfileDenomination;
         private readonly IUnitOfWork _unitOfWork;
 
         public AccountTypeProfileDenominationService(
-            IBaseRepository<Denomination, int> denominationRepository,
             IBaseRepository<AccountTypeProfileDenomination, int> accountTypeProfileDenomination,
             IUnitOfWork unitOfWork
             )
         {
-            _denominationRepository = denominationRepository;
             _accountTypeProfileDenomination = accountTypeProfileDenomination;
             _unitOfWork = unitOfWork;
         }

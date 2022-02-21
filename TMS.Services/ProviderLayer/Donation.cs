@@ -1,19 +1,13 @@
-﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using TMS.Services.SOFClientAPIs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TMS.Data.Entities;
 using TMS.Infrastructure;
 using TMS.Infrastructure.Helpers;
-using TMS.Infrastructure.Utils;
 using TMS.Services.BusinessLayer;
 using TMS.Services.Models;
-using TMS.Services.Repositories;
 using TMS.Services.Services;
 
 namespace TMS.Services.ProviderLayer
@@ -22,10 +16,8 @@ namespace TMS.Services.ProviderLayer
     {
         private readonly IDenominationService _denominationService;
         private readonly IProviderService _providerService;
-        private readonly ISwitchService _switchService;
         private readonly IInquiryBillService _inquiryBillService;
         private readonly ILoggingService _loggingService;
-        private readonly IDbMessageService _dbMessageService;
         private readonly IFeesService _feesService;
         private readonly ITaxService _taxesService;
         private readonly ITransactionService _transactionService;
@@ -33,10 +25,8 @@ namespace TMS.Services.ProviderLayer
         public Donation(
            IDenominationService denominationService,
            IProviderService providerService,
-           ISwitchService switchService,
            IInquiryBillService inquiryBillService,
            ILoggingService loggingService,
-           IDbMessageService dbMessageService,
            IFeesService feesService,
               ITaxService taxesService,
         ITransactionService transactionService,
@@ -45,10 +35,8 @@ namespace TMS.Services.ProviderLayer
         {
             _denominationService = denominationService;
             _providerService = providerService;
-            _switchService = switchService;
             _inquiryBillService = inquiryBillService;
             _loggingService = loggingService;
-            _dbMessageService = dbMessageService;
             _feesService = feesService;
             _taxesService = taxesService;
             _transactionService = transactionService;
@@ -68,7 +56,7 @@ namespace TMS.Services.ProviderLayer
                 DenominationID = id
             });
 
-            var demonation = _denominationService.GetDenominationServiceProvider(id);
+            //var demonation = _denominationService.GetDenominationServiceProvider(id);
 
             if (feesModel.Data != null)
                 foreach (var item in feesModel.Data)
