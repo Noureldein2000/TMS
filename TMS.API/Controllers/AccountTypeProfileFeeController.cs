@@ -51,13 +51,13 @@ namespace TMS.API.Controllers
         }
         [HttpPost]
         [Route("AddAccountTypeProfileFee")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AccountTypeProfileFeesModel), StatusCodes.Status200OK)]
         public IActionResult AddAccountTypeProfileFee(AccountTypeProfileFeesModel model)
         {
             try
             {
-                _accountTypeProfileFeeService.Add(MapToDTO(model));
-                return Ok();
+                var result = _accountTypeProfileFeeService.Add(MapToDTO(model));
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {

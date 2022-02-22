@@ -26,19 +26,35 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void AddDenominationTaxes(AddDenominationTaxesDTO model)
+        public DenominationTaxesDTO AddDenominationTaxes(AddDenominationTaxesDTO model)
         {
             if (_denominationTaxRepository.Any(x => x.DenominationID == model.DenominationId && x.TaxID == model.TaxId))
             {
                 throw new TMSException("Denomination-Taxes already exist", "-5");
             }
 
-            _denominationTaxRepository.Add(new DenominationTax
+            var addedEntity = _denominationTaxRepository.Add(new DenominationTax
             {
                 DenominationID = model.DenominationId,
                 TaxID = model.TaxId
             });
+
             _unitOfWork.SaveChanges();
+
+            var dto = _denominationTaxRepository.Getwhere(dc => dc.ID == addedEntity.ID).Select(x => new DenominationTaxesDTO
+            {
+                Id = x.ID,
+                TaxId = x.TaxID,
+                TaxTypeId = x.Tax.TaxTypeID,
+                TaxTypeName = x.Tax.TaxType.Name,
+                TaxValue = x.Tax.Value,
+                PaymentModeId = x.Tax.PaymentModeID,
+                PaymentMode = x.Tax.PaymentMode.Name,
+                DenominationId = x.DenominationID,
+                Range = $"{x.Tax.AmountFrom} - { x.Tax.AmountTo}",
+                CreationDate = x.CreationDate
+            }).FirstOrDefault();
+            return dto;
         }
 
         public void DeleteDenominationTaxes(int id)

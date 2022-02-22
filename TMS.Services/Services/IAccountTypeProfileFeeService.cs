@@ -7,7 +7,7 @@ namespace TMS.Services.Services
 {
     public interface IAccountTypeProfileFeeService
     {
-        void Add(AccountTypeProfileFeesDTO model);
+        AccountTypeProfileFeesDTO Add(AccountTypeProfileFeesDTO model);
         void Delete(int id);
         PagedResult<AccountTypeProfileFeesDTO> GetAccountTypeProfileFees(int id,int page, int pageSize,string language);
     }

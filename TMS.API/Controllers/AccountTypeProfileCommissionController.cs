@@ -50,13 +50,13 @@ namespace TMS.API.Controllers
         }
         [HttpPost]
         [Route("AddAccountTypeProfileCommission")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AccountTypeProfileCommissionModel), StatusCodes.Status200OK)]
         public IActionResult AddAccountTypeProfileCommission(AccountTypeProfileCommissionModel model)
         {
             try
             {
-                _accountTypeProfileCommissionService.Add(MapToDTO(model));
-                return Ok();
+                var result = _accountTypeProfileCommissionService.Add(MapToDTO(model));
+                return Ok(MapToModel(result));
             }
             catch (TMSException ex)
             {

@@ -27,19 +27,35 @@ namespace TMS.Services.Services
             _denominationFeeRepository = denominationFeeRepository;
             _unitOfWork = unitOfWork;
         }
-        public void AddDenominationFees(AddDenominationFeesDTO model)
+        public DenominationFeesDTO AddDenominationFees(AddDenominationFeesDTO model)
         {
             if (_denominationFeeRepository.Any(x => x.DenominationID == model.DenominationId && x.FeesID == model.FeesId))
             {
                 throw new TMSException("Denomination-Fees already exist", "-5");
             }
 
-            _denominationFeeRepository.Add(new DenominationFee
+            var addedEntity = _denominationFeeRepository.Add(new DenominationFee
             {
                 DenominationID = model.DenominationId,
                 FeesID = model.FeesId
             });
+
             _unitOfWork.SaveChanges();
+
+            var dto = _denominationFeeRepository.Getwhere(df => df.ID == addedEntity.ID).Select(x => new DenominationFeesDTO()
+            {
+                Id = x.ID,
+                FeesId = x.FeesID,
+                FeesTypeId = x.Fee.FeesTypeID,
+                FeesTypeName = x.Fee.FeesType.Name,
+                FeesValue = x.Fee.Value,
+                PaymentModeId = x.Fee.PaymentModeID,
+                PaymentMode = x.Fee.PaymentMode.Name,
+                DenominationId = x.DenominationID,
+                Range = $"{x.Fee.AmountFrom} - { x.Fee.AmountTo}",
+                CreationDate = x.CreationDate
+            }).FirstOrDefault();
+            return dto;
         }
 
         public void DeleteDenominationFees(int id)
