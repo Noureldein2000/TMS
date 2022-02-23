@@ -10,6 +10,8 @@ namespace TMS.API.Models
         public int Id { get; set; }
         public int CommissionId { get; set; }
         public int AccountId { get; set; }
+        public decimal AmountFrom { get; set; }
+        public decimal AmountTo { get; set; }
         public decimal CommissionValue { get; set; }
         public int PaymentModeId { get; set; }
         public string PaymentMode { get; set; }

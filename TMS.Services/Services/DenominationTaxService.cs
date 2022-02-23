@@ -59,7 +59,8 @@ namespace TMS.Services.Services
                 PaymentModeId = x.Tax.PaymentModeID,
                 PaymentMode = language == "en" ? x.Tax.PaymentMode.Name : x.Tax.PaymentMode.ArName,
                 DenominationId = x.DenominationID,
-                Range = $"{x.Tax.AmountFrom} - { x.Tax.AmountTo}",
+                AmountFrom = x.Tax.AmountFrom,
+                AmountTo = x.Tax.AmountTo,
                 CreationDate = x.CreationDate
             }).ToList();
         }

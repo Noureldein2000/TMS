@@ -102,6 +102,8 @@ namespace TMS.API.Controllers
                 CommissionId = model.CommissionId,
                 CommissionTypeId = model.CommissionTypeId,
                 CommissionTypeName = model.CommissionTypeName,
+                AmountFrom = model.AmountFrom,
+                AmountTo = model.AmountTo,
                 CommissionValue = model.CommissionValue,
                 PaymentModeId = model.PaymentModeId,
                 PaymentMode = model.PaymentMode,

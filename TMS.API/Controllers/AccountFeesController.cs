@@ -103,6 +103,8 @@ namespace TMS.API.Controllers
                 FeesId = model.FeesId,
                 FeesTypeId = model.FeesTypeId,
                 FeesTypeName = model.FeesTypeName,
+                AmountFrom = model.AmountFrom,
+                AmountTo = model.AmountTo,
                 FeesValue = model.FeesValue,
                 PaymentModeId = model.PaymentModeId,
                 PaymentMode = model.PaymentMode,
