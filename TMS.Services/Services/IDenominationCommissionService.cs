@@ -7,7 +7,7 @@ namespace TMS.Services.Services
 {
     public interface IDenominationCommissionService
     {
-        void AddDenominationCommission(AddDenominationCommissionDTO model);
+        DenominationCommissionDTO AddDenominationCommission(AddDenominationCommissionDTO model);
         void DeleteDenominationCommission(int id);
         IEnumerable<DenominationCommissionDTO> GetDeniminationCommissionsByDenominationId(int denominationId, string language);
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -29,18 +30,32 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void Add(AccountTypeProfileCommissionDTO model)
+        public AccountTypeProfileCommissionDTO Add(AccountTypeProfileCommissionDTO model)
         {
             var checkExists = _accountTypeProfileCommission.Getwhere(atpf => atpf.CommissionID == model.CommissionID && atpf.AccountTypeProfileDenominationID == model.AccountTypeProfileDenominationID).Any();
-            if (checkExists) throw new Exception("This is already exists before");
+            if (checkExists) throw new TMSException("This is already exists before","-5");
 
-            _accountTypeProfileCommission.Add(new AccountTypeProfileCommission
+            var addedEntity = _accountTypeProfileCommission.Add(new AccountTypeProfileCommission
             {
                 CommissionID = model.CommissionID,
                 AccountTypeProfileDenominationID = model.AccountTypeProfileDenominationID
             });
 
             _unitOfWork.SaveChanges();
+
+            return _accountTypeProfileCommission.Getwhere(x => x.ID == addedEntity.ID).Select(atpf => new AccountTypeProfileCommissionDTO
+            {
+                Id = atpf.ID,
+                CommissionValue = atpf.Commission.Value,
+                CommissionTypeName = atpf.Commission.CommissionType.Name,
+                PaymentModeName = atpf.Commission.PaymentMode.Name,
+                AmountFrom = atpf.Commission.AmountFrom,
+                AmountTo = atpf.Commission.AmountTo,
+                DenomintionName = atpf.AccountTypeProfileDenomination.Denomination.Name,
+                ServiceName = atpf.AccountTypeProfileDenomination.Denomination.Service.Name,
+                CommissionID = atpf.CommissionID,
+                AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
+            }).FirstOrDefault();
         }
 
         public void Delete(int id)

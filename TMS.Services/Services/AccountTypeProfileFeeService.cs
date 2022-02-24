@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -30,18 +31,32 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void Add(AccountTypeProfileFeesDTO model)
+        public AccountTypeProfileFeesDTO Add(AccountTypeProfileFeesDTO model)
         {
             var checkExists = _accountTypeProfileFee.Getwhere(atpf => atpf.FeesID == model.FeesID && atpf.AccountTypeProfileDenominationID == model.AccountTypeProfileDenominationID).Any();
-            if (checkExists) throw new Exception("This is already exists before");
+            if (checkExists) throw new TMSException("This is already exists before","-5");
 
-            _accountTypeProfileFee.Add(new AccountTypeProfileFee
+            var addedEntity = _accountTypeProfileFee.Add(new AccountTypeProfileFee
             {
                 FeesID = model.FeesID,
                 AccountTypeProfileDenominationID = model.AccountTypeProfileDenominationID
             });
 
             _unitOfWork.SaveChanges();
+
+            return _accountTypeProfileFee.Getwhere(x => x.ID == addedEntity.ID).Select(atpf => new AccountTypeProfileFeesDTO
+            {
+                Id = atpf.ID,
+                FeesValue = atpf.Fee.Value,
+                FeesTypeName = atpf.Fee.FeesType.Name,
+                PaymentModeName = atpf.Fee.PaymentMode.Name,
+                AmountFrom = atpf.Fee.AmountFrom,
+                AmountTo = atpf.Fee.AmountTo,
+                DenomintionName = atpf.AccountTypeProfileDenomination.Denomination.Name,
+                ServiceName = atpf.AccountTypeProfileDenomination.Denomination.Service.Name,
+                FeesID = atpf.FeesID,
+                AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
+            }).FirstOrDefault();
         }
 
         public void Delete(int id)

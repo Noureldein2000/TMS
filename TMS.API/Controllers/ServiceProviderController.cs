@@ -72,13 +72,13 @@ namespace TMS.API.Controllers
 
         [HttpPost]
         [Route("AddServiceProvider")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ServiceProviderModel), StatusCodes.Status200OK)]
         public IActionResult AddServiceProvider(ServiceProviderModel model)
         {
             try
             {
-                _serviceProvider.AddServiceProviders(new ServiceProviderDTO { Name = model.Name });
-                return Ok();
+                var result = _serviceProvider.AddServiceProviders(new ServiceProviderDTO { Name = model.Name });
+                return Ok(Map(result));
             }
             catch (TMSException ex)
             {

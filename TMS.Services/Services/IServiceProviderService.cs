@@ -9,7 +9,7 @@ namespace TMS.Services.Services
     {
         PagedResult<ServiceProviderDTO> GetServiceProviders(int page, int pageSize);
         ServiceProviderDTO GetServiceProviderById(int id);
-        void AddServiceProviders(ServiceProviderDTO model);
+        ServiceProviderDTO AddServiceProviders(ServiceProviderDTO model);
         void EditServiceProviders(ServiceProviderDTO model);
         void DeleteServiceProviders(int id);
     }
