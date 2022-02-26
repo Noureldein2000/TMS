@@ -52,7 +52,6 @@ namespace TMS.Services.Services
                 PaymentModeId = x.Fee.PaymentModeID,
                 PaymentMode = x.Fee.PaymentMode.Name,
                 DenominationId = x.DenominationID,
-                Range = $"{x.Fee.AmountFrom} - { x.Fee.AmountTo}",
                 CreationDate = x.CreationDate
             }).FirstOrDefault();
             return dto;
