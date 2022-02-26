@@ -46,18 +46,18 @@ namespace TMS.API.Controllers
         }
         [HttpPost]
         [Route("AddDenominationCommission")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DenominationCommissionModel), StatusCodes.Status200OK)]
         public IActionResult AddDenominationCommission([FromBody] AddDenominationCommissionModel model)
         {
             try
             {
-                _denominationCommissionService.AddDenominationCommission(new AddDenominationCommissionDTO
+                var result = _denominationCommissionService.AddDenominationCommission(new AddDenominationCommissionDTO
                 {
                     CommissionId = model.CommissionId,
                     DenominationId = model.DenominationId
                 });
 
-                return Ok();
+                return Ok(Map(result));
             }
             catch (TMSException ex)
             {

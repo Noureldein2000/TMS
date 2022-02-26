@@ -22,14 +22,16 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void AddServiceProviders(ServiceProviderDTO model)
+        public ServiceProviderDTO AddServiceProviders(ServiceProviderDTO model)
         {
-            _serviceProviderRepository.Add(new ServiceProvider
+            var addedEntity = _serviceProviderRepository.Add(new ServiceProvider
             {
                 Name = model.Name,
             });
 
             _unitOfWork.SaveChanges();
+            model.Id = addedEntity.ID;
+            return model;
         }
 
         public void DeleteServiceProviders(int id)

@@ -21,19 +21,36 @@ namespace TMS.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public void AddDenominationCommission(AddDenominationCommissionDTO model)
+        public DenominationCommissionDTO AddDenominationCommission(AddDenominationCommissionDTO model)
         {
             if (_denominationCommission.Any(x => x.DenominationID == model.DenominationId && x.CommissionID == model.CommissionId))
             {
                 throw new TMSException("Denomination-Commission already exist", "-5");
             }
 
-            _denominationCommission.Add(new DenominationCommission
+            var addedEntity = _denominationCommission.Add(new DenominationCommission
             {
                 DenominationID = model.DenominationId,
                 CommissionID = model.CommissionId
             });
+
             _unitOfWork.SaveChanges();
+
+            var dto = _denominationCommission.Getwhere(dc => dc.ID == addedEntity.ID).Select(x => new DenominationCommissionDTO
+            {
+                Id = x.ID,
+                CommissionId = x.CommissionID,
+                CommissionTypeId = x.Commission.CommissionTypeID,
+                CommissionTypeName = x.Commission.CommissionType.Name,
+                CommissionValue = x.Commission.Value,
+                PaymentModeId = x.Commission.PaymentModeID,
+                PaymentMode = x.Commission.PaymentMode.Name,
+                DenominationId = x.DenominationID,
+                Range = $"{x.Commission.AmountFrom} - { x.Commission.AmountTo}",
+                CreationDate = x.CreationDate
+            }).FirstOrDefault();
+
+            return dto;
         }
 
         public void DeleteDenominationCommission(int id)

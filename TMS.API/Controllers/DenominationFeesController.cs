@@ -46,18 +46,18 @@ namespace TMS.API.Controllers
         }
         [HttpPost]
         [Route("AddDenominationFees")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DenominationFeesModel), StatusCodes.Status200OK)]
         public IActionResult AddDenominationFees([FromBody] AddDenominationFeesModel model)
         {
             try
             {
-                _denominationFeeService.AddDenominationFees(new AddDenominationFeesDTO
+                var result = _denominationFeeService.AddDenominationFees(new AddDenominationFeesDTO
                 {
                     FeesId = model.FeesId,
                     DenominationId = model.DenominationId
                 });
 
-                return Ok();
+                return Ok(Map(result));
             }
             catch (TMSException ex)
             {

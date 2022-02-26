@@ -7,7 +7,7 @@ namespace TMS.Services.Services
 {
     public interface IDenominationFeesService
     {
-        void AddDenominationFees(AddDenominationFeesDTO model);
+        DenominationFeesDTO AddDenominationFees(AddDenominationFeesDTO model);
         void DeleteDenominationFees(int id);
         IEnumerable<DenominationFeesDTO> GetDeniminationFeesByDenominationId(int denominationId, string language);
     }
