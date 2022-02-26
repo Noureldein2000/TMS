@@ -14,7 +14,8 @@ namespace TMS.Services.Models
         public int TaxTypeId { get; set; }
         public string TaxTypeName { get; set; }
         public int DenominationId { get; set; }
-        public string Range { get; set; }
+        public decimal AmountFrom { get; set; }
+        public decimal AmountTo { get; set; }
         public DateTime CreationDate { get; set; }
     }
 }
