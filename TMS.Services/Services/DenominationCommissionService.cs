@@ -46,7 +46,6 @@ namespace TMS.Services.Services
                 PaymentModeId = x.Commission.PaymentModeID,
                 PaymentMode = x.Commission.PaymentMode.Name,
                 DenominationId = x.DenominationID,
-                Range = $"{x.Commission.AmountFrom} - { x.Commission.AmountTo}",
                 CreationDate = x.CreationDate
             }).FirstOrDefault();
 
@@ -71,7 +70,8 @@ namespace TMS.Services.Services
                 PaymentModeId = x.Commission.PaymentModeID,
                 PaymentMode = language == "en" ? x.Commission.PaymentMode.Name : x.Commission.PaymentMode.ArName,
                 DenominationId = x.DenominationID,
-                Range = $"{x.Commission.AmountFrom} - { x.Commission.AmountTo}",
+                AmountFrom=x.Commission.AmountFrom,
+                AmountTo=x.Commission.AmountTo,
                 CreationDate = x.CreationDate
             }).ToList();
         }
