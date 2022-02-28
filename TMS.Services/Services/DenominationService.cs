@@ -255,6 +255,7 @@ namespace TMS.Services.Services
                        Sequence=model.DenominationParameter.Sequence,
                        ValidationExpression=model.DenominationParameter.ValidationExpression,
                        ValidationMessage=model.DenominationParameter.ValidationMessage,
+                       ValidationMessageAr=model.DenominationParameter.ValidationMessageAr,
                        DenominationParamID=model.DenominationParameter.DenominationParamID,
                        Value=model.DenominationParameter.Value,
                        ValueList=model.DenominationParameter.ValueList,
@@ -272,7 +273,8 @@ namespace TMS.Services.Services
                     ParameterID = x.ParameterID,
                     Bold = x.Bold,
                     Alignment = x.Alignment,
-                    Status = x.Status
+                    Status = x.Status,
+                    FontSize = x.FontSize,
                 }).ToList()
             });
 
@@ -407,6 +409,7 @@ namespace TMS.Services.Services
                         Sequence = dp.Sequence,
                         ValidationExpression = dp.ValidationExpression,
                         ValidationMessage = dp.ValidationMessage,
+                        ValidationMessageAr = dp.ValidationMessageAr,
                         DenominationParamID = dp.DenominationParamID,
                         Value = dp.Value,
                         ValueList = dp.ValueList
@@ -427,6 +430,7 @@ namespace TMS.Services.Services
                             Bold = x.Bold,
                             Alignment = x.Alignment,
                             Status = x.Status,
+                            FontSize = x.FontSize,
                             Id = x.ID,
                             DenominationID = x.DenominationID
                         }).ToList()
@@ -470,7 +474,17 @@ namespace TMS.Services.Services
         public void ChangeDenominationServiceProviderStatus(int id)
         {
             var current = _denominationServiceProviderRepository.GetById(id);
-            current.Status = !current.Status;
+
+            if (current.Status == false)
+            {
+                _denominationServiceProviderRepository.Getwhere(x => x.DenominationID == current.DenominationID).ForEachAsync(a => a.Status = false);
+                current.Status = !current.Status;
+            }
+            else
+            {
+                var s = _denominationServiceProviderRepository.Getwhere(x => x.DenominationID == current.DenominationID && x.ID != id).FirstOrDefault().Status = true;
+                current.Status = !current.Status;
+            }
             _unitOfWork.SaveChanges();
         }
 
@@ -485,6 +499,7 @@ namespace TMS.Services.Services
                    Sequence = dp.Sequence,
                    ValidationExpression = dp.ValidationExpression,
                    ValidationMessage = dp.ValidationMessage,
+                   ValidationMessageAr = dp.ValidationMessageAr,
                    DenominationParamID = dp.DenominationParamID,
                    Value = dp.Value,
                    ValueList = dp.ValueList
@@ -501,6 +516,7 @@ namespace TMS.Services.Services
             current.Sequence = dp.Sequence;
             current.ValidationExpression = dp.ValidationExpression;
             current.ValidationMessage = dp.ValidationMessage;
+            current.ValidationMessageAr = dp.ValidationMessageAr;
             current.DenominationParamID = dp.DenominationParamID;
             current.Value = dp.Value;
             current.ValueList = dp.ValueList;
@@ -515,6 +531,7 @@ namespace TMS.Services.Services
                 Sequence = current.Sequence,
                 ValidationExpression = current.ValidationExpression,
                 ValidationMessage = current.ValidationMessage,
+                ValidationMessageAr = current.ValidationMessageAr,
                 DenominationParamID = current.DenominationParamID,
                 Value = current.Value,
                 ValueList = current.ValueList
@@ -536,6 +553,7 @@ namespace TMS.Services.Services
                    Sequence = dp.Sequence,
                    ValidationExpression = dp.ValidationExpression,
                    ValidationMessage = dp.ValidationMessage,
+                   ValidationMessageAr = dp.ValidationMessageAr,
                    DenominationParamID = dp.DenominationParamID,
                    Value = dp.Value,
                    ValueList = dp.ValueList
@@ -562,7 +580,8 @@ namespace TMS.Services.Services
                 Alignment = x.Alignment,
                 Bold = x.Bold,
                 ParameterID = x.ParameterID,
-                Status = x.Status
+                Status = x.Status,
+                FontSize = x.FontSize,
             }).FirstOrDefault();
         }
 
@@ -572,6 +591,7 @@ namespace TMS.Services.Services
             current.Alignment = model.Alignment;
             current.Bold = model.Bold;
             current.ParameterID = model.ParameterID;
+            current.FontSize = model.FontSize;
 
             _unitOfWork.SaveChanges();
         }
@@ -630,6 +650,7 @@ namespace TMS.Services.Services
                 Sequence = dp.Sequence,
                 ValidationExpression = dp.ValidationExpression,
                 ValidationMessage = dp.ValidationMessage,
+                ValidationMessageAr = dp.ValidationMessageAr,
                 DenominationParamID = dp.DenominationParamID,
                 Value = dp.Value,
                 ValueList = dp.ValueList
@@ -645,6 +666,7 @@ namespace TMS.Services.Services
                 Sequence = addedEntity.Sequence,
                 ValidationExpression = addedEntity.ValidationExpression,
                 ValidationMessage = addedEntity.ValidationMessage,
+                ValidationMessageAr = addedEntity.ValidationMessageAr,
                 DenominationParamID = addedEntity.DenominationParamID,
                 Value = addedEntity.Value,
                 ValueList = addedEntity.ValueList
@@ -738,9 +760,9 @@ namespace TMS.Services.Services
             };
         }
 
-        public RestaurantDTO GetResturants(string code,string language)
+        public RestaurantDTO GetResturants(string code, string language)
         {
-            return _resturant.Getwhere(x=>x.RestaurantCode==code).Select(x => new RestaurantDTO
+            return _resturant.Getwhere(x => x.RestaurantCode == code).Select(x => new RestaurantDTO
             {
                 ID = x.ID,
                 RestaurantCode = x.RestaurantCode,

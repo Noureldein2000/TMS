@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TMS.Infrastructure;
 
 namespace TMS.Services.Models
 {
@@ -13,5 +14,6 @@ namespace TMS.Services.Models
         public bool Bold { get; set; }
         public int Alignment { get; set; }
         public bool Status { get; set; }
+        public FontSize FontSize { get; set; }
     }
 }

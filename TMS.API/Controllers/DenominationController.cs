@@ -608,6 +608,7 @@ namespace TMS.API.Controllers
                 Sequence = model.Sequence,
                 ValidationExpression = model.ValidationExpression,
                 ValidationMessage = model.ValidationMessage,
+                ValidationMessageAr = model.ValidationMessageAr,
                 DenominationParamID = model.DenominationParamID,
                 Value = model.Value,
                 ValueList = model.ValueList
@@ -644,7 +645,8 @@ namespace TMS.API.Controllers
                 ParameterID = model.ParameterID,
                 Bold = model.Bold,
                 Alignment = model.Alignment,
-                Status = model.Status
+                Status = model.Status,
+                FontSize = model.FontSize
             };
         }
         private DenominationReceiptParamModel MapToModel(DenominationReceiptParamDTO model)
@@ -657,7 +659,8 @@ namespace TMS.API.Controllers
                 ParameterName = model.ParameterName,
                 Bold = model.Bold,
                 Alignment = model.Alignment,
-                Status = model.Status
+                Status = model.Status,
+                FontSize = model.FontSize
             };
         }
     }
