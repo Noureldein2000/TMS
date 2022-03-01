@@ -93,7 +93,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -420,6 +420,25 @@ namespace TMS.API.Controllers
                     Results = result.Results.Select(ard => MapToModel(ard)).ToList(),
                     PageCount = result.PageCount
                 });
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
+        [HttpGet]
+        [Route("GetDenominationServiceProvidersByDenominationId/{denominationId}")]
+        [ProducesResponseType(typeof(List<DenominationServiceProvidersModel>), StatusCodes.Status200OK)]
+        public IActionResult GetDenominationServiceProvidersByDenominationId(int denominationId)
+        {
+            try
+            {
+                var result = _denominationService.GetDenominationServiceProvidersByDenominationId(denominationId).Select(ard => MapToModel(ard));
+                return Ok(result);
             }
             catch (TMSException ex)
             {

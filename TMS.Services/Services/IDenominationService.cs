@@ -11,6 +11,7 @@ namespace TMS.Services.Services
         SwitchEndPointDTO GetServiceConfiguration(int denominationId);
         DenominationDTO GetDenomination(int id);
         DenominationServiceProviderDTO GetDenominationServiceProvider(int denominationId);
+        List<DenominationServiceProviderDTO> GetDenominationServiceProvidersByDenominationId(int denominationId);
         ServiceClassType GetServiceClassType(int id);
         DenominationClassType GetDenominationClassType(int id);
         int GetServiceBalanceType(int denominationId);
