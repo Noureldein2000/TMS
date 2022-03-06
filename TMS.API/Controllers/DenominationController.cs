@@ -93,7 +93,7 @@ namespace TMS.API.Controllers
             {
                 return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
@@ -430,6 +430,25 @@ namespace TMS.API.Controllers
                 return BadRequest(_localizer["GeneralError"].Value, "-1");
             }
         }
+        [HttpGet]
+        [Route("GetDenominationServiceProvidersByDenominationId/{denominationId}")]
+        [ProducesResponseType(typeof(List<DenominationServiceProvidersModel>), StatusCodes.Status200OK)]
+        public IActionResult GetDenominationServiceProvidersByDenominationId(int denominationId)
+        {
+            try
+            {
+                var result = _denominationService.GetDenominationServiceProvidersByDenominationId(denominationId).Select(ard => MapToModel(ard));
+                return Ok(result);
+            }
+            catch (TMSException ex)
+            {
+                return BadRequest(_localizer[ex.Message].Value, ex.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(_localizer["GeneralError"].Value, "-1");
+            }
+        }
 
         //Helper Methods
         private AddDenominationDTO MapToDTO(AddDenominationModel model)
@@ -608,6 +627,7 @@ namespace TMS.API.Controllers
                 Sequence = model.Sequence,
                 ValidationExpression = model.ValidationExpression,
                 ValidationMessage = model.ValidationMessage,
+                ValidationMessageAr = model.ValidationMessageAr,
                 DenominationParamID = model.DenominationParamID,
                 Value = model.Value,
                 ValueList = model.ValueList
@@ -644,7 +664,8 @@ namespace TMS.API.Controllers
                 ParameterID = model.ParameterID,
                 Bold = model.Bold,
                 Alignment = model.Alignment,
-                Status = model.Status
+                Status = model.Status,
+                FontSize = model.FontSize
             };
         }
         private DenominationReceiptParamModel MapToModel(DenominationReceiptParamDTO model)
@@ -657,7 +678,8 @@ namespace TMS.API.Controllers
                 ParameterName = model.ParameterName,
                 Bold = model.Bold,
                 Alignment = model.Alignment,
-                Status = model.Status
+                Status = model.Status,
+                FontSize = model.FontSize
             };
         }
     }

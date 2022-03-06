@@ -14,7 +14,6 @@ namespace TMS.Services.Services
     public class DenominationService : IDenominationService
     {
         private readonly IBaseRepository<Denomination, int> _denominationRepository;
-        private readonly IBaseRepository<Service, int> _serviceRepository;
         private readonly IBaseRepository<DenominationProviderConfiguration, int> _denominationProviderConfigurationRepository;
         private readonly IBaseRepository<DenominationServiceProvider, int> _denominationServiceProviderRepository;
         private readonly IBaseRepository<ServiceConfigeration, int> _serviceConfigurationRepository;
@@ -28,7 +27,6 @@ namespace TMS.Services.Services
              IBaseRepository<DenominationServiceProvider, int> denominationServiceProviderRepository,
             IBaseRepository<ServiceConfigeration, int> serviceConfigurationRepository,
             IBaseRepository<Denomination, int> denominationRepository,
-            IBaseRepository<Service, int> serviceRepository,
             IBaseRepository<DenominationProviderConfiguration, int> denominationProviderConfigurationRepository,
             IBaseRepository<DenominationParameter, int> denominationParamter,
             IBaseRepository<DenominationReceiptData, int> denominationRecepitData,
@@ -40,7 +38,6 @@ namespace TMS.Services.Services
             _denominationServiceProviderRepository = denominationServiceProviderRepository;
             _serviceConfigurationRepository = serviceConfigurationRepository;
             _denominationRepository = denominationRepository;
-            _serviceRepository = serviceRepository;
             _denominationProviderConfigurationRepository = denominationProviderConfigurationRepository;
             _denominationParamter = denominationParamter;
             _denominationRecepitData = denominationRecepitData;
@@ -255,6 +252,7 @@ namespace TMS.Services.Services
                        Sequence=model.DenominationParameter.Sequence,
                        ValidationExpression=model.DenominationParameter.ValidationExpression,
                        ValidationMessage=model.DenominationParameter.ValidationMessage,
+                       ValidationMessageAr=model.DenominationParameter.ValidationMessageAr,
                        DenominationParamID=model.DenominationParameter.DenominationParamID,
                        Value=model.DenominationParameter.Value,
                        ValueList=model.DenominationParameter.ValueList,
@@ -272,7 +270,8 @@ namespace TMS.Services.Services
                     ParameterID = x.ParameterID,
                     Bold = x.Bold,
                     Alignment = x.Alignment,
-                    Status = x.Status
+                    Status = x.Status,
+                    FontSize = x.FontSize,
                 }).ToList()
             });
 
@@ -420,6 +419,7 @@ namespace TMS.Services.Services
                         Sequence = dp.Sequence,
                         ValidationExpression = dp.ValidationExpression,
                         ValidationMessage = dp.ValidationMessage,
+                        ValidationMessageAr = dp.ValidationMessageAr,
                         DenominationParamID = dp.DenominationParamID,
                         Value = dp.Value,
                         ValueList = dp.ValueList
@@ -440,6 +440,7 @@ namespace TMS.Services.Services
                             Bold = x.Bold,
                             Alignment = x.Alignment,
                             Status = x.Status,
+                            FontSize = x.FontSize,
                             Id = x.ID,
                             DenominationID = x.DenominationID
                         }).ToList()
@@ -485,8 +486,26 @@ namespace TMS.Services.Services
             var current = _denominationServiceProviderRepository.GetById(id);
             current.Status = !current.Status;
             _unitOfWork.SaveChanges();
-        }
 
+            var denominationServiceProvider = _denominationServiceProviderRepository.Getwhere(x => x.DenominationID == current.DenominationID && x.ID != id);
+
+            foreach (var item in denominationServiceProvider)
+            {
+                if (current.Status)
+                {
+                    item.Status = false;
+                }
+                else
+                {
+                    item.Status = true;
+                    break;
+                }
+            }
+
+            //_denominationServiceProviderRepository.Getwhere(x => x.DenominationID == current.DenominationID && x.ID != id).FirstOrDefault().Status = true;
+
+            _unitOfWork.SaveChanges();
+        }
         public DenominationParameterDTO GetDenominationParameterById(int id)
         {
             var denominatiaon = _denominationParamter.Getwhere(s => s.ID == id)
@@ -498,6 +517,7 @@ namespace TMS.Services.Services
                    Sequence = dp.Sequence,
                    ValidationExpression = dp.ValidationExpression,
                    ValidationMessage = dp.ValidationMessage,
+                   ValidationMessageAr = dp.ValidationMessageAr,
                    DenominationParamID = dp.DenominationParamID,
                    Value = dp.Value,
                    ValueList = dp.ValueList
@@ -514,6 +534,7 @@ namespace TMS.Services.Services
             current.Sequence = dp.Sequence;
             current.ValidationExpression = dp.ValidationExpression;
             current.ValidationMessage = dp.ValidationMessage;
+            current.ValidationMessageAr = dp.ValidationMessageAr;
             current.DenominationParamID = dp.DenominationParamID;
             current.Value = dp.Value;
             current.ValueList = dp.ValueList;
@@ -528,6 +549,7 @@ namespace TMS.Services.Services
                 Sequence = current.Sequence,
                 ValidationExpression = current.ValidationExpression,
                 ValidationMessage = current.ValidationMessage,
+                ValidationMessageAr = current.ValidationMessageAr,
                 DenominationParamID = current.DenominationParamID,
                 Value = current.Value,
                 ValueList = current.ValueList
@@ -549,6 +571,7 @@ namespace TMS.Services.Services
                    Sequence = dp.Sequence,
                    ValidationExpression = dp.ValidationExpression,
                    ValidationMessage = dp.ValidationMessage,
+                   ValidationMessageAr = dp.ValidationMessageAr,
                    DenominationParamID = dp.DenominationParamID,
                    Value = dp.Value,
                    ValueList = dp.ValueList
@@ -575,7 +598,8 @@ namespace TMS.Services.Services
                 Alignment = x.Alignment,
                 Bold = x.Bold,
                 ParameterID = x.ParameterID,
-                Status = x.Status
+                Status = x.Status,
+                FontSize = x.FontSize,
             }).FirstOrDefault();
         }
 
@@ -585,6 +609,7 @@ namespace TMS.Services.Services
             current.Alignment = model.Alignment;
             current.Bold = model.Bold;
             current.ParameterID = model.ParameterID;
+            current.FontSize = model.FontSize;
 
             _unitOfWork.SaveChanges();
         }
@@ -649,6 +674,7 @@ namespace TMS.Services.Services
                 Sequence = dp.Sequence,
                 ValidationExpression = dp.ValidationExpression,
                 ValidationMessage = dp.ValidationMessage,
+                ValidationMessageAr = dp.ValidationMessageAr,
                 DenominationParamID = dp.DenominationParamID,
                 Value = dp.Value,
                 ValueList = dp.ValueList
@@ -664,6 +690,7 @@ namespace TMS.Services.Services
                 Sequence = addedEntity.Sequence,
                 ValidationExpression = addedEntity.ValidationExpression,
                 ValidationMessage = addedEntity.ValidationMessage,
+                ValidationMessageAr = addedEntity.ValidationMessageAr,
                 DenominationParamID = addedEntity.DenominationParamID,
                 Value = addedEntity.Value,
                 ValueList = addedEntity.ValueList
@@ -757,15 +784,33 @@ namespace TMS.Services.Services
             };
         }
 
-        public RestaurantDTO GetResturants(string code,string language)
+        public RestaurantDTO GetResturants(string code, string language)
         {
-            return _resturant.Getwhere(x=>x.RestaurantCode==code).Select(x => new RestaurantDTO
+            return _resturant.Getwhere(x => x.RestaurantCode == code).Select(x => new RestaurantDTO
             {
                 ID = x.ID,
                 RestaurantCode = x.RestaurantCode,
                 RestaurantName = language == "en" ? x.RestaurantName : x.RestaurantNameAr,
                 CreationDate = x.CreationDate
             }).FirstOrDefault();
+        }
+
+        public List<DenominationServiceProviderDTO> GetDenominationServiceProvidersByDenominationId(int denominationId)
+        {
+            return _denominationServiceProviderRepository.Getwhere(s => s.DenominationID == denominationId)
+                .Select(s => new DenominationServiceProviderDTO
+                {
+                    Id = s.ID,
+                    ServiceProviderId = s.ServiceProviderID,
+                    ProviderCode = s.ProviderCode,
+                    ProviderHasFees = s.ProviderHasFees,
+                    Balance = s.Balance,
+                    Status = s.Status,
+                    DenominationId = s.DenominationID,
+                    OldServiceId = (int)s.OldServiceID,
+                    ProviderAmount = s.ProviderAmount,
+                    ServiceConfigerationId = s.ProviderServiceConfigerations.ServiceConfigerationID
+                }).ToList();
         }
     }
 }

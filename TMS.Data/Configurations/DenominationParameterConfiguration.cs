@@ -15,6 +15,7 @@ namespace TMS.Data.Configurations
             builder.Property(s => s.Value).HasMaxLength(100);
             builder.Property(s => s.ValueList).HasMaxLength(1000);
             builder.Property(s => s.ValidationMessage).HasMaxLength(1000);
+            builder.Property(s => s.ValidationMessageAr).HasMaxLength(1000);
             builder.Property(s => s.ValidationExpression).HasMaxLength(1000);
             builder.HasOne(s => s.DenominationParam).WithMany(s => s.DenominationParameters)
                 .HasForeignKey(s => s.DenominationParamID).OnDelete(DeleteBehavior.NoAction);

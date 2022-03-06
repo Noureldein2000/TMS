@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -23,6 +24,11 @@ namespace TMS.Services.Services
 
         public void AddAccountCommission(AccountCommissionDTO model)
         {
+            if (_accountCommission.Any(x => x.AccountID == model.AccountId && x.CommissionID == model.CommissionId && x.DenominationID == model.DenomiinationId))
+            {
+                throw new TMSException("Account-Commissions already exist", "-5");
+            }
+
             _accountCommission.Add(new AccountCommission
             {
                 AccountID = model.AccountId,

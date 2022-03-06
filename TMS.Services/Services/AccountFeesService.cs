@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using TMS.Data;
 using TMS.Data.Entities;
+using TMS.Infrastructure.Helpers;
 using TMS.Services.Models;
 using TMS.Services.Repositories;
 
@@ -32,6 +33,11 @@ namespace TMS.Services.Services
         }
         public void AddAccountFees(AccountFeesDTO model)
         {
+            if (_accountFees.Any(x => x.AccountID == model.AccountId && x.FeesID == model.FeesId && x.DenominationID == model.DenomiinationId))
+            {
+                throw new TMSException("Account-Fees already exist", "-5");
+            }
+
             _accountFees.Add(new AccountFee
             {
                 AccountID = model.AccountId,
@@ -82,7 +88,7 @@ namespace TMS.Services.Services
                     FeesTypeId = x.FeesTypeId,
                     FeesTypeName = x.FeesTypeName,
                     AmountFrom = x.AmountFrom,
-                    AmountTo= x.AmountTo,
+                    AmountTo = x.AmountTo,
                     FeesValue = x.FeesValue,
                     PaymentModeId = x.PaymentModeId,
                     PaymentMode = x.PaymentModeName,

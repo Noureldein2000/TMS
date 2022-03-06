@@ -15,5 +15,6 @@ namespace TMS.Services.Models
         public string ValueList { get; set; }
         public string ValidationExpression { get; set; }
         public string ValidationMessage { get; set; }
+        public string ValidationMessageAr { get; set; }
     }
 }

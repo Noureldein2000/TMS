@@ -239,4 +239,10 @@ namespace TMS.Infrastructure
         CommissionType = 2,
         TaxesType = 3
     }
+    public enum FontSize : short
+    {
+        Normal = 1,
+        Large = 2,
+        ExtraLarge = 3
+    }
 }
