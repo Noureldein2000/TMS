@@ -517,7 +517,7 @@ namespace TMS.API.Controllers
                 ServiceConfigerationId = model.ServiceConfigerationId,
                 Status = model.Status,
                 DenominationId = model.DenominationId,
-                DenominationProviderConfigurationModel = model.DenominationProviderConfigurationDto?.Select(x => MapToModel(x)).ToList()
+                DenominationProviderConfigurationModel = model.DenominationProviderConfigurations?.Select(x => MapToModel(x)).ToList()
             };
         }
         private DenominationDTO MapToDTO(DenominationModel model)
@@ -558,7 +558,7 @@ namespace TMS.API.Controllers
                 ServiceProviderName = model.ServiceProviderName,
                 Status = model.Status,
                 ServiceConfigerationId = model.ServiceConfigerationId,
-                DenominationProviderConfigurationDto = model.DenominationProviderConfigurationModel?.Select(x => MapToDTO(x)).ToList()
+                DenominationProviderConfigurations = model.DenominationProviderConfigurationModel?.Select(x => MapToDTO(x)).ToList()
             };
         }
         private DenominationProviderConfigurationDTO MapToDTO(DenominationProviderConfigerationModel model)

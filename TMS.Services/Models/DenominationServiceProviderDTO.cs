@@ -17,6 +17,6 @@ namespace TMS.Services.Models
         public decimal ProviderAmount { get; set; }
         public int OldServiceId { get; set; }
         public bool ProviderHasFees { get; set; }
-        public List<DenominationProviderConfigurationDTO> DenominationProviderConfigurationDto { get; set; }
+        public List<DenominationProviderConfigurationDTO> DenominationProviderConfigurations { get; set; }
     }
 }

@@ -69,22 +69,20 @@ namespace TMS.Services.Services
         {
             var accountTypeProfileFee = _accountTypeProfileFee.Getwhere(x => x.AccountTypeProfileDenominationID == id).Select(atpf => new
             {
-                ID = atpf.ID,
+                atpf.ID,
                 FeeID = atpf.FeesID,
-                AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID,
-                Value = atpf.Fee.Value,
+                atpf.AccountTypeProfileDenominationID,
+                atpf.Fee.Value,
                 FeeTypeName = language == "en" ? atpf.Fee.FeesType.Name : atpf.Fee.FeesType.ArName,
                 PaymentModeName = language == "en" ? atpf.Fee.PaymentMode.Name : atpf.Fee.PaymentMode.ArName,
-                AmountFrom = atpf.Fee.AmountFrom,
-                AmountTo = atpf.Fee.AmountTo,
-                DenominationName = atpf.AccountTypeProfileDenomination.Denomination.Name,
-                ServiceName = atpf.AccountTypeProfileDenomination.Denomination.Service.Name,
-                CreationDate = atpf.CreationDate
+                atpf.Fee.AmountFrom,
+                atpf.Fee.AmountTo,
+                atpf.CreationDate
             });
 
             var count = accountTypeProfileFee.Count();
 
-            var resultList = accountTypeProfileFee.OrderByDescending(ar => ar.CreationDate)
+            var resultList = accountTypeProfileFee.OrderBy(x => x.AmountFrom)
           .Skip(page - 1).Take(pageSize)
           .ToList();
 
@@ -98,8 +96,6 @@ namespace TMS.Services.Services
                     PaymentModeName = atpf.PaymentModeName,
                     AmountFrom = atpf.AmountFrom,
                     AmountTo = atpf.AmountTo,
-                    DenomintionName = atpf.DenominationName,
-                    ServiceName = atpf.ServiceName,
                     FeesID = atpf.FeeID,
                     AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
                 }).ToList(),
