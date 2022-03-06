@@ -278,13 +278,13 @@ namespace TMS.Services.Services
 
             _unitOfWork.SaveChanges();
 
-            if (!string.IsNullOrEmpty(model.DenominationServiceProvidersDto.DenominationProviderConfigurationDto?.Select(x => x.Name).FirstOrDefault()))
+            if (!string.IsNullOrEmpty(model.DenominationServiceProvidersDto.DenominationProviderConfigurations?.Select(x => x.Name).FirstOrDefault()))
             {
                 var addedServiceConfiguration = _denominationProviderConfigurationRepository.Add(new DenominationProviderConfiguration
                 {
                     DenominationProviderID = _denominationServiceProviderRepository.GetAll().Max(x => x.ID),
-                    Name = model.DenominationServiceProvidersDto.DenominationProviderConfigurationDto.Select(x => x.Name).FirstOrDefault(),
-                    Value = model.DenominationServiceProvidersDto.DenominationProviderConfigurationDto.Select(x => x.Value).FirstOrDefault(),
+                    Name = model.DenominationServiceProvidersDto.DenominationProviderConfigurations.Select(x => x.Name).FirstOrDefault(),
+                    Value = model.DenominationServiceProvidersDto.DenominationProviderConfigurations.Select(x => x.Value).FirstOrDefault(),
                 });
 
                 _unitOfWork.SaveChanges();
@@ -325,7 +325,15 @@ namespace TMS.Services.Services
 
         public DenominationServiceProviderDTO EditDenominationServiceProvdier(DenominationServiceProviderDTO model)
         {
-            var current = _denominationServiceProviderRepository.Getwhere(x => x.ID == model.Id).FirstOrDefault();
+            var denominationProviderConfigurations = _denominationProviderConfigurationRepository.Getwhere(s => s.DenominationServiceProvider.ID == model.Id).ToList();
+            denominationProviderConfigurations.ForEach(data =>
+            {
+                _denominationProviderConfigurationRepository.Delete(data.ID);
+            });
+            _unitOfWork.SaveChanges();
+
+            var current = _denominationServiceProviderRepository.Getwhere(x => x.ID == model.Id)
+                .Include(x => x.ProviderServiceConfigerations).FirstOrDefault();
 
             current.Balance = model.Balance;
             current.ProviderAmount = model.ProviderAmount;
@@ -334,7 +342,12 @@ namespace TMS.Services.Services
             current.OldServiceID = (int)model.OldServiceId;
             current.ServiceProviderID = model.ServiceProviderId;
             current.ProviderServiceConfigerations.ServiceConfigerationID = model.ServiceConfigerationId;
-            //current.Status = model.Status;
+            current.DenominationProviderConfigerations = model.DenominationProviderConfigurations.Select(c => new DenominationProviderConfiguration
+            {
+                DenominationProviderID = model.ServiceProviderId,
+                Value = c.Value,
+                Name = c.Name
+            }).ToList();
 
             _unitOfWork.SaveChanges();
 
@@ -391,7 +404,7 @@ namespace TMS.Services.Services
                         Status = dsp.Status,
                         ServiceProviderId = dsp.ServiceProviderID,
                         ServiceProviderName = dsp.ServiceProvider.Name,
-                        DenominationProviderConfigurationDto = dsp.DenominationProviderConfigerations.Select(psc => new DenominationProviderConfigurationDTO
+                        DenominationProviderConfigurations = dsp.DenominationProviderConfigerations.Select(psc => new DenominationProviderConfigurationDTO
                         {
                             ID = psc.ID,
                             Name = psc.Name,
@@ -455,7 +468,7 @@ namespace TMS.Services.Services
                     ServiceProviderId = dsp.ServiceProviderID,
                     ServiceProviderName = dsp.ServiceProvider.Name,
                     ServiceConfigerationId = dsp.ProviderServiceConfigerations.ServiceConfigerationID,
-                    DenominationProviderConfigurationDto = dsp.DenominationProviderConfigerations.Select(psc => new DenominationProviderConfigurationDTO
+                    DenominationProviderConfigurations = dsp.DenominationProviderConfigerations.Select(psc => new DenominationProviderConfigurationDTO
                     {
                         ID = psc.ID,
                         Name = psc.Name,
@@ -592,13 +605,19 @@ namespace TMS.Services.Services
                 ProviderAmount = model.ProviderAmount,
                 ProviderCode = model.ProviderCode,
                 ProviderHasFees = model.ProviderHasFees,
-                OldServiceID = (int)model.OldServiceId,
+                OldServiceID = model.OldServiceId,
                 ServiceProviderID = model.ServiceProviderId,
                 Status = model.Status,
                 ProviderServiceConfigerations = new ProviderServiceConfigeration
                 {
                     ServiceConfigerationID = model.ServiceConfigerationId
-                }
+                },
+                DenominationProviderConfigerations = model.DenominationProviderConfigurations.Select(c => new DenominationProviderConfiguration
+                {
+                    Name = c.Name,
+                    Value = c.Value,
+                    DenominationProviderID = model.ServiceProviderId
+                }).ToList()
             });
 
             _unitOfWork.SaveChanges();

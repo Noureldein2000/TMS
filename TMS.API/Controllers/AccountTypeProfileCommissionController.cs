@@ -97,8 +97,8 @@ namespace TMS.API.Controllers
                 PaymentModeName = atpf.PaymentModeName,
                 AmountFrom = atpf.AmountFrom,
                 AmountTo = atpf.AmountTo,
-                DenomintionName = atpf.DenomintionName,
-                ServiceName = atpf.ServiceName,
+                //DenomintionName = atpf.DenomintionName,
+                //ServiceName = atpf.ServiceName,
                 CommissionID = atpf.CommissionID,
                 AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
             };
@@ -113,8 +113,8 @@ namespace TMS.API.Controllers
                 PaymentModeName = atpf.PaymentModeName,
                 AmountFrom = atpf.AmountFrom,
                 AmountTo = atpf.AmountTo,
-                DenomintionName = atpf.DenomintionName,
-                ServiceName = atpf.ServiceName,
+                //DenomintionName = atpf.DenomintionName,
+                //ServiceName = atpf.ServiceName,
                 CommissionID = atpf.CommissionID,
                 AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
             };

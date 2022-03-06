@@ -68,22 +68,20 @@ namespace TMS.Services.Services
         {
             var accountTypeProfileCommission = _accountTypeProfileCommission.Getwhere(x => x.AccountTypeProfileDenominationID == id).Select(atpf => new
             {
-                ID = atpf.ID,
-                CommissionID = atpf.CommissionID,
-                AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID,
-                Value = atpf.Commission.Value,
+                atpf.ID,
+                atpf.CommissionID,
+                atpf.AccountTypeProfileDenominationID,
+                atpf.Commission.Value,
                 CommissionTypeName = language == "en" ? atpf.Commission.CommissionType.Name : atpf.Commission.CommissionType.ArName,
                 PaymentModeName = language == "en" ? atpf.Commission.PaymentMode.Name : atpf.Commission.PaymentMode.ArName,
-                AmountFrom = atpf.Commission.AmountFrom,
-                AmountTo = atpf.Commission.AmountTo,
-                DenominationName = atpf.AccountTypeProfileDenomination.Denomination.Name,
-                ServiceName = atpf.AccountTypeProfileDenomination.Denomination.Service.Name,
-                CreationDate = atpf.CreationDate
+                atpf.Commission.AmountFrom,
+                atpf.Commission.AmountTo,
+                atpf.CreationDate
             });
 
             var count = accountTypeProfileCommission.Count();
 
-            var resultList = accountTypeProfileCommission.OrderByDescending(ar => ar.CreationDate)
+            var resultList = accountTypeProfileCommission.OrderBy(x => x.AmountFrom)
           .Skip((page * pageSize) - pageSize).Take(pageSize)
           .ToList();
 
@@ -97,8 +95,6 @@ namespace TMS.Services.Services
                     PaymentModeName = atpf.PaymentModeName,
                     AmountFrom = atpf.AmountFrom,
                     AmountTo = atpf.AmountTo,
-                    DenomintionName = atpf.DenominationName,
-                    ServiceName = atpf.ServiceName,
                     CommissionID = atpf.CommissionID,
                     AccountTypeProfileDenominationID = atpf.AccountTypeProfileDenominationID
                 }).ToList(),
