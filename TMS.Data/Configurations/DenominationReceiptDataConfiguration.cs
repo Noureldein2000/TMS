@@ -13,6 +13,8 @@ namespace TMS.Data.Configurations
         {
             builder.HasKey(s => s.ID);
             builder.HasOne(s => s.Denomination).WithOne(s => s.DenominationReceiptData).OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(s => s.DenominationReceiptParams).WithOne(s => s.DenominationReceiptData)
+                .HasForeignKey(s => s.DenominationReceiptDataID).OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(s => s.Title).HasMaxLength(2000);
             builder.Property(s => s.Disclaimer).HasMaxLength(2000);

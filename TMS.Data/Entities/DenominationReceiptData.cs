@@ -11,5 +11,6 @@ namespace TMS.Data.Entities
         public string Title { get; set; }
         public string Disclaimer { get; set; }
         public string Footer { get; set; }
+        public virtual ICollection<DenominationReceiptParam> DenominationReceiptParams { get; set; }
     }
 }

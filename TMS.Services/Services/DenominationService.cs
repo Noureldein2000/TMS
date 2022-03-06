@@ -442,7 +442,8 @@ namespace TMS.Services.Services
                             Status = x.Status,
                             FontSize = x.FontSize,
                             Id = x.ID,
-                            DenominationID = x.DenominationID
+                            DenominationID = x.DenominationID,
+                            DenominationReceiptDataID = x.DenominationReceiptDataID
                         }).ToList()
                     }
                 }).FirstOrDefault();
@@ -600,6 +601,7 @@ namespace TMS.Services.Services
                 ParameterID = x.ParameterID,
                 Status = x.Status,
                 FontSize = x.FontSize,
+                DenominationReceiptDataID = x.DenominationReceiptDataID
             }).FirstOrDefault();
         }
 
@@ -699,15 +701,54 @@ namespace TMS.Services.Services
 
         public void EditDenominationReceipt(DenominationReceiptDTO model)
         {
-            var current = _denominationRecepitData.GetById(model.DenominationReceiptDataDTO.Id);
-            current.Title = model.DenominationReceiptDataDTO.Title;
-            current.Disclaimer = model.DenominationReceiptDataDTO.Disclaimer;
-            current.Footer = model.DenominationReceiptDataDTO.Footer;
+            if (model.DenominationReceiptDataDTO.Id == 0)
+            {
+                _denominationRecepitData.Add(new DenominationReceiptData
+                {
+                    DenominationID = model.DenominationReceiptDataDTO.DenominationID,
+                    Disclaimer = model.DenominationReceiptDataDTO.Disclaimer,
+                    Footer = model.DenominationReceiptDataDTO.Footer,
+                    Title = model.DenominationReceiptDataDTO.Title,
+                    DenominationReceiptParams = model.DenominationReceiptParamDTOs.Select(RP => new DenominationReceiptParam
+                    {
+                        FontSize = RP.FontSize,
+                        Alignment = RP.Alignment,
+                        ParameterID = RP.ParameterID,
+                        Bold = RP.Bold,
+                        DenominationID = model.DenominationReceiptDataDTO.DenominationID,
+                        Status = true
+                    }).ToList()
+                });
+            }
+            else
+            {
+                var current = _denominationRecepitData.GetById(model.DenominationReceiptDataDTO.Id);
+                if(current != null)
+                {
+                    var denominationRecepitParams = _denominationRecepitParam.Getwhere(s => s.DenominationReceiptDataID == model.DenominationReceiptDataDTO.Id).ToList();
+                    denominationRecepitParams.ForEach(data =>
+                    {
+                        _denominationRecepitParam.Delete(data.ID);
+                    });
+                    _unitOfWork.SaveChanges();
+
+                    current.Title = model.DenominationReceiptDataDTO.Title;
+                    current.Disclaimer = model.DenominationReceiptDataDTO.Disclaimer;
+                    current.Footer = model.DenominationReceiptDataDTO.Footer;
+                    current.DenominationReceiptParams = model.DenominationReceiptParamDTOs.Select(RP => new DenominationReceiptParam
+                    {
+                        FontSize = RP.FontSize,
+                        Alignment = RP.Alignment,
+                        ParameterID = RP.ParameterID,
+                        Bold = RP.Bold,
+                        DenominationID = model.DenominationReceiptDataDTO.DenominationID,
+                        Status = true,
+                    }).ToList();
+                }
+               
+            }
 
             _unitOfWork.SaveChanges();
-            //DenomotionRevcpit param>>>>TODO Ebram
-
-
         }
 
         public void DeleteDenominationReceiptParam(int id)

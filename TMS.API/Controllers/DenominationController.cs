@@ -679,7 +679,8 @@ namespace TMS.API.Controllers
                 Bold = model.Bold,
                 Alignment = model.Alignment,
                 Status = model.Status,
-                FontSize = model.FontSize
+                FontSize = model.FontSize,
+                DenominationReceiptDataID = model.DenominationReceiptDataID
             };
         }
     }

@@ -22,6 +22,8 @@
     <Compile Remove="Migrations\20211115165420_AccountTypeProfileDenominationUnique.Designer.cs" />
     <Compile Remove="Migrations\20211115165620_AccountTypeProfileDenominationUnique.cs" />
     <Compile Remove="Migrations\20211115165620_AccountTypeProfileDenominationUnique.Designer.cs" />
+    <Compile Remove="Migrations\20220306202845_RecieptDataWithRecieptParam.cs" />
+    <Compile Remove="Migrations\20220306202845_RecieptDataWithRecieptParam.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

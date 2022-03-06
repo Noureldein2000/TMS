@@ -15,5 +15,7 @@ namespace TMS.Data.Entities
         public int Alignment { get; set; }
         public bool Status { get; set; }
         public FontSize FontSize { get; set; }
+        public int? DenominationReceiptDataID { get; set; }
+        public virtual DenominationReceiptData DenominationReceiptData { get; set; }
     }
 }
